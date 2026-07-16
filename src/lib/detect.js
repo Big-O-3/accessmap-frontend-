@@ -1,4 +1,4 @@
-// Client for the Python ML service (accessmap-ml) that runs YOLO-World.
+// Client for the Python ML service (accessmap-ml) that runs Grounding DINO.
 //
 // The Analyze page posts an image straight to this service and gets back
 // detections. We also turn those detections into the "features" shape that

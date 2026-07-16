@@ -4,7 +4,7 @@ import ScoreBadge from "../components/ScoreBadge";
 import { featureLabel } from "../lib/features";
 import { analyzeImage, detectionsToFeatures, scoreFromDetections } from "../lib/detect";
 
-// Upload a venue photo, run it through YOLO-World, and preview the accessibility
+// Upload a venue photo, run it through Grounding DINO, and preview the accessibility
 // score + detected features. Upload-only for now; a "take a photo" option is
 // planned (a camera capture input) but intentionally not built yet.
 export default function AnalyzePage() {
