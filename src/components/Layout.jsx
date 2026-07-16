@@ -16,7 +16,6 @@ export default function Layout() {
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="text-2xl">♿</span>
             <span>AccessMap</span>
           </NavLink>
           <nav className="flex items-center gap-1">

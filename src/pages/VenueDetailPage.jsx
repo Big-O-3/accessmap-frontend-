@@ -120,9 +120,6 @@ function FeatureBreakdown({ features }) {
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-xl" aria-hidden>
-                  {meta.icon}
-                </span>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
                     {meta.label}

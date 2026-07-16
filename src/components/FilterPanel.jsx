@@ -32,7 +32,7 @@ export default function FilterPanel({
             : "border-gray-300 text-gray-700 hover:bg-gray-50"
         }`}
       >
-        {hasLocation ? "📍 Using your location" : "📍 Near me"}
+        {hasLocation ? "Using your location" : "Near me"}
       </button>
 
       <fieldset>
@@ -51,7 +51,6 @@ export default function FilterPanel({
                 onChange={() => onToggleFeature(feature.key)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span aria-hidden>{feature.icon}</span>
               <span>{feature.label}</span>
             </label>
           ))}

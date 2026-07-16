@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import ScoreBadge from "./ScoreBadge";
-import { featureIcon, featureLabel } from "../lib/features";
+import { featureLabel } from "../lib/features";
 
 export default function VenueCard({ venue, active, onHover }) {
   return (
@@ -29,7 +29,6 @@ export default function VenueCard({ venue, active, onHover }) {
             className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
             title={featureLabel(key)}
           >
-            <span aria-hidden>{featureIcon(key)}</span>
             {featureLabel(key)}
           </span>
         ))}

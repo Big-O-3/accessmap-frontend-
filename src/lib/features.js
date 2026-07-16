@@ -1,12 +1,12 @@
 // Accessibility features used across search filters, venue detail, and scoring.
 // Keys match the backend's mapped accessibility feature strings.
 export const ACCESSIBILITY_FEATURES = [
-  { key: "entrance_detected", label: "Wheelchair accessible entrance", icon: "♿" },
-  { key: "restroom_available", label: "Accessible restroom", icon: "🚽" },
-  { key: "parking_area", label: "Accessible parking", icon: "🅿️" },
-  { key: "seating_available", label: "Seating available", icon: "🪑" },
-  { key: "indoor_seating", label: "Indoor seating", icon: "🪑" },
-  { key: "stairs_present", label: "Stairs present (barrier)", icon: "🪜", barrier: true },
+  { key: "entrance_detected", label: "Wheelchair accessible entrance" },
+  { key: "restroom_available", label: "Accessible restroom" },
+  { key: "parking_area", label: "Accessible parking" },
+  { key: "seating_available", label: "Seating available" },
+  { key: "indoor_seating", label: "Indoor seating" },
+  { key: "stairs_present", label: "Stairs present (barrier)", barrier: true },
 ];
 
 export const FEATURE_BY_KEY = Object.fromEntries(
@@ -18,8 +18,4 @@ export const FILTERABLE_FEATURES = ACCESSIBILITY_FEATURES.filter((f) => !f.barri
 
 export function featureLabel(key) {
   return FEATURE_BY_KEY[key]?.label ?? key;
-}
-
-export function featureIcon(key) {
-  return FEATURE_BY_KEY[key]?.icon ?? "•";
 }
