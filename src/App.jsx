@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import VenueDetailPage from "./pages/VenueDetailPage";
+import AnalyzePage from "./pages/AnalyzePage";
 import StubPage from "./pages/StubPage";
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="venue/:id" element={<VenueDetailPage />} />
+          <Route path="analyze" element={<AnalyzePage />} />
           <Route
             path="upload"
             element={<StubPage title="Photo Upload" owner="Brandon" />}

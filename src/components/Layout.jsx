@@ -4,6 +4,7 @@ import { USE_MOCK } from "../lib/api";
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/search", label: "Search" },
+  { to: "/analyze", label: "Analyze" },
   { to: "/add-venue", label: "Add Venue" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/about", label: "About" },
