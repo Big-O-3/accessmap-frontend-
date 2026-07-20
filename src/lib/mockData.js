@@ -78,39 +78,6 @@ export const MOCK_VENUES = [
   },
 ];
 
-export const MOCK_PHOTOS = {
-  "venue-1": [
-    {
-      id: "photo-1",
-      imageUrl:
-        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=60",
-      detections: [
-        {
-          cocoLabel: "door",
-          accessibilityFeature: "entrance_detected",
-          confidence: 0.94,
-          boundingBox: { x: 120, y: 180, width: 160, height: 260 },
-        },
-      ],
-    },
-  ],
-  "venue-2": [
-    {
-      id: "photo-2",
-      imageUrl:
-        "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&q=60",
-      detections: [
-        {
-          cocoLabel: "stairs",
-          accessibilityFeature: "stairs_present",
-          confidence: 0.95,
-          boundingBox: { x: 300, y: 220, width: 220, height: 300 },
-        },
-      ],
-    },
-  ],
-};
-
 export const MOCK_REVIEWS = {
   "venue-1": [
     {

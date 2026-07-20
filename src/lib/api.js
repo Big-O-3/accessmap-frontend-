@@ -5,7 +5,7 @@
 // Every function returns a Promise, so swapping to the real API later is a
 // no-op for calling components.
 
-import { MOCK_VENUES, MOCK_PHOTOS, MOCK_REVIEWS } from "./mockData";
+import { MOCK_VENUES, MOCK_REVIEWS } from "./mockData";
 import { calculateAccessibilityScore } from "./score";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -98,7 +98,7 @@ export async function getVenue(id) {
     if (!venue) throw new Error("Venue not found");
     return {
       ...withScore(venue),
-      photos: MOCK_PHOTOS[id] ?? [],
+      photos: [], // real photos come from the backend once venues have uploads
       reviews: MOCK_REVIEWS[id] ?? [],
     };
   }
