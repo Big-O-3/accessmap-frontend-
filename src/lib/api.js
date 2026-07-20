@@ -218,6 +218,55 @@ export async function submitContribution({ venue, features, previewScore, note, 
   };
 }
 
+// POST /api/photos — upload a photo file to a venue (multipart/form-data).
+// The backend streams it to Cloudinary and returns the created Photo row
+// (id + hosted imageUrl). In mock mode we can't host an image, so we return a
+// synthetic photo carrying the local preview URL for display only.
+export async function uploadPhoto(venueId, file, localPreviewUrl) {
+  if (USE_MOCK) {
+    await delay();
+    return {
+      id: `photo-local-${mockId()}`,
+      venueId,
+      imageUrl: localPreviewUrl ?? null,
+      thumbnailUrl: null,
+      mlAnalyzed: false,
+    };
+  }
+
+  const form = new FormData();
+  form.append("venueId", venueId);
+  form.append("image", file);
+
+  // NOTE: do NOT set Content-Type here — the browser adds the multipart
+  // boundary. request() forces application/json, so we fetch directly.
+  const res = await fetch(`${API_URL}/api/photos`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Upload failed (${res.status})`);
+  }
+  return res.json();
+}
+
+// POST /api/photos/:id/analyze — run detection on an already-uploaded photo and
+// persist the MLAnalysis + Detection rows. Returns detections that include their
+// DB `id` (needed to confirm/reject them) plus an altTextSuggestion.
+export async function analyzeUploadedPhoto(photoId) {
+  return request(`/api/photos/${photoId}/analyze`, { method: "POST" });
+}
+
+// PATCH /api/photos/:id/detections — confirm (verify) or reject (delete) the
+// contributor's detections by id.
+export async function patchDetections(photoId, { confirmed = [], rejected = [] }) {
+  return request(`/api/photos/${photoId}/detections`, {
+    method: "PATCH",
+    body: JSON.stringify({ confirmed, rejected }),
+  });
+}
+
 // Short pseudo-unique id for locally-created records (no crypto dependency).
 let _mockSeq = 0;
 function mockId() {

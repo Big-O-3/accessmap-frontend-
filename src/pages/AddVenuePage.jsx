@@ -5,7 +5,13 @@ import {
   detectionsToFeatures,
   scoreFromDetections,
 } from "../lib/detect";
-import { submitContribution } from "../lib/api";
+import {
+  submitContribution,
+  uploadPhoto,
+  analyzeUploadedPhoto,
+  patchDetections,
+  USE_MOCK,
+} from "../lib/api";
 import Stepper from "../components/addVenue/Stepper";
 import StepFindVenue from "../components/addVenue/StepFindVenue";
 import StepUploadPhotos from "../components/addVenue/StepUploadPhotos";
@@ -63,6 +69,17 @@ function reducer(state, action) {
         ),
       };
 
+    case "PHOTO_UPLOADED":
+      // Record the backend photo id as soon as upload succeeds, so a later
+      // analyze failure + retry re-analyzes the SAME photo instead of
+      // re-uploading it (which would duplicate the Cloudinary asset + row).
+      return {
+        ...state,
+        photos: state.photos.map((p) =>
+          p.id === action.id ? { ...p, backendPhotoId: action.backendPhotoId } : p,
+        ),
+      };
+
     case "ANALYZE_SUCCESS": {
       // Pre-confirm high-confidence detections (≥0.85, matching the ML/backend
       // threshold); lower-confidence ones are shown but left unchecked.
@@ -81,6 +98,8 @@ function reducer(state, action) {
                 status: "done",
                 detections: action.detections,
                 altText: action.altText,
+                // Set in real mode so submit can PATCH detections by photo id.
+                backendPhotoId: action.backendPhotoId ?? p.backendPhotoId ?? null,
               }
             : p,
         ),
@@ -167,6 +186,7 @@ export default function AddVenuePage() {
         detections: [],
         altText: null,
         error: null,
+        backendPhotoId: null, // set after upload in real (non-mock) mode
       };
     });
     dispatch({ type: "ADD_PHOTOS", photos });
@@ -183,10 +203,38 @@ export default function AddVenuePage() {
     if (!photo || !photo.file) return;
     dispatch({ type: "ANALYZE_START", id });
     try {
-      const data = await analyzeImage(photo.file);
+      if (USE_MOCK) {
+        // Mock/offline: analyze the raw file directly against the ML service
+        // for an instant preview. Nothing is persisted.
+        const data = await analyzeImage(photo.file);
+        dispatch({
+          type: "ANALYZE_SUCCESS",
+          id,
+          detections: data.detections ?? [],
+          altText: data.altTextSuggestion ?? null,
+        });
+        return;
+      }
+
+      // Real backend: upload to Cloudinary (once), then analyze the stored
+      // photo so Photo + Detection rows persist and detections carry DB ids.
+      let backendPhotoId = photo.backendPhotoId;
+      if (!backendPhotoId) {
+        const uploaded = await uploadPhoto(
+          state.venue.id,
+          photo.file,
+          photo.previewUrl,
+        );
+        backendPhotoId = uploaded.id;
+        // Persist the id immediately so a subsequent analyze failure + retry
+        // does not upload the same photo a second time.
+        dispatch({ type: "PHOTO_UPLOADED", id, backendPhotoId });
+      }
+      const data = await analyzeUploadedPhoto(backendPhotoId);
       dispatch({
         type: "ANALYZE_SUCCESS",
         id,
+        backendPhotoId,
         detections: data.detections ?? [],
         altText: data.altTextSuggestion ?? null,
       });
@@ -206,6 +254,30 @@ export default function AddVenuePage() {
   async function handleSubmit() {
     dispatch({ type: "SUBMIT_START" });
     try {
+      // Real backend: persist the contributor's confirm/reject decisions on the
+      // already-stored detections (by DB id) before recording the contribution.
+      // Confirmed detections are marked verified; rejected ones are deleted, so
+      // only confirmed features feed the venue's score and photo evidence.
+      if (!USE_MOCK) {
+        await Promise.all(
+          state.photos
+            .filter((p) => p.backendPhotoId && p.detections.length > 0)
+            .map((p) => {
+              const confirmedIds = [];
+              const rejectedIds = [];
+              p.detections.forEach((d, idx) => {
+                if (!d.id) return;
+                if (state.confirmed[detKey(p.id, idx)]) confirmedIds.push(d.id);
+                else rejectedIds.push(d.id);
+              });
+              return patchDetections(p.backendPhotoId, {
+                confirmed: confirmedIds,
+                rejected: rejectedIds,
+              });
+            }),
+        );
+      }
+
       const result = await submitContribution({
         venue: state.venue,
         features,
