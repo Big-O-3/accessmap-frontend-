@@ -166,15 +166,15 @@ export async function createVenue(input) {
   });
 }
 
-// Submit a completed Add Venue contribution (Step 4).
+// POST /api/contributions — submit a completed Add Venue contribution (Step 4).
 //
-// NOTE: the backend has no single `/api/contributions` endpoint yet, and photo
-// persistence + detection confirmation both require auth the frontend doesn't
-// have. So this returns a client-computed summary (venue + preview score) and
-// is the one seam to swap for a real multi-request submit once auth lands.
-// `previewScore` is computed by the caller from the shared scoring model, so it
-// stays identical to what the backend would calculate.
-export async function submitContribution({ venue, features, previewScore, note }) {
+// Persists the contributor-confirmed features (the backend recomputes the venue
+// score from them) plus any photos that carry a hosted URL. The endpoint takes
+// optional auth, so this works before the frontend has a sign-in flow.
+// `previewScore` is computed by the caller from the shared scoring model and is
+// used for the mock response / optimistic display; the real endpoint returns
+// its own recomputed `accessibilityScore`, which we surface under the same key.
+export async function submitContribution({ venue, features, previewScore, note, photos }) {
   if (!venue?.id) throw new Error("A venue is required.");
   if (!features?.length) {
     throw new Error("Confirm at least one detected feature before submitting.");
@@ -192,13 +192,30 @@ export async function submitContribution({ venue, features, previewScore, note }
     };
   }
 
-  // The backend has no /api/contributions endpoint, and persisting photos +
-  // confirming detections both require auth the frontend doesn't have yet.
-  // Fail loudly rather than showing a fabricated success screen for data that
-  // was never saved. Swap this for the real submit once auth lands.
-  throw new Error(
-    "Submitting contributions isn't supported in this build yet (needs sign-in).",
-  );
+  // Map the frontend feature shape ({ type, ... }) to the API's ({ featureType,
+  // ... }). The venue already exists at this point (Step 1 created/selected it),
+  // so we reference it by id.
+  const data = await request("/api/contributions", {
+    method: "POST",
+    body: JSON.stringify({
+      venueId: venue.id,
+      note: note ?? "",
+      features: features.map((f) => ({
+        featureType: f.type,
+        mlDetected: f.mlDetected ?? false,
+        confidence: f.confidence,
+      })),
+      photos: photos ?? [],
+    }),
+  });
+
+  // Normalize so the success screen can read previewScore/featuresConfirmed
+  // regardless of which branch produced the result.
+  return {
+    ...data,
+    previewScore: data.accessibilityScore ?? previewScore,
+    featuresConfirmed: data.featuresConfirmed ?? features.length,
+  };
 }
 
 // Short pseudo-unique id for locally-created records (no crypto dependency).
