@@ -37,7 +37,7 @@ export default function DetectionImage({ photo }) {
             height: d.boundingBox.height * scale.y,
           }}
         >
-          <span className="absolute -top-6 left-0 whitespace-nowrap rounded bg-indigo-600 px-1.5 py-0.5 text-xs font-medium text-white">
+          <span className="absolute top-0 left-0 max-w-full truncate rounded-br rounded-tl bg-indigo-600 px-1.5 py-0.5 text-xs font-medium text-white">
             {featureLabel(d.accessibilityFeature)} ·{" "}
             {Math.round(d.confidence * 100)}%
           </span>

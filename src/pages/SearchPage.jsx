@@ -144,7 +144,7 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              <div className="h-[600px] rounded-lg overflow-hidden border border-gray-200">
+              <div className="h-[60vh] min-h-[320px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-200">
                 <VenueMap
                   venues={venues}
                   center={mapCenter}
