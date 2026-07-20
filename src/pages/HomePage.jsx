@@ -48,12 +48,6 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid grid-cols-3 gap-4 text-center mb-12">
-          <Stat label="Venues reviewed" value="200+" />
-          <Stat label="Photos analyzed" value="1,000+" />
-          <Stat label="Features detected" value="5,000+" />
-        </div>
-
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-900">Featured venues</h2>
           <Link to="/search" className="text-indigo-600 hover:underline text-sm">
@@ -66,15 +60,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-    </div>
-  );
-}
-
-function Stat({ label, value }) {
-  return (
-    <div className="rounded-lg bg-white border border-gray-200 py-6">
-      <p className="text-3xl font-bold text-indigo-600">{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{label}</p>
     </div>
   );
 }
