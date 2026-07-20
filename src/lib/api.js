@@ -114,4 +114,98 @@ export async function getReviews(venueId) {
   return request(`/api/reviews?venueId=${venueId}`);
 }
 
+// POST /api/venues  (Add Venue · Step 1 "create a new venue")
+// The real backend route is unauthenticated and expects
+//   { name, address, city, latitude, longitude, ... }
+// and responds with a serialized venue (id, accessibilityScore, featureKeys…).
+// In mock mode we synthesize that same shape so the stepper works offline.
+export async function createVenue(input) {
+  const { name, address, city, state, zipCode, latitude, longitude, venueType } =
+    input;
+
+  if (!name || !address || !city) {
+    throw new Error("Name, address, and city are required.");
+  }
+
+  if (USE_MOCK) {
+    await delay();
+    const venue = {
+      id: `venue-local-${mockId()}`,
+      name,
+      address,
+      city,
+      state: state ?? "",
+      zipCode: zipCode ?? "",
+      latitude: latitude ?? null,
+      longitude: longitude ?? null,
+      venueType: venueType ?? "other",
+      accessibilityScore: 0,
+      totalReviews: 0,
+      totalPhotos: 0,
+      features: [],
+      featureKeys: [],
+    };
+    // Seed it into the mock store so getVenue/searchVenues can resolve it —
+    // otherwise the "View venue" link after submitting would 404 in mock mode.
+    MOCK_VENUES.push(venue);
+    return venue;
+  }
+
+  return request("/api/venues", {
+    method: "POST",
+    body: JSON.stringify({
+      name,
+      address,
+      city,
+      state,
+      zipCode,
+      latitude,
+      longitude,
+      venueType,
+    }),
+  });
+}
+
+// Submit a completed Add Venue contribution (Step 4).
+//
+// NOTE: the backend has no single `/api/contributions` endpoint yet, and photo
+// persistence + detection confirmation both require auth the frontend doesn't
+// have. So this returns a client-computed summary (venue + preview score) and
+// is the one seam to swap for a real multi-request submit once auth lands.
+// `previewScore` is computed by the caller from the shared scoring model, so it
+// stays identical to what the backend would calculate.
+export async function submitContribution({ venue, features, previewScore, note }) {
+  if (!venue?.id) throw new Error("A venue is required.");
+  if (!features?.length) {
+    throw new Error("Confirm at least one detected feature before submitting.");
+  }
+
+  if (USE_MOCK) {
+    await delay();
+    return {
+      id: `contribution-${mockId()}`,
+      venueId: venue.id,
+      previewScore,
+      featuresConfirmed: features.length,
+      status: "pending_verification",
+      note: note ?? "",
+    };
+  }
+
+  // The backend has no /api/contributions endpoint, and persisting photos +
+  // confirming detections both require auth the frontend doesn't have yet.
+  // Fail loudly rather than showing a fabricated success screen for data that
+  // was never saved. Swap this for the real submit once auth lands.
+  throw new Error(
+    "Submitting contributions isn't supported in this build yet (needs sign-in).",
+  );
+}
+
+// Short pseudo-unique id for locally-created records (no crypto dependency).
+let _mockSeq = 0;
+function mockId() {
+  _mockSeq += 1;
+  return `${_mockSeq}${Math.floor(performance.now())}`;
+}
+
 export { USE_MOCK };
