@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import VenueDetailPage from "./pages/VenueDetailPage";
 import AnalyzePage from "./pages/AnalyzePage";
+import AddVenuePage from "./pages/AddVenuePage";
 import StubPage from "./pages/StubPage";
 
 export default function App() {
@@ -19,10 +20,7 @@ export default function App() {
             path="upload"
             element={<StubPage title="Photo Upload" owner="Brandon" />}
           />
-          <Route
-            path="add-venue"
-            element={<StubPage title="Add Venue" owner="Brandon" />}
-          />
+          <Route path="add-venue" element={<AddVenuePage />} />
           <Route
             path="dashboard"
             element={<StubPage title="Dashboard" owner="Brandon" />}
