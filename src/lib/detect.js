@@ -6,6 +6,7 @@
 // photo before any backend/venue exists.
 
 import { calculateAccessibilityScore } from "./score";
+import { FEATURE_BY_KEY, featureLabel } from "./features";
 
 // Where the Flask ML service lives. Override with VITE_ML_URL if needed.
 const ML_URL = import.meta.env.VITE_ML_URL || "http://localhost:5001";
@@ -46,6 +47,41 @@ export function detectionsToFeatures(detections = []) {
 // Convenience: raw detections -> a 0-100 preview score.
 export function scoreFromDetections(detections = []) {
   return calculateAccessibilityScore(detectionsToFeatures(detections));
+}
+
+// Turn detections into a human-readable "degree of accessibility" summary:
+// which accessibility features are present, which detected things are barriers
+// (e.g. stairs), and a plain-English verdict. Used by the Analyze page to show
+// more than a flat list.
+export function summarizeAccessibility(detections = []) {
+  const features = detectionsToFeatures(detections);
+
+  const present = [];
+  const barriers = [];
+  for (const f of features) {
+    const meta = FEATURE_BY_KEY[f.type];
+    const entry = { key: f.type, label: featureLabel(f.type), confidence: f.confidence };
+    if (meta?.barrier) {
+      barriers.push(entry);
+    } else {
+      present.push(entry);
+    }
+  }
+
+  // A simple verdict from what we found. Barriers with no accessible features
+  // is the worst case; accessible features with no barriers is the best.
+  let level;
+  if (present.length === 0 && barriers.length === 0) {
+    level = "unknown";
+  } else if (barriers.length > 0 && present.length === 0) {
+    level = "not-accessible";
+  } else if (barriers.length > 0) {
+    level = "partial";
+  } else {
+    level = "accessible";
+  }
+
+  return { level, present, barriers };
 }
 
 export { ML_URL };

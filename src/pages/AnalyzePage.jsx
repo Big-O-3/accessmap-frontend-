@@ -1,8 +1,31 @@
 import { useState } from "react";
 import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
-import { featureLabel } from "../lib/features";
-import { analyzeImage, detectionsToFeatures, scoreFromDetections } from "../lib/detect";
+import { analyzeImage, scoreFromDetections, summarizeAccessibility } from "../lib/detect";
+
+// Plain-English verdict shown at the top of the results, keyed by summary.level.
+const VERDICTS = {
+  accessible: {
+    text: "Looks accessible",
+    detail: "Accessible features detected, with no barriers spotted in this photo.",
+    className: "bg-green-50 text-green-800 ring-green-600/20",
+  },
+  partial: {
+    text: "Partially accessible",
+    detail: "Some accessible features detected, but also a barrier — check the details.",
+    className: "bg-amber-50 text-amber-800 ring-amber-600/20",
+  },
+  "not-accessible": {
+    text: "Barriers detected",
+    detail: "A barrier was detected and no accessible features were found in this photo.",
+    className: "bg-red-50 text-red-800 ring-red-600/20",
+  },
+  unknown: {
+    text: "No features detected",
+    detail: "Nothing recognizable was found. Try a clearer photo of the entrance.",
+    className: "bg-gray-50 text-gray-700 ring-gray-600/20",
+  },
+};
 
 // Upload a venue photo, run it through Grounding DINO, and preview the accessibility
 // score + detected features. Upload-only for now; a "take a photo" option is
@@ -33,7 +56,7 @@ export default function AnalyzePage() {
   }
 
   const detections = result?.detections ?? [];
-  const features = detectionsToFeatures(detections);
+  const summary = result ? summarizeAccessibility(detections) : null;
   const score = result ? scoreFromDetections(detections) : null;
 
   // A photo object in the shape DetectionImage expects.
@@ -46,8 +69,9 @@ export default function AnalyzePage() {
           Check a venue's accessibility
         </h1>
         <p className="mt-2 text-sm sm:text-base text-gray-500">
-          Upload a photo and our AI will detect accessibility features like
-          ramps, doors, and seating — and give you a preview score.
+          Upload a photo and our AI will detect accessibility features — ramps,
+          doors, seating, restrooms — and flag barriers like stairs, with a
+          preview score.
         </p>
       </header>
 
@@ -95,38 +119,75 @@ export default function AnalyzePage() {
       {/* Results */}
       {status === "done" && photo && (
         <section className="mt-8 space-y-6">
-          <div className="flex flex-col items-center gap-3 rounded-xl bg-white p-5 ring-1 ring-gray-200 sm:flex-row sm:justify-between">
-            <div className="text-center sm:text-left">
-              <p className="text-sm text-gray-500">Preview accessibility score</p>
-              <p className="text-xs text-gray-400">
-                Based on {detections.length} detected feature
-                {detections.length === 1 ? "" : "s"} in this photo
-              </p>
+          {/* Overall verdict — the "degree of accessibility" at a glance. */}
+          <div
+            className={`rounded-xl p-5 ring-1 ${VERDICTS[summary.level].className}`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-lg font-bold">{VERDICTS[summary.level].text}</p>
+                <p className="mt-1 text-sm opacity-90">
+                  {VERDICTS[summary.level].detail}
+                </p>
+              </div>
+              <ScoreBadge score={score} size="lg" />
             </div>
-            <ScoreBadge score={score} size="lg" />
           </div>
 
           {/* The photo with bounding boxes drawn over detections. */}
           <DetectionImage photo={photo} />
 
-          {/* Per-feature breakdown. */}
-          {features.length > 0 ? (
-            <ul className="divide-y divide-gray-100 rounded-xl bg-white ring-1 ring-gray-200">
-              {features.map((f) => (
-                <li
-                  key={f.type}
-                  className="flex items-center justify-between gap-3 px-4 py-3"
-                >
-                  <span className="text-sm font-medium text-gray-800">
-                    {featureLabel(f.type)}
-                  </span>
-                  <span className="text-xs font-semibold text-gray-500">
-                    {Math.round(f.confidence * 100)}% confidence
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
+          {/* Accessible features found. */}
+          {summary.present.length > 0 && (
+            <div className="rounded-xl bg-white ring-1 ring-gray-200">
+              <h2 className="border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900">
+                Accessible features found
+              </h2>
+              <ul className="divide-y divide-gray-100">
+                {summary.present.map((f) => (
+                  <li
+                    key={f.key}
+                    className="flex items-center justify-between gap-3 px-4 py-3"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                      <span className="text-green-600" aria-hidden>✓</span>
+                      {f.label}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-500">
+                      {Math.round(f.confidence * 100)}% confidence
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Barriers found (e.g. stairs). */}
+          {summary.barriers.length > 0 && (
+            <div className="rounded-xl bg-white ring-1 ring-red-200">
+              <h2 className="border-b border-red-100 px-4 py-3 text-sm font-semibold text-red-800">
+                Barriers detected
+              </h2>
+              <ul className="divide-y divide-red-100">
+                {summary.barriers.map((f) => (
+                  <li
+                    key={f.key}
+                    className="flex items-center justify-between gap-3 px-4 py-3"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                      <span className="text-red-600" aria-hidden>⚠</span>
+                      {f.label}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-500">
+                      {Math.round(f.confidence * 100)}% confidence
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {summary.present.length === 0 && summary.barriers.length === 0 && (
             <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-gray-500 ring-1 ring-gray-200">
               No accessibility features were detected in this photo. Try a
               clearer photo of the entrance.
