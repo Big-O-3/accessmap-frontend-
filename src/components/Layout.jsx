@@ -41,7 +41,7 @@ export default function Layout() {
 
       {USE_MOCK && (
         <div className="bg-amber-50 border-b border-amber-200 text-amber-800 text-center text-xs py-1.5">
-          Running on mock data — set <code className="font-mono">VITE_API_URL</code> to connect the backend.
+          Running on mock data
         </div>
       )}
 

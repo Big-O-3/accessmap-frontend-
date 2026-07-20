@@ -25,19 +25,21 @@ export default function HomePage() {
             Find truly accessible places
           </h1>
           <p className="mt-4 text-lg text-indigo-100 max-w-2xl mx-auto">
-            Community-verified accessibility details and AI-detected features —
-            so you can plan a visit with confidence.
+            Community-verified accessibility details and AI-detected features.
           </p>
-          <form onSubmit={handleSearch} className="mt-8 flex max-w-md mx-auto gap-2">
+          <form
+            onSubmit={handleSearch}
+            className="mt-8 flex max-w-xl mx-auto gap-2 rounded-xl bg-white p-2 shadow-lg ring-1 ring-black/5"
+          >
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by city…"
-              className="flex-1 rounded-md px-4 py-3 text-gray-900 outline-none"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
             />
             <button
               type="submit"
-              className="rounded-md bg-white px-5 py-3 font-medium text-indigo-700 hover:bg-indigo-50"
+              className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
             >
               Search
             </button>
