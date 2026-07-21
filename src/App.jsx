@@ -6,6 +6,7 @@ import VenueDetailPage from "./pages/VenueDetailPage";
 import AnalyzePage from "./pages/AnalyzePage";
 import AddVenuePage from "./pages/AddVenuePage";
 import DashboardPage from "./pages/DashboardPage";
+import AboutPage from "./pages/AboutPage";
 import StubPage from "./pages/StubPage";
 
 export default function App() {
@@ -27,7 +28,7 @@ export default function App() {
             path="profile"
             element={<StubPage title="Profile & Settings" owner="Brandon" />}
           />
-          <Route path="about" element={<StubPage title="About AccessMap" />} />
+          <Route path="about" element={<AboutPage />} />
           <Route path="*" element={<StubPage title="Page not found" />} />
         </Route>
       </Routes>
