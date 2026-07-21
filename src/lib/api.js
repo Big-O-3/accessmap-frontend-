@@ -12,17 +12,36 @@ import { detectionsToFeatures } from "./detect";
 const API_URL = import.meta.env.VITE_API_URL;
 const USE_MOCK = !API_URL;
 
+// Typed error so callers can distinguish "not signed in" from other failures
+// (e.g. AuthContext skips 401s silently; guarded actions can redirect to login).
+export class AuthError extends Error {
+  constructor(message = "Authentication required") {
+    super(message);
+    this.name = "AuthError";
+    this.status = 401;
+  }
+}
+
 function delay(ms = 250) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function request(path, options) {
   const res = await fetch(`${API_URL}${path}`, {
+    // credentials:include is what makes the browser send the httpOnly session
+    // cookie cross-origin. The backend must allow this origin in CORS and set
+    // Access-Control-Allow-Credentials: true (see backend app.js).
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+  if (res.status === 401) {
+    const body = await res.json().catch(() => ({}));
+    throw new AuthError(body.error || "Authentication required");
+  }
   if (!res.ok) {
-    throw new Error(`API ${res.status}: ${res.statusText}`);
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `API ${res.status}: ${res.statusText}`);
   }
   return res.json();
 }
@@ -262,10 +281,15 @@ export async function uploadPhoto(venueId, file, localPreviewUrl) {
 
   // NOTE: do NOT set Content-Type here — the browser adds the multipart
   // boundary. request() forces application/json, so we fetch directly.
+  // credentials:"include" so the session cookie rides along cross-origin.
   const res = await fetch(`${API_URL}/api/photos`, {
     method: "POST",
+    credentials: "include",
     body: form,
   });
+  if (res.status === 401) {
+    throw new AuthError();
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Upload failed (${res.status})`);
@@ -343,4 +367,4 @@ function mockId() {
   return `${_mockSeq}${Math.floor(performance.now())}`;
 }
 
-export { USE_MOCK };
+export { USE_MOCK, request };
