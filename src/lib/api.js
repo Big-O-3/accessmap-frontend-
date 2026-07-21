@@ -323,7 +323,9 @@ export async function saveAnalyzedVenue({ name, lat, lng, detections }) {
       venue: {
         name: name.trim(),
         address: "Added from Analyze",
-        city: "",
+        // Backend requires city to be non-empty; we don't collect it on the
+        // Analyze page, so use a stable placeholder the venue can be edited from.
+        city: "Unknown",
         latitude: lat,
         longitude: lng,
         venueType: "other",
