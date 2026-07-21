@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { USE_MOCK } from "../lib/api";
+import { useAuth } from "../context/useAuth";
 
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -17,6 +18,68 @@ function navLinkClass({ isActive }) {
   }`;
 }
 
+// Small auth control shown at the right of the header (and inside the mobile
+// drawer). Reads user state from AuthContext; renders "Log in / Sign up" while
+// signed out and "Hi, <username> · Log out" while signed in.
+function AuthSlot({ compact = false, onNavigate }) {
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) return null;
+
+  const wrap = compact
+    ? "flex flex-col gap-1"
+    : "flex items-center gap-2 text-sm";
+
+  async function handleLogout() {
+    await logout();
+    onNavigate?.();
+    navigate("/");
+  }
+
+  if (user) {
+    return (
+      <div className={wrap}>
+        <span className={compact ? "px-3 py-2 text-sm text-gray-600" : "text-gray-600"}>
+          Hi, {user.username}
+        </span>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={
+            compact
+              ? "rounded-md px-3 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100"
+              : "rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100"
+          }
+        >
+          Log out
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={wrap}>
+      <NavLink to="/login" onClick={onNavigate} className={navLinkClass}>
+        Log in
+      </NavLink>
+      <NavLink
+        to="/register"
+        onClick={onNavigate}
+        className={({ isActive }) =>
+          `${compact ? "block" : "inline-block"} rounded-md px-3 py-2 text-sm font-medium ${
+            isActive
+              ? "bg-indigo-700 text-white"
+              : "bg-indigo-600 text-white hover:bg-indigo-700"
+          }`
+        }
+      >
+        Sign up
+      </NavLink>
+    </div>
+  );
+}
+
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -28,13 +91,16 @@ export default function Layout() {
             <span>AccessMap</span>
           </NavLink>
 
-          {/* Desktop nav — full row of links. */}
+          {/* Desktop nav — full row of links plus the auth slot. */}
           <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={navLinkClass}>
                 {link.label}
               </NavLink>
             ))}
+            <div className="ml-2 border-l border-gray-200 pl-2">
+              <AuthSlot />
+            </div>
           </nav>
 
           {/* Mobile menu toggle — a large, easy-to-tap hamburger button. */}
@@ -70,6 +136,9 @@ export default function Layout() {
                 {link.label}
               </NavLink>
             ))}
+            <div className="mt-2 border-t border-gray-100 pt-2">
+              <AuthSlot compact onNavigate={() => setMenuOpen(false)} />
+            </div>
           </nav>
         )}
       </header>
