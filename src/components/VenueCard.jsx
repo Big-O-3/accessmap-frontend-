@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import ScoreBadge from "./ScoreBadge";
+import SaveButton from "./SaveButton";
 import { featureLabel } from "../lib/features";
 
 export default function VenueCard({ venue, active, onHover }) {
@@ -19,7 +20,10 @@ export default function VenueCard({ venue, active, onHover }) {
             {venue.address}, {venue.city}
           </p>
         </div>
-        <ScoreBadge score={venue.accessibilityScore} size="sm" />
+        <div className="flex flex-col items-end gap-1.5">
+          <ScoreBadge score={venue.accessibilityScore} size="sm" />
+          <SaveButton venue={venue} size="sm" />
+        </div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">

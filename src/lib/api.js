@@ -114,6 +114,27 @@ export async function getReviews(venueId) {
   return request(`/api/reviews?venueId=${venueId}`);
 }
 
+// Recommended venues for the dashboard. There's no dedicated recommendations
+// endpoint yet, so this reuses venue search: nearest-first when a location is
+// given, else highest-scored. Each result carries a plain-English `reason`.
+// Works in both mock and real mode because it delegates to searchVenues.
+export async function getRecommendations({ lat, lng, limit = 3 } = {}) {
+  const filters = {};
+  if (lat != null && lng != null) {
+    filters.lat = lat;
+    filters.lng = lng;
+  }
+  const { venues } = await searchVenues(filters);
+
+  return venues.slice(0, limit).map((v) => ({
+    ...v,
+    reason:
+      v.distance != null
+        ? `${v.distance.toFixed(1)} mi away with a strong accessibility score`
+        : "Highly rated for accessibility by the community",
+  }));
+}
+
 // POST /api/venues  (Add Venue · Step 1 "create a new venue")
 // The real backend route is unauthenticated and expects
 //   { name, address, city, latitude, longitude, ... }

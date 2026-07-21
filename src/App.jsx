@@ -5,6 +5,7 @@ import SearchPage from "./pages/SearchPage";
 import VenueDetailPage from "./pages/VenueDetailPage";
 import AnalyzePage from "./pages/AnalyzePage";
 import AddVenuePage from "./pages/AddVenuePage";
+import DashboardPage from "./pages/DashboardPage";
 import StubPage from "./pages/StubPage";
 
 export default function App() {
@@ -21,10 +22,7 @@ export default function App() {
             element={<StubPage title="Photo Upload" owner="Brandon" />}
           />
           <Route path="add-venue" element={<AddVenuePage />} />
-          <Route
-            path="dashboard"
-            element={<StubPage title="Dashboard" owner="Brandon" />}
-          />
+          <Route path="dashboard" element={<DashboardPage />} />
           <Route
             path="profile"
             element={<StubPage title="Profile & Settings" owner="Brandon" />}

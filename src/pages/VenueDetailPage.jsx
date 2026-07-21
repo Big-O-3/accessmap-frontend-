@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { getVenue } from "../lib/api";
 import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY } from "../lib/features";
 import ScoreBadge from "../components/ScoreBadge";
+import SaveButton from "../components/SaveButton";
 import DetectionImage from "../components/DetectionImage";
 
 export default function VenueDetailPage() {
@@ -64,14 +65,17 @@ export default function VenueDetailPage() {
         </div>
         <div className="flex flex-col items-end gap-2">
           <ScoreBadge score={venue.accessibilityScore} size="lg" />
-          <a
-            href={directionsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            Get directions
-          </a>
+          <div className="flex items-center gap-2">
+            <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              Get directions
+            </a>
+          </div>
         </div>
       </div>
 

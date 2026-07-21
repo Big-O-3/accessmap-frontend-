@@ -12,6 +12,7 @@ import {
   patchDetections,
   USE_MOCK,
 } from "../lib/api";
+import { logActivity } from "../lib/userData";
 import Stepper from "../components/addVenue/Stepper";
 import StepFindVenue from "../components/addVenue/StepFindVenue";
 import StepUploadPhotos from "../components/addVenue/StepUploadPhotos";
@@ -283,6 +284,16 @@ export default function AddVenuePage() {
         features,
         previewScore,
         note: state.note,
+      });
+      // Record the contribution in this browser's activity feed so it shows on
+      // the dashboard (and counts toward the local contribution stat).
+      logActivity({
+        type: "contributed",
+        venueId: state.venue.id,
+        venueName: state.venue.name,
+        detail: `Contributed ${features.length} feature${
+          features.length === 1 ? "" : "s"
+        } to ${state.venue.name}`,
       });
       dispatch({ type: "SUBMIT_SUCCESS", result });
     } catch (err) {
