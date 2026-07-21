@@ -7,6 +7,7 @@
 
 import { MOCK_VENUES, MOCK_REVIEWS } from "./mockData";
 import { calculateAccessibilityScore } from "./score";
+import { detectionsToFeatures } from "./detect";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const USE_MOCK = !API_URL;
@@ -285,6 +286,51 @@ export async function patchDetections(photoId, { confirmed = [], rejected = [] }
   return request(`/api/photos/${photoId}/detections`, {
     method: "PATCH",
     body: JSON.stringify({ confirmed, rejected }),
+  });
+}
+
+// Persist an Analyze-page result as a real venue (Analyze → Map, saved to DB).
+//
+// Reuses POST /api/contributions with an INLINE venue: it creates the venue,
+// writes its accessibility features, recomputes the score, and the venue then
+// shows up immediately via GET /api/venues/search. No auth required.
+//
+// The raw Analyze upload has no hosted Cloudinary URL, so we persist the
+// detected features + score (the accessibility data that matters), not the
+// image. In mock mode there's no backend, so this returns null and the caller
+// falls back to the session-only pin.
+export async function saveAnalyzedVenue({ name, lat, lng, detections }) {
+  if (!name?.trim()) throw new Error("A venue name is required.");
+  if (lat == null || lng == null) throw new Error("A location is required.");
+
+  const features = detectionsToFeatures(detections).map((f) => ({
+    featureType: f.type,
+    mlDetected: true,
+    confidence: f.confidence,
+  }));
+  if (features.length === 0) {
+    throw new Error("No accessibility features to save.");
+  }
+
+  if (USE_MOCK) {
+    // No backend to persist to — signal the caller to use the session pin.
+    return null;
+  }
+
+  return request("/api/contributions", {
+    method: "POST",
+    body: JSON.stringify({
+      venue: {
+        name: name.trim(),
+        address: "Added from Analyze",
+        city: "",
+        latitude: lat,
+        longitude: lng,
+        venueType: "other",
+      },
+      features,
+      note: "Created from an analyzed photo.",
+    }),
   });
 }
 

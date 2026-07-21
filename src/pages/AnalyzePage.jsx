@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
 import { analyzeImage, scoreFromDetections, summarizeAccessibility } from "../lib/detect";
+import { makeAnalyzedSpot, addAnalyzedSpot } from "../lib/analyzedSpots";
+import { saveAnalyzedVenue, USE_MOCK } from "../lib/api";
 
 // Plain-English verdict shown at the top of the results, keyed by summary.level.
 const VERDICTS = {
@@ -31,10 +34,54 @@ const VERDICTS = {
 // score + detected features. Upload-only for now; a "take a photo" option is
 // planned (a camera capture input) but intentionally not built yet.
 export default function AnalyzePage() {
+  const navigate = useNavigate();
   const [previewUrl, setPreviewUrl] = useState(null);
   const [result, setResult] = useState(null); // { detections, altTextSuggestion }
   const [status, setStatus] = useState("idle"); // idle | loading | done | error
   const [error, setError] = useState(null);
+  const [placing, setPlacing] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [venueName, setVenueName] = useState("");
+
+  // Get the browser's current position as a Promise.
+  function getPosition() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("Location isn't available on this device."));
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => reject(new Error("Couldn't get your location. Allow location access.")),
+      );
+    });
+  }
+
+  // Save this analysis at the user's location under the given venue name.
+  // Real backend → persist as a venue via the contributions API (permanent).
+  // Mock/demo mode → drop a session-only pin (lost on tab close).
+  async function confirmPlaceOnMap() {
+    if (!venueName.trim()) {
+      setError("Please enter a name for this place.");
+      return;
+    }
+    setPlacing(true);
+    setError(null);
+    try {
+      const { lat, lng } = await getPosition();
+
+      if (USE_MOCK) {
+        const spot = makeAnalyzedSpot({ detections, lat, lng, name: venueName.trim() });
+        addAnalyzedSpot(spot);
+      } else {
+        await saveAnalyzedVenue({ name: venueName.trim(), lat, lng, detections });
+      }
+      navigate("/search");
+    } catch (err) {
+      setPlacing(false);
+      setError(err.message || "Couldn't save this place.");
+    }
+  }
 
   async function handleFile(file) {
     if (!file) return;
@@ -199,6 +246,48 @@ export default function AnalyzePage() {
               {result.altTextSuggestion}
             </p>
           )}
+
+          {/* Connect this analysis to the map — save it as a place. */}
+          {(summary.present.length > 0 || summary.barriers.length > 0) &&
+            (showNameInput ? (
+              <div className="space-y-2 rounded-xl bg-white p-4 ring-1 ring-gray-200">
+                <label
+                  htmlFor="venue-name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Name this place
+                </label>
+                <input
+                  id="venue-name"
+                  type="text"
+                  value={venueName}
+                  onChange={(e) => setVenueName(e.target.value)}
+                  placeholder="e.g. Downtown Library"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+                />
+                <p className="text-xs text-gray-400">
+                  {USE_MOCK
+                    ? "Demo mode: this drops a temporary pin on the map."
+                    : "Saves this place and its accessibility features to the map."}
+                </p>
+                <button
+                  type="button"
+                  onClick={confirmPlaceOnMap}
+                  disabled={placing}
+                  className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+                >
+                  {placing ? "Saving…" : "Save & show on map"}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowNameInput(true)}
+                className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
+              >
+                Place this result on the map
+              </button>
+            ))}
 
           <p className="text-center text-xs text-gray-400">
             AI detections are a starting point — the community verifies each one
