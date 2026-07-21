@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { searchVenues } from "../lib/api";
+import { getAnalyzedSpots } from "../lib/analyzedSpots";
 import FilterPanel from "../components/FilterPanel";
 import VenueCard from "../components/VenueCard";
 import VenueMap from "../components/VenueMap";
@@ -28,7 +29,18 @@ export default function SearchPage() {
           filters.lng = location.lng;
         }
         const data = await searchVenues(filters);
-        if (!cancelled) setVenues(data.venues);
+
+        // Merge in any "analyzed spots" the user dropped from the Analyze page.
+        // Apply the same feature filter so they behave like real venues; city
+        // filtering is skipped since analyzed spots have no city.
+        let analyzed = getAnalyzedSpots();
+        if (selectedFeatures.length) {
+          analyzed = analyzed.filter((s) =>
+            selectedFeatures.every((f) => s.featureKeys.includes(f)),
+          );
+        }
+
+        if (!cancelled) setVenues([...analyzed, ...data.venues]);
       } catch (err) {
         if (!cancelled) setError(err.message);
       } finally {

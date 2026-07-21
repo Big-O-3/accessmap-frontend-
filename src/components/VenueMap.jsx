@@ -75,14 +75,20 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
                   <ScoreBadge score={venue.accessibilityScore} size="sm" />
                 </div>
                 <p className="text-xs text-gray-500">
-                  {venue.address}, {venue.city}
+                  {venue.city ? `${venue.address}, ${venue.city}` : venue.address}
                 </p>
-                <Link
-                  to={`/venue/${venue.id}`}
-                  className="text-indigo-600 hover:underline text-xs"
-                >
-                  View details →
-                </Link>
+                {venue.analyzed ? (
+                  <p className="text-xs text-indigo-600">
+                    Analyzed photo — not a saved venue yet
+                  </p>
+                ) : (
+                  <Link
+                    to={`/venue/${venue.id}`}
+                    className="text-indigo-600 hover:underline text-xs"
+                  >
+                    View details →
+                  </Link>
+                )}
               </div>
             </Popup>
           </CircleMarker>

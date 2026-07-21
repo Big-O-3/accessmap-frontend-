@@ -4,9 +4,14 @@ import SaveButton from "./SaveButton";
 import { featureLabel } from "../lib/features";
 
 export default function VenueCard({ venue, active, onHover }) {
+  // Analyzed spots (dropped from the Analyze page) aren't saved venues, so they
+  // have no detail page — render a plain div instead of a navigating Link.
+  const Wrapper = venue.analyzed ? "div" : Link;
+  const wrapperProps = venue.analyzed ? {} : { to: `/venue/${venue.id}` };
+
   return (
-    <Link
-      to={`/venue/${venue.id}`}
+    <Wrapper
+      {...wrapperProps}
       onMouseEnter={() => onHover?.(venue.id)}
       onMouseLeave={() => onHover?.(null)}
       className={`block rounded-lg border bg-white p-4 transition-shadow hover:shadow-md ${
@@ -17,7 +22,7 @@ export default function VenueCard({ venue, active, onHover }) {
         <div>
           <h3 className="font-semibold text-gray-900">{venue.name}</h3>
           <p className="text-sm text-gray-500">
-            {venue.address}, {venue.city}
+            {venue.city ? `${venue.address}, ${venue.city}` : venue.address}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1.5">
@@ -43,6 +48,6 @@ export default function VenueCard({ venue, active, onHover }) {
         <span>{venue.totalReviews} reviews</span>
         <span>{venue.totalPhotos} photos</span>
       </div>
-    </Link>
+    </Wrapper>
   );
 }
