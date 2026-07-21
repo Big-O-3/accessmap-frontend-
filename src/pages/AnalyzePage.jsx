@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
+import CameraCapture from "../components/CameraCapture";
 import { analyzeImage, scoreFromDetections, summarizeAccessibility } from "../lib/detect";
 import { makeAnalyzedSpot, addAnalyzedSpot } from "../lib/analyzedSpots";
 import { saveAnalyzedVenue, USE_MOCK } from "../lib/api";
@@ -30,9 +31,8 @@ const VERDICTS = {
   },
 };
 
-// Upload a venue photo, run it through Grounding DINO, and preview the accessibility
-// score + detected features. Upload-only for now; a "take a photo" option is
-// planned (a camera capture input) but intentionally not built yet.
+// Upload a venue photo or capture one with the device camera, run it through
+// Grounding DINO, and preview the accessibility score + detected features.
 export default function AnalyzePage() {
   const navigate = useNavigate();
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -42,6 +42,7 @@ export default function AnalyzePage() {
   const [placing, setPlacing] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [venueName, setVenueName] = useState("");
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   // Get the browser's current position as a Promise.
   function getPosition() {
@@ -122,30 +123,50 @@ export default function AnalyzePage() {
         </p>
       </header>
 
-      {/* Upload control — a full-width tap target that works well on mobile. */}
-      <label
-        htmlFor="photo-input"
-        className="mt-8 block cursor-pointer rounded-2xl border-2 border-dashed border-gray-300 bg-white p-8 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40 focus-within:border-indigo-500"
-      >
-        <span className="block font-medium text-gray-900">
-          Tap to upload a photo
-        </span>
-        <span className="mt-1 block text-xs text-gray-500">
-          JPG or PNG — a clear photo of the entrance works best
-        </span>
-        <input
-          id="photo-input"
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          onChange={(e) => handleFile(e.target.files?.[0])}
-        />
-      </label>
+      {/* Two ways to add a photo: upload a file or open the camera. */}
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        <label
+          htmlFor="photo-input"
+          className="block cursor-pointer rounded-2xl border-2 border-dashed border-gray-300 bg-white p-6 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40 focus-within:border-indigo-500"
+        >
+          <span className="block font-medium text-gray-900">
+            Upload a photo
+          </span>
+          <span className="mt-1 block text-xs text-gray-500">
+            JPG or PNG from your device
+          </span>
+          <input
+            id="photo-input"
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => handleFile(e.target.files?.[0])}
+          />
+        </label>
 
-      {/* Camera capture is planned but not enabled yet. */}
-      <p className="mt-2 text-center text-xs text-gray-400">
-        Taking a photo with your camera is coming soon.
-      </p>
+        <button
+          type="button"
+          onClick={() => setCameraOpen(true)}
+          className="rounded-2xl border-2 border-dashed border-gray-300 bg-white p-6 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40 focus:border-indigo-500 focus:outline-none"
+        >
+          <span className="block font-medium text-gray-900">
+            Take a photo
+          </span>
+          <span className="mt-1 block text-xs text-gray-500">
+            Use your device's camera
+          </span>
+        </button>
+      </div>
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onCapture={(file) => {
+            setCameraOpen(false);
+            handleFile(file);
+          }}
+        />
+      )}
 
       {status === "loading" && (
         <p className="mt-8 text-center text-gray-600" role="status">
