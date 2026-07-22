@@ -62,11 +62,8 @@ function AuthSlot({ compact = false, onNavigate }) {
 
   return (
     <div className={wrap}>
-      <NavLink to="/login" onClick={onNavigate} className={navLinkClass}>
-        Log in
-      </NavLink>
       <NavLink
-        to="/register"
+        to="/login"
         onClick={onNavigate}
         className={({ isActive }) =>
           `${compact ? "block" : "inline-block"} rounded-md px-3 py-2 text-sm font-medium ${
@@ -76,7 +73,7 @@ function AuthSlot({ compact = false, onNavigate }) {
           }`
         }
       >
-        Sign up
+        Log in
       </NavLink>
     </div>
   );
