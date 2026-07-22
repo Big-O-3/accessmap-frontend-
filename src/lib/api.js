@@ -1,10 +1,11 @@
 // API client for the AccessMap backend.
 //
-// All calls go to the live Node backend at VITE_API_URL. If that env var is
-// missing at build time we fail loud rather than silently falling back to fake
-// data, so the map is never on stale mocks.
+// Auth is handled by attaching the Supabase access token as a Bearer header on
+// every request. The backend's requireAuth middleware verifies that JWT using
+// SUPABASE_JWT_SECRET.
 
 import { detectionsToFeatures } from "./detect";
+import { supabase } from "./supabase";
 
 const API_URL = import.meta.env.VITE_API_URL;
 if (!API_URL) {
@@ -14,7 +15,7 @@ if (!API_URL) {
 }
 
 // Typed error so callers can distinguish "not signed in" from other failures
-// (e.g. AuthContext skips 401s silently; guarded actions can redirect to login).
+// (e.g. guarded actions can redirect to login).
 export class AuthError extends Error {
   constructor(message = "Authentication required") {
     super(message);
@@ -23,14 +24,21 @@ export class AuthError extends Error {
   }
 }
 
-async function request(path, options) {
+async function authHeader() {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request(path, options = {}) {
+  const auth = await authHeader();
   const res = await fetch(`${API_URL}${path}`, {
-    // credentials:include is what makes the browser send the httpOnly session
-    // cookie cross-origin. The backend must allow this origin in CORS and set
-    // Access-Control-Allow-Credentials: true (see backend app.js).
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...auth,
+      ...(options.headers ?? {}),
+    },
   });
   if (res.status === 401) {
     const body = await res.json().catch(() => ({}));
@@ -152,10 +160,10 @@ export async function uploadPhoto(venueId, file) {
 
   // NOTE: do NOT set Content-Type here — the browser adds the multipart
   // boundary. request() forces application/json, so we fetch directly.
-  // credentials:"include" so the session cookie rides along cross-origin.
+  const auth = await authHeader();
   const res = await fetch(`${API_URL}/api/photos`, {
     method: "POST",
-    credentials: "include",
+    headers: auth,
     body: form,
   });
   if (res.status === 401) {
