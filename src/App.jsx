@@ -9,7 +9,6 @@ import AddVenuePage from "./pages/AddVenuePage";
 import DashboardPage from "./pages/DashboardPage";
 import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import StubPage from "./pages/StubPage";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -25,7 +24,6 @@ export default function App() {
             <Route path="venue/:id" element={<VenueDetailPage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
 
             {/* Protected routes — anything that writes to the DB. */}
             <Route element={<RequireAuth />}>
