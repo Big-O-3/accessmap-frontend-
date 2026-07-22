@@ -7,7 +7,6 @@ import VenueDetailPage from "./pages/VenueDetailPage";
 import AnalyzePage from "./pages/AnalyzePage";
 import AddVenuePage from "./pages/AddVenuePage";
 import DashboardPage from "./pages/DashboardPage";
-import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import StubPage from "./pages/StubPage";
 import { AuthProvider } from "./context/AuthContext";
@@ -22,7 +21,6 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="venue/:id" element={<VenueDetailPage />} />
-            <Route path="about" element={<AboutPage />} />
             <Route path="login" element={<LoginPage />} />
 
             {/* Protected routes — anything that writes to the DB. */}
