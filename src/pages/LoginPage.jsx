@@ -1,27 +1,22 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { loginWithGoogle } = useAuth();
   const location = useLocation();
-  const redirectTo = location.state?.from?.pathname ?? "/";
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const redirectHint = location.state?.from?.pathname;
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onGoogle() {
     setError(null);
     setSubmitting(true);
     try {
-      await login({ email: email.trim(), password });
-      navigate(redirectTo, { replace: true });
+      await loginWithGoogle();
+      // signInWithOAuth redirects the browser; nothing else to do here.
     } catch (err) {
-      setError(err.message || "Couldn't sign in.");
+      setError(err.message || "Couldn't start Google sign-in.");
       setSubmitting(false);
     }
   }
@@ -30,61 +25,35 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md px-4 py-12">
       <h1 className="text-2xl font-bold text-gray-900">Log in</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Sign in to save analyses and contribute venues.
+        Sign in with Google to save analyses and contribute venues.
       </p>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+      {redirectHint && (
+        <p className="mt-4 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-700 ring-1 ring-indigo-600/20">
+          Sign in to continue to <span className="font-medium">{redirectHint}</span>.
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={onGoogle}
+        disabled={submitting}
+        className="mt-6 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60"
+      >
+        <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
+          <path
+            fill="#EA4335"
+            d="M12 10.2v3.9h5.5c-.24 1.44-1.72 4.23-5.5 4.23-3.31 0-6-2.74-6-6.13s2.69-6.13 6-6.13c1.88 0 3.14.8 3.86 1.49l2.63-2.53C16.83 3.5 14.66 2.5 12 2.5 6.98 2.5 2.9 6.58 2.9 11.6S6.98 20.7 12 20.7c6.93 0 9.15-4.87 9.15-7.36 0-.49-.05-.87-.12-1.24H12z"
           />
-        </div>
+        </svg>
+        {submitting ? "Redirecting to Google…" : "Continue with Google"}
+      </button>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-          />
-        </div>
-
-        {error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
-        >
-          {submitting ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-
-      <p className="mt-4 text-center text-sm text-gray-500">
-        Don't have an account?{" "}
-        <Link to="/register" state={location.state} className="font-medium text-indigo-600 hover:underline">
-          Create one
-        </Link>
-      </p>
+      {error && (
+        <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
