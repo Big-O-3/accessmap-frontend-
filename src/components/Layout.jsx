@@ -2,13 +2,16 @@ import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
-const NAV_LINKS = [
+const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/search", label: "Search" },
+  { to: "/about", label: "About" },
+];
+
+const AUTH_LINKS = [
   { to: "/analyze", label: "Analyze" },
   { to: "/add-venue", label: "Add Venue" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/about", label: "About" },
 ];
 
 function navLinkClass({ isActive }) {
@@ -81,6 +84,8 @@ function AuthSlot({ compact = false, onNavigate }) {
 
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const navLinks = user ? [...PUBLIC_LINKS, ...AUTH_LINKS] : PUBLIC_LINKS;
 
   return (
     <div className="min-h-full flex flex-col bg-gray-50 text-gray-900">
@@ -92,7 +97,7 @@ export default function Layout() {
 
           {/* Desktop nav — full row of links plus the auth slot. */}
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={navLinkClass}>
                 {link.label}
               </NavLink>
@@ -118,7 +123,7 @@ export default function Layout() {
         {/* Mobile dropdown menu — stacked, full-width tap targets. */}
         {menuOpen && (
           <nav className="md:hidden border-t border-gray-100 px-2 pb-3 pt-2">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
