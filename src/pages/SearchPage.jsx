@@ -5,9 +5,14 @@ import VenueCard from "../components/VenueCard";
 import VenueMap from "../components/VenueMap";
 
 export default function SearchPage() {
+  // Default search origin: downtown San Francisco. Used to order results
+  // nearest-first even before the visitor shares their real location, so the
+  // list/map are geographically coherent instead of sorted by raw score.
+  const SF_CENTER = { lat: 37.7793, lng: -122.4193 };
+
   const [city, setCity] = useState("");
   const [selectedFeatures, setSelectedFeatures] = useState([]);
-  const [location, setLocation] = useState(null); // { lat, lng }
+  const [location, setLocation] = useState(null); // real GPS location { lat, lng }
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,11 +27,15 @@ export default function SearchPage() {
 
     const timer = setTimeout(async () => {
       try {
-        const filters = { city, features: selectedFeatures };
-        if (location) {
-          filters.lat = location.lat;
-          filters.lng = location.lng;
-        }
+        // Order nearest-first: use the visitor's real location if shared,
+        // otherwise fall back to downtown SF so results are still proximity-sorted.
+        const origin = location ?? SF_CENTER;
+        const filters = {
+          city,
+          features: selectedFeatures,
+          lat: origin.lat,
+          lng: origin.lng,
+        };
         const data = await searchVenues(filters);
         if (!cancelled) setVenues(data.venues);
       } catch (err) {
@@ -64,11 +73,24 @@ export default function SearchPage() {
     );
   }
 
-  const mapCenter = location
-    ? location
-    : venues[0]
+  // How many venues are shown in the list. Starts at 10 (closest); "See more"
+  // reveals the next 10. Reset whenever the result set changes.
+  const PAGE_SIZE = 10;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [city, selectedFeatures, location]);
+
+  const visibleVenues = venues.slice(0, visibleCount);
+  const hasMore = visibleCount < venues.length;
+
+  // Center the map on the visitor's real location, else the nearest venue,
+  // else downtown SF as a last resort.
+  const mapCenter =
+    location ??
+    (venues[0]
       ? { lat: venues[0].latitude, lng: venues[0].longitude }
-      : undefined;
+      : SF_CENTER);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
@@ -128,9 +150,10 @@ export default function SearchPage() {
                 ) : (
                   <>
                     <p className="text-sm text-gray-500">
-                      {venues.length} venue{venues.length !== 1 && "s"}
+                      Showing {visibleVenues.length} of {venues.length} venue
+                      {venues.length !== 1 && "s"}, closest first
                     </p>
-                    {venues.map((venue) => (
+                    {visibleVenues.map((venue) => (
                       <VenueCard
                         key={venue.id}
                         venue={venue}
@@ -138,6 +161,18 @@ export default function SearchPage() {
                         onHover={setActiveId}
                       />
                     ))}
+                    {hasMore && (
+                      <button
+                        onClick={() =>
+                          setVisibleCount((c) => c + PAGE_SIZE)
+                        }
+                        className="w-full rounded-md border border-indigo-300 bg-white px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+                      >
+                        See more (
+                        {Math.min(PAGE_SIZE, venues.length - visibleCount)} of{" "}
+                        {venues.length - visibleCount} remaining)
+                      </button>
+                    )}
                   </>
                 )}
               </div>
