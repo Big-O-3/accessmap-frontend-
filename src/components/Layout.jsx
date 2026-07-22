@@ -5,7 +5,6 @@ import { useAuth } from "../context/useAuth";
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/search", label: "Search" },
-  { to: "/about", label: "About" },
 ];
 
 const AUTH_LINKS = [
