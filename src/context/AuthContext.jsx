@@ -1,48 +1,62 @@
 import { createContext, useEffect, useState, useCallback } from "react";
-import * as authApi from "../lib/authApi";
+import { supabase } from "../lib/supabase";
 
-// Source of truth for "is the user signed in" across the UI. The session
-// itself lives in an httpOnly cookie the browser sends automatically — this
-// context just mirrors that state into React so components can react to it.
+// Source of truth for "is the user signed in" across the UI. Supabase's JS
+// client owns the session (stored in localStorage) — this context just mirrors
+// it into React so components can react to changes.
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
+
+// Shape a Supabase user for the rest of the app. Uses google-provided
+// user_metadata (full_name, avatar_url, email) plus the Supabase-issued uuid.
+function shapeUser(sbUser) {
+  if (!sbUser) return null;
+  const meta = sbUser.user_metadata ?? {};
+  return {
+    id: sbUser.id,
+    email: sbUser.email ?? meta.email ?? null,
+    username: meta.full_name ?? meta.name ?? sbUser.email?.split("@")[0] ?? "there",
+    avatarUrl: meta.avatar_url ?? null,
+  };
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      setUser(await authApi.getMe());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    let mounted = true;
 
-  const login = useCallback(async (credentials) => {
-    const data = await authApi.login(credentials);
-    setUser(data.user);
-    return data.user;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setUser(shapeUser(data.session?.user));
+      setLoading(false);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(shapeUser(session?.user));
+    });
+
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
-  const register = useCallback(async (credentials) => {
-    const data = await authApi.register(credentials);
-    setUser(data.user);
-    return data.user;
+  const loginWithGoogle = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
   }, []);
 
   const logout = useCallback(async () => {
-    await authApi.logout();
+    await supabase.auth.signOut();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );
