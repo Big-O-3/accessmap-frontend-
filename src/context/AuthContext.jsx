@@ -50,13 +50,29 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
+  const loginWithEmail = useCallback(async (email, password) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(error.message);
+  }, []);
+
+  // Returns { needsConfirmation: boolean }. If Supabase has email confirmation
+  // turned on, signUp returns no session and the user must click a link in the
+  // confirmation email before they can sign in.
+  const signUpWithEmail = useCallback(async (email, password) => {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw new Error(error.message);
+    return { needsConfirmation: !data.session };
+  }, []);
+
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, loginWithGoogle, loginWithEmail, signUpWithEmail, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
