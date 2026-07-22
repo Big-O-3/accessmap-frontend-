@@ -108,7 +108,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
         <p className="font-medium">Couldn&apos;t analyze this photo.</p>
         <p className="mt-1">{photo.error}</p>
         <p className="mt-1 text-xs text-red-600">
-          Make sure the ML service is running (VITE_ML_URL).
+          Make sure the backend and ML service are reachable.
         </p>
         <button
           type="button"
