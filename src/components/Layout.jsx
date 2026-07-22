@@ -34,6 +34,10 @@ function AuthSlot({ compact = false, onNavigate }) {
     : "flex items-center gap-2 text-sm";
 
   async function handleLogout() {
+    const ok = window.confirm(
+      "Are you sure you want to log out? Any unsaved progress on this page won't be saved.",
+    );
+    if (!ok) return;
     await logout();
     onNavigate?.();
     navigate("/");
