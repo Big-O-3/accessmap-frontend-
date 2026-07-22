@@ -4,8 +4,7 @@ import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
 import CameraCapture from "../components/CameraCapture";
 import { analyzeImage, scoreFromDetections, summarizeAccessibility } from "../lib/detect";
-import { makeAnalyzedSpot, addAnalyzedSpot } from "../lib/analyzedSpots";
-import { saveAnalyzedVenue, USE_MOCK } from "../lib/api";
+import { saveAnalyzedVenue } from "../lib/api";
 
 // Plain-English verdict shown at the top of the results, keyed by summary.level.
 const VERDICTS = {
@@ -58,9 +57,9 @@ export default function AnalyzePage() {
     });
   }
 
-  // Save this analysis at the user's location under the given venue name.
-  // Real backend → persist as a venue via the contributions API (permanent).
-  // Mock/demo mode → drop a session-only pin (lost on tab close).
+  // Save this analysis at the user's location under the given venue name —
+  // persists as a real venue via the contributions API so it shows up on the
+  // shared map for everyone.
   async function confirmPlaceOnMap() {
     if (!venueName.trim()) {
       setError("Please enter a name for this place.");
@@ -70,13 +69,7 @@ export default function AnalyzePage() {
     setError(null);
     try {
       const { lat, lng } = await getPosition();
-
-      if (USE_MOCK) {
-        const spot = makeAnalyzedSpot({ detections, lat, lng, name: venueName.trim() });
-        addAnalyzedSpot(spot);
-      } else {
-        await saveAnalyzedVenue({ name: venueName.trim(), lat, lng, detections });
-      }
+      await saveAnalyzedVenue({ name: venueName.trim(), lat, lng, detections });
       navigate("/search");
     } catch (err) {
       setPlacing(false);
@@ -287,9 +280,7 @@ export default function AnalyzePage() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
                 />
                 <p className="text-xs text-gray-400">
-                  {USE_MOCK
-                    ? "Demo mode: this drops a temporary pin on the map."
-                    : "Saves this place and its accessibility features to the map."}
+                  Saves this place and its accessibility features to the map.
                 </p>
                 <button
                   type="button"

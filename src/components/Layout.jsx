@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { USE_MOCK } from "../lib/api";
 import { useAuth } from "../context/useAuth";
 
 const NAV_LINKS = [
@@ -142,12 +141,6 @@ export default function Layout() {
           </nav>
         )}
       </header>
-
-      {USE_MOCK && (
-        <div className="bg-amber-50 border-b border-amber-200 text-amber-800 text-center text-xs py-1.5">
-          Running on mock data
-        </div>
-      )}
 
       <main className="flex-1">
         <Outlet />

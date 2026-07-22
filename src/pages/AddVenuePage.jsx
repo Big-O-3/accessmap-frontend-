@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  analyzeImage,
   detectionsToFeatures,
   scoreFromDetections,
 } from "../lib/detect";
@@ -10,7 +9,6 @@ import {
   uploadPhoto,
   analyzeUploadedPhoto,
   patchDetections,
-  USE_MOCK,
 } from "../lib/api";
 import { logActivity } from "../lib/userData";
 import Stepper from "../components/addVenue/Stepper";
@@ -187,7 +185,7 @@ export default function AddVenuePage() {
         detections: [],
         altText: null,
         error: null,
-        backendPhotoId: null, // set after upload in real (non-mock) mode
+        backendPhotoId: null, // set after upload succeeds
       };
     });
     dispatch({ type: "ADD_PHOTOS", photos });
@@ -204,28 +202,11 @@ export default function AddVenuePage() {
     if (!photo || !photo.file) return;
     dispatch({ type: "ANALYZE_START", id });
     try {
-      if (USE_MOCK) {
-        // Mock/offline: analyze the raw file directly against the ML service
-        // for an instant preview. Nothing is persisted.
-        const data = await analyzeImage(photo.file);
-        dispatch({
-          type: "ANALYZE_SUCCESS",
-          id,
-          detections: data.detections ?? [],
-          altText: data.altTextSuggestion ?? null,
-        });
-        return;
-      }
-
-      // Real backend: upload to Cloudinary (once), then analyze the stored
-      // photo so Photo + Detection rows persist and detections carry DB ids.
+      // Upload to Cloudinary (once), then analyze the stored photo so Photo +
+      // Detection rows persist and detections carry DB ids.
       let backendPhotoId = photo.backendPhotoId;
       if (!backendPhotoId) {
-        const uploaded = await uploadPhoto(
-          state.venue.id,
-          photo.file,
-          photo.previewUrl,
-        );
+        const uploaded = await uploadPhoto(state.venue.id, photo.file);
         backendPhotoId = uploaded.id;
         // Persist the id immediately so a subsequent analyze failure + retry
         // does not upload the same photo a second time.
@@ -255,29 +236,27 @@ export default function AddVenuePage() {
   async function handleSubmit() {
     dispatch({ type: "SUBMIT_START" });
     try {
-      // Real backend: persist the contributor's confirm/reject decisions on the
-      // already-stored detections (by DB id) before recording the contribution.
+      // Persist the contributor's confirm/reject decisions on the already-
+      // stored detections (by DB id) before recording the contribution.
       // Confirmed detections are marked verified; rejected ones are deleted, so
       // only confirmed features feed the venue's score and photo evidence.
-      if (!USE_MOCK) {
-        await Promise.all(
-          state.photos
-            .filter((p) => p.backendPhotoId && p.detections.length > 0)
-            .map((p) => {
-              const confirmedIds = [];
-              const rejectedIds = [];
-              p.detections.forEach((d, idx) => {
-                if (!d.id) return;
-                if (state.confirmed[detKey(p.id, idx)]) confirmedIds.push(d.id);
-                else rejectedIds.push(d.id);
-              });
-              return patchDetections(p.backendPhotoId, {
-                confirmed: confirmedIds,
-                rejected: rejectedIds,
-              });
-            }),
-        );
-      }
+      await Promise.all(
+        state.photos
+          .filter((p) => p.backendPhotoId && p.detections.length > 0)
+          .map((p) => {
+            const confirmedIds = [];
+            const rejectedIds = [];
+            p.detections.forEach((d, idx) => {
+              if (!d.id) return;
+              if (state.confirmed[detKey(p.id, idx)]) confirmedIds.push(d.id);
+              else rejectedIds.push(d.id);
+            });
+            return patchDetections(p.backendPhotoId, {
+              confirmed: confirmedIds,
+              rejected: rejectedIds,
+            });
+          }),
+      );
 
       const result = await submitContribution({
         venue: state.venue,
