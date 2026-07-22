@@ -8,19 +8,25 @@
 import { calculateAccessibilityScore } from "./score";
 import { FEATURE_BY_KEY, featureLabel } from "./features";
 
-// Where the Flask ML service lives. Override with VITE_ML_URL if needed.
-const ML_URL = import.meta.env.VITE_ML_URL || "http://localhost:5001";
+// All ML traffic goes through the backend now — it forwards the image to the
+// Python ML service. This keeps the ML URL and its CORS surface server-side.
+const API_URL = import.meta.env.VITE_API_URL;
+if (!API_URL) {
+  throw new Error("VITE_API_URL is not set. Point it at the backend.");
+}
 
-// Send an image File/Blob to the ML service and return its JSON response:
+// Send an image File/Blob to the backend proxy and return the ML service's
+// JSON response:
 //   { detections: [{ cocoLabel, accessibilityFeature, confidence,
-//                     highConfidence, boundingBox }], altTextSuggestion }
+//                     highConfidence, boundingBox }], altTextSuggestion,
+//     isVenue, framingHint }
 export async function analyzeImage(file) {
   const form = new FormData();
   form.append("image", file);
 
-  const res = await fetch(`${ML_URL}/analyze`, { method: "POST", body: form });
+  const res = await fetch(`${API_URL}/api/analyze`, { method: "POST", body: form });
   if (!res.ok) {
-    throw new Error(`ML service error (${res.status})`);
+    throw new Error(`Analyze failed (${res.status})`);
   }
   return res.json();
 }
@@ -84,4 +90,3 @@ export function summarizeAccessibility(detections = []) {
   return { level, present, barriers };
 }
 
-export { ML_URL };
