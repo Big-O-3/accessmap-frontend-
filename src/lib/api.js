@@ -73,6 +73,26 @@ export async function getReviews(venueId) {
   return request(`/api/reviews?venueId=${venueId}`);
 }
 
+// POST /api/reviews — leave a review on a venue (requires sign-in).
+// { venueId, rating (1-5), comment, visitDate? } → the created review.
+export async function createReview({ venueId, rating, comment, visitDate }) {
+  if (!venueId) throw new Error("A venue is required.");
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    throw new Error("Please choose a rating from 1 to 5 stars.");
+  }
+  if (!comment?.trim()) throw new Error("Please write a short comment.");
+
+  return request("/api/reviews", {
+    method: "POST",
+    body: JSON.stringify({
+      venueId,
+      rating,
+      comment: comment.trim(),
+      visitDate: visitDate || null,
+    }),
+  });
+}
+
 // Recommended venues for the dashboard. There's no dedicated recommendations
 // endpoint yet, so this reuses venue search: nearest-first when a location is
 // given, else highest-scored. Each result carries a plain-English `reason`.
