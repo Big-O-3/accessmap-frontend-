@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
 import CameraCapture from "../components/CameraCapture";
+import PlaceAutocomplete from "../components/PlaceAutocomplete";
 import {
   analyzeImage,
   featureChecklist,
@@ -46,6 +47,9 @@ export default function AnalyzePage() {
   const [placing, setPlacing] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [venueName, setVenueName] = useState("");
+  // When the user picks a place from the autocomplete, remember its
+  // coordinates — that's where the venue actually is, not where the phone is.
+  const [pickedPlace, setPickedPlace] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
 
   // Get the browser's current position as a Promise.
@@ -73,8 +77,18 @@ export default function AnalyzePage() {
     setPlacing(true);
     setError(null);
     try {
-      const { lat, lng } = await getPosition();
-      await saveAnalyzedVenue({ name: venueName.trim(), lat, lng, detections });
+      // Prefer the picked place's coordinates (the venue's actual location).
+      // Only fall back to the phone's location if the user typed a name
+      // without picking a suggestion.
+      const coords = pickedPlace
+        ? { lat: pickedPlace.latitude, lng: pickedPlace.longitude }
+        : await getPosition();
+      await saveAnalyzedVenue({
+        name: venueName.trim(),
+        lat: coords.lat,
+        lng: coords.lng,
+        detections,
+      });
       navigate("/search");
     } catch (err) {
       setPlacing(false);
@@ -314,16 +328,28 @@ export default function AnalyzePage() {
                 >
                   Name this place
                 </label>
-                <input
+                <PlaceAutocomplete
                   id="venue-name"
-                  type="text"
                   value={venueName}
-                  onChange={(e) => setVenueName(e.target.value)}
-                  placeholder="e.g. Downtown Library"
+                  onChange={(v) => {
+                    setVenueName(v);
+                    // Typing after a pick invalidates the coordinates — the
+                    // user may be editing the name away from the picked place.
+                    if (pickedPlace && v !== pickedPlace.name) {
+                      setPickedPlace(null);
+                    }
+                  }}
+                  onPick={(place) => {
+                    setVenueName(place.name);
+                    setPickedPlace(place);
+                  }}
+                  placeholder="e.g. Salesforce Tower"
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
                 />
                 <p className="text-xs text-gray-400">
-                  Saves this place and its accessibility features to the map.
+                  {pickedPlace
+                    ? `Saving at ${pickedPlace.displayName}.`
+                    : "Pick a suggestion to save at that address, or we'll use your current location."}
                 </p>
                 <button
                   type="button"
