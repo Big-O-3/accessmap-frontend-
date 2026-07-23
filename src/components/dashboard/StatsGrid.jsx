@@ -1,6 +1,7 @@
-// Dashboard stat tiles. Only shows metrics we can honestly compute from this
-// browser's activity (no auth/server yet). Each tile pairs a number with a text
-// label — no icon/color-only meaning (accessibility requirement).
+// Dashboard stat tiles. Shows metrics computed from this browser's local
+// activity — server-side sync isn't wired up yet, so switching devices resets
+// them. Each tile pairs a number with a text label (no icon/color-only meaning,
+// per the accessibility requirement).
 export default function StatsGrid({ stats }) {
   const tiles = [
     { label: "Venues Saved", value: stats.savedCount },
@@ -30,8 +31,8 @@ export default function StatsGrid({ stats }) {
         ))}
       </div>
       <p className="mt-2 text-xs text-gray-400">
-        Tracked on this device. Sign-in (coming soon) will sync your stats and
-        unlock community metrics like people helped.
+        Tracked on this device. Server-side sync isn&apos;t wired up yet, so
+        stats reset when you switch browsers or clear site data.
       </p>
     </section>
   );
