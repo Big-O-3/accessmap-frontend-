@@ -25,8 +25,8 @@ export default function StepUploadPhotos({ photos, onAdd, onRemove }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Upload photos</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <h2 className="text-lg font-semibold text-ink">Upload photos</h2>
+        <p className="mt-1 text-sm text-ink-soft">
           No forms to fill out — our AI reads the photos in the next step.
         </p>
       </div>
@@ -42,18 +42,18 @@ export default function StepUploadPhotos({ photos, onAdd, onRemove }) {
         onDrop={handleDrop}
         className={`rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? "border-indigo-500 bg-indigo-50"
-            : "border-gray-300 bg-white"
+            ? "border-brand-500 bg-brand-50"
+            : "border-sand-200 bg-surface"
         }`}
       >
-        <p className="font-medium text-gray-900">Drag &amp; drop photos here</p>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="font-medium text-ink">Drag &amp; drop photos here</p>
+        <p className="mt-1 text-xs text-ink-soft">
           Tip: entrance, bathroom, parking, and seating photos work best.
         </p>
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
           Choose from device
         </button>
@@ -69,19 +69,19 @@ export default function StepUploadPhotos({ photos, onAdd, onRemove }) {
             e.target.value = ""; // allow re-selecting the same file
           }}
         />
-        <p className="mt-2 text-xs text-gray-400">JPG or PNG, up to 10MB each.</p>
+        <p className="mt-2 text-xs text-ink-faint">JPG or PNG, up to 10MB each.</p>
       </div>
 
       {photos.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700">
+          <h3 className="text-sm font-medium text-ink-soft">
             Uploaded ({photos.length})
           </h3>
           <ul className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {photos.map((photo) => (
               <li
                 key={photo.id}
-                className="relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
+                className="relative overflow-hidden rounded-lg border border-sand-200 bg-sand-100"
               >
                 <img
                   src={photo.previewUrl}

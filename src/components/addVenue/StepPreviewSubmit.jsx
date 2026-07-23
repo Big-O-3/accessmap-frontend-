@@ -54,7 +54,7 @@ export default function StepPreviewSubmit({
         <button
           type="button"
           onClick={onViewVenue}
-          className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
           View venue →
         </button>
@@ -65,19 +65,19 @@ export default function StepPreviewSubmit({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-ink">
           Preview &amp; submit
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-ink-soft">
           {venue?.name}
           {venue?.address ? ` · ${venue.address}` : ""}
         </p>
       </div>
 
-      <div className="flex items-center justify-between rounded-xl bg-white p-5 ring-1 ring-gray-200">
+      <div className="flex items-center justify-between rounded-xl bg-surface p-5 ring-1 ring-sand-200">
         <div>
-          <p className="text-sm text-gray-500">Estimated accessibility score</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm text-ink-soft">Estimated accessibility score</p>
+          <p className="text-xs text-ink-faint">
             Preview — updates as the community verifies features
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function StepPreviewSubmit({
       </div>
 
       <div>
-        <h3 className="text-sm font-medium text-gray-700">
+        <h3 className="text-sm font-medium text-ink-soft">
           Confirmed features ({features.length})
         </h3>
         {features.length === 0 ? (
@@ -98,7 +98,7 @@ export default function StepPreviewSubmit({
             {features.map((f) => (
               <li
                 key={f.type}
-                className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
+                className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-link"
               >
                 {featureLabel(f.type)}
               </li>
@@ -110,7 +110,7 @@ export default function StepPreviewSubmit({
       <div>
         <label
           htmlFor="contribution-note"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-ink-soft"
         >
           Add a note (optional)
         </label>
@@ -120,11 +120,11 @@ export default function StepPreviewSubmit({
           onChange={(e) => onNoteChange(e.target.value)}
           rows={3}
           placeholder="e.g. Ramp is on the left side of the main entrance."
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+          className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
-      <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-500">
+      <p className="rounded-lg bg-sand-100 px-3 py-2 text-xs text-ink-soft">
         Your photos will enter the community verification queue. Features are
         confirmed by the community before they count toward the official score.
       </p>
@@ -142,7 +142,7 @@ export default function StepPreviewSubmit({
         type="button"
         onClick={onSubmit}
         disabled={submitState === "submitting" || features.length === 0}
-        className="w-full rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+        className="w-full rounded-md bg-brand-600 px-4 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200"
       >
         {submitState === "submitting"
           ? "Submitting…"

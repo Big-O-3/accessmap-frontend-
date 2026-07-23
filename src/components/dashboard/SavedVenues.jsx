@@ -7,7 +7,7 @@ import SaveButton from "../SaveButton";
 export default function SavedVenues({ saved }) {
   return (
     <section aria-labelledby="saved-heading">
-      <h2 id="saved-heading" className="text-lg font-semibold text-gray-900">
+      <h2 id="saved-heading" className="font-display text-xl font-semibold text-ink">
         Your saved venues
       </h2>
 
@@ -15,16 +15,16 @@ export default function SavedVenues({ saved }) {
         {saved.map((v) => (
           <div
             key={v.id}
-            className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-4"
+            className="flex flex-col justify-between rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm"
           >
             <div>
               <Link
                 to={`/venue/${v.id}`}
-                className="font-semibold text-gray-900 hover:underline"
+                className="font-display font-semibold text-ink hover:underline"
               >
                 {v.name}
               </Link>
-              {v.city && <p className="mt-0.5 text-xs text-gray-500">{v.city}</p>}
+              {v.city && <p className="mt-0.5 text-xs text-ink-soft">{v.city}</p>}
             </div>
             <div className="mt-3 flex items-center justify-between gap-2">
               <ScoreBadge score={v.accessibilityScore} size="sm" />
@@ -36,7 +36,7 @@ export default function SavedVenues({ saved }) {
         {/* Find-more tile. */}
         <Link
           to="/search"
-          className="flex min-h-[7rem] flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 text-center text-sm font-medium text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50/40"
+          className="flex min-h-[7rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sand-200 p-4 text-center text-sm font-semibold text-link transition-colors hover:border-brand-400 hover:bg-brand-50/40"
         >
           + Find more venues
         </Link>

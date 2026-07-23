@@ -71,17 +71,18 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-12">
-      <h1 className="text-2xl font-bold text-gray-900">
-        {mode === "login" ? "Log in" : "Sign up"}
+      <div className="rounded-2xl border border-sand-200 bg-surface p-8 shadow-sm">
+      <h1 className="font-display text-3xl font-semibold text-ink">
+        {mode === "login" ? "Welcome back" : "Create your account"}
       </h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-ink-soft">
         {mode === "login"
           ? "Sign in to save analyses and contribute venues."
           : "Create an account with your email to save analyses and contribute venues."}
       </p>
 
       {redirectHint && (
-        <p className="mt-4 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-700 ring-1 ring-indigo-600/20">
+        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-brand-600/20">
           Sign in to continue to <span className="font-medium">{redirectHint}</span>.
         </p>
       )}
@@ -90,7 +91,7 @@ export default function LoginPage() {
         type="button"
         onClick={onGoogle}
         disabled={submitting}
-        className="mt-6 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-sand-200 bg-surface px-4 py-3 font-semibold text-ink-soft transition-colors hover:bg-sand-100 disabled:opacity-60"
       >
         <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
           <path
@@ -101,15 +102,15 @@ export default function LoginPage() {
         {submitting ? "Please wait…" : "Continue with Google"}
       </button>
 
-      <div className="my-6 flex items-center gap-3 text-xs uppercase text-gray-400">
-        <span className="h-px flex-1 bg-gray-200" />
+      <div className="my-6 flex items-center gap-3 text-xs uppercase text-ink-faint">
+        <span className="h-px flex-1 bg-sand-200" />
         <span>or</span>
-        <span className="h-px flex-1 bg-gray-200" />
+        <span className="h-px flex-1 bg-sand-200" />
       </div>
 
       <form onSubmit={onEmailSubmit} className="space-y-3">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="block text-sm font-medium text-ink">
             Email
           </label>
           <input
@@ -119,11 +120,11 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+            className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="password" className="block text-sm font-medium text-ink">
             Password
           </label>
           <input
@@ -134,13 +135,13 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={mode === "signup" ? 6 : undefined}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+            className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
           />
         </div>
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+          className="w-full rounded-xl bg-brand-600 px-4 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:opacity-60"
         >
           {submitting
             ? "Please wait…"
@@ -150,14 +151,14 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-4 text-center text-sm text-ink-soft">
         {mode === "login" ? (
           <>
             Don't have an account?{" "}
             <button
               type="button"
               onClick={() => switchMode("signup")}
-              className="font-medium text-indigo-600 hover:text-indigo-700"
+              className="font-semibold text-link hover:text-link"
             >
               Sign up
             </button>
@@ -168,7 +169,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => switchMode("login")}
-              className="font-medium text-indigo-600 hover:text-indigo-700"
+              className="font-semibold text-link hover:text-link"
             >
               Log in
             </button>
@@ -177,16 +178,17 @@ export default function LoginPage() {
       </p>
 
       {info && (
-        <p className="mt-4 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-700 ring-1 ring-indigo-600/20">
+        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-brand-600/20">
           {info}
         </p>
       )}
 
       {error && (
-        <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">
+        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">
           {error}
         </p>
       )}
+      </div>
     </div>
   );
 }

@@ -32,7 +32,7 @@ const VERDICTS = {
   unknown: {
     text: "No features detected",
     detail: "Nothing recognizable was found. Try a clearer photo of the entrance.",
-    className: "bg-gray-50 text-gray-700 ring-gray-600/20",
+    className: "bg-sand-100 text-ink-soft ring-ink-soft/20",
   },
 };
 
@@ -131,10 +131,10 @@ export default function AnalyzePage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
       <header className="text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold text-ink">
           Check a venue's accessibility
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-gray-500">
+        <p className="mt-2 text-sm sm:text-base text-ink-soft">
           Upload a photo and our AI will detect accessibility features — ramps,
           doors, seating, restrooms — and flag barriers like stairs, with a
           preview score.
@@ -145,12 +145,12 @@ export default function AnalyzePage() {
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
         <label
           htmlFor="photo-input"
-          className="block cursor-pointer rounded-2xl border-2 border-dashed border-gray-300 bg-white p-6 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40 focus-within:border-indigo-500"
+          className="block cursor-pointer rounded-2xl border-2 border-dashed border-sand-200 bg-surface p-6 text-center transition-colors hover:border-brand-400 hover:bg-brand-50/40 focus-within:border-brand-500"
         >
-          <span className="block font-medium text-gray-900">
+          <span className="block font-medium text-ink">
             Upload a photo
           </span>
-          <span className="mt-1 block text-xs text-gray-500">
+          <span className="mt-1 block text-xs text-ink-soft">
             JPG or PNG from your device
           </span>
           <input
@@ -165,12 +165,12 @@ export default function AnalyzePage() {
         <button
           type="button"
           onClick={() => setCameraOpen(true)}
-          className="rounded-2xl border-2 border-dashed border-gray-300 bg-white p-6 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40 focus:border-indigo-500 focus:outline-none"
+          className="rounded-2xl border-2 border-dashed border-sand-200 bg-surface p-6 text-center transition-colors hover:border-brand-400 hover:bg-brand-50/40 focus:border-brand-500 focus:outline-none"
         >
-          <span className="block font-medium text-gray-900">
+          <span className="block font-medium text-ink">
             Take a photo
           </span>
-          <span className="mt-1 block text-xs text-gray-500">
+          <span className="mt-1 block text-xs text-ink-soft">
             Use your device's camera
           </span>
         </button>
@@ -187,7 +187,7 @@ export default function AnalyzePage() {
       )}
 
       {status === "loading" && (
-        <p className="mt-8 text-center text-gray-600" role="status">
+        <p className="mt-8 text-center text-ink-soft" role="status">
           Analyzing photo… this can take a few seconds.
         </p>
       )}
@@ -260,17 +260,17 @@ export default function AnalyzePage() {
           {/* One unified checklist so the user sees every feature we checked
               for, not just the ones we found. Yes / Not detected / Barrier is
               easier to scan than two separate lists with confidence percents. */}
-          <div className="rounded-xl bg-white ring-1 ring-gray-200">
-            <h2 className="border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900">
+          <div className="rounded-xl bg-surface ring-1 ring-sand-200">
+            <h2 className="border-b border-sand-100 px-4 py-3 text-sm font-semibold text-ink">
               Accessibility checklist
             </h2>
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-sand-100">
               {checklist.map((row) => (
                 <li
                   key={row.key}
                   className="flex items-center justify-between gap-3 px-4 py-3"
                 >
-                  <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                  <span className="flex items-center gap-2 text-sm font-medium text-ink">
                     {row.status === "yes" && (
                       <span className="text-green-600" aria-hidden>✓</span>
                     )}
@@ -278,7 +278,7 @@ export default function AnalyzePage() {
                       <span className="text-red-600" aria-hidden>⚠</span>
                     )}
                     {row.status === "not-detected" && (
-                      <span className="text-gray-400" aria-hidden>—</span>
+                      <span className="text-ink-faint" aria-hidden>—</span>
                     )}
                     {row.label}
                   </span>
@@ -299,21 +299,21 @@ export default function AnalyzePage() {
                     </span>
                   )}
                   {row.status === "not-detected" && (
-                    <span className="text-xs font-semibold text-gray-400">
+                    <span className="text-xs font-semibold text-ink-faint">
                       Not detected
                     </span>
                   )}
                 </li>
               ))}
             </ul>
-            <p className="border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
+            <p className="border-t border-sand-100 px-4 py-3 text-xs text-ink-soft">
               &ldquo;Not detected&rdquo; means we didn&apos;t see it in this photo
               — the feature could still exist at the venue.
             </p>
           </div>
 
           {result.altTextSuggestion && (
-            <p className="text-center text-xs text-gray-400">
+            <p className="text-center text-xs text-ink-faint">
               {result.altTextSuggestion}
             </p>
           )}
@@ -321,10 +321,10 @@ export default function AnalyzePage() {
           {/* Connect this analysis to the map — save it as a place. */}
           {(summary.present.length > 0 || summary.barriers.length > 0) &&
             (showNameInput ? (
-              <div className="space-y-2 rounded-xl bg-white p-4 ring-1 ring-gray-200">
+              <div className="space-y-2 rounded-xl bg-surface p-4 ring-1 ring-sand-200">
                 <label
                   htmlFor="venue-name"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-ink-soft"
                 >
                   Name this place
                 </label>
@@ -344,9 +344,9 @@ export default function AnalyzePage() {
                     setPickedPlace(place);
                   }}
                   placeholder="e.g. Salesforce Tower"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+                  className="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
                 />
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-ink-faint">
                   {pickedPlace
                     ? `Saving at ${pickedPlace.displayName}.`
                     : "Pick a suggestion to save at that address, or we'll use your current location."}
@@ -355,7 +355,7 @@ export default function AnalyzePage() {
                   type="button"
                   onClick={confirmPlaceOnMap}
                   disabled={placing}
-                  className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+                  className="w-full rounded-lg bg-brand-600 px-4 py-3 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-60"
                 >
                   {placing ? "Saving…" : "Save & show on map"}
                 </button>
@@ -364,13 +364,13 @@ export default function AnalyzePage() {
               <button
                 type="button"
                 onClick={() => setShowNameInput(true)}
-                className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
+                className="w-full rounded-lg bg-brand-600 px-4 py-3 font-medium text-white transition-colors hover:bg-brand-700"
               >
                 Place this result on the map
               </button>
             ))}
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-ink-faint">
             AI detections are a starting point — the community verifies each one
             before it counts toward a venue's official score.
           </p>

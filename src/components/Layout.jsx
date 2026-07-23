@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import ThemeToggle from "./ThemeToggle";
+import CursorGlow from "./CursorGlow";
 
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -14,8 +16,10 @@ const AUTH_LINKS = [
 ];
 
 function navLinkClass({ isActive }) {
-  return `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-    isActive ? "bg-indigo-50 text-indigo-700" : "text-gray-600 hover:bg-gray-100"
+  return `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+    isActive
+      ? "bg-brand-50 text-link"
+      : "text-ink-soft hover:bg-sand-100 hover:text-ink"
   }`;
 }
 
@@ -45,7 +49,7 @@ function AuthSlot({ compact = false, onNavigate }) {
   if (user) {
     return (
       <div className={wrap}>
-        <span className={compact ? "px-3 py-2 text-sm text-gray-600" : "text-gray-600"}>
+        <span className={compact ? "px-3 py-2 text-sm text-ink-soft" : "text-ink-soft"}>
           Hi, {user.username}
         </span>
         <button
@@ -53,8 +57,8 @@ function AuthSlot({ compact = false, onNavigate }) {
           onClick={handleLogout}
           className={
             compact
-              ? "rounded-md px-3 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100"
-              : "rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100"
+              ? "rounded-lg px-3 py-3 text-left text-base font-medium text-ink-soft hover:bg-sand-100"
+              : "rounded-lg px-3 py-2 font-medium text-ink-soft hover:bg-sand-100"
           }
         >
           Log out
@@ -69,10 +73,10 @@ function AuthSlot({ compact = false, onNavigate }) {
         to="/login"
         onClick={onNavigate}
         className={({ isActive }) =>
-          `${compact ? "block" : "inline-block"} rounded-md px-3 py-2 text-sm font-medium ${
+          `${compact ? "block" : "inline-block"} rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${
             isActive
-              ? "bg-indigo-700 text-white"
-              : "bg-indigo-600 text-white hover:bg-indigo-700"
+              ? "bg-brand-700 text-white"
+              : "bg-brand-600 text-white hover:bg-brand-700"
           }`
         }
       >
@@ -88,11 +92,17 @@ export default function Layout() {
   const navLinks = user ? [...PUBLIC_LINKS, ...AUTH_LINKS] : PUBLIC_LINKS;
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50 text-gray-900">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="min-h-full flex flex-col bg-sand-50 text-ink">
+      <CursorGlow />
+      <header className="sticky top-0 z-30 border-b border-sand-200 bg-sand-50/85 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
-          <NavLink to="/" className="flex items-center gap-2 font-bold text-lg">
-            <span>AccessMap</span>
+          <NavLink to="/" className="flex items-center gap-2 group">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white text-lg shadow-sm transition-transform group-hover:scale-105">
+              ◆
+            </span>
+            <span className="font-display text-xl font-semibold tracking-tight text-ink">
+              AccessMap
+            </span>
           </NavLink>
 
           {/* Desktop nav — full row of links plus the auth slot. */}
@@ -102,7 +112,8 @@ export default function Layout() {
                 {link.label}
               </NavLink>
             ))}
-            <div className="ml-2 border-l border-gray-200 pl-2">
+            <div className="ml-2 flex items-center gap-1 border-l border-sand-200 pl-2">
+              <ThemeToggle />
               <AuthSlot />
             </div>
           </nav>
@@ -110,7 +121,7 @@ export default function Layout() {
           {/* Mobile menu toggle — a large, easy-to-tap hamburger button. */}
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100"
+            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-ink-soft hover:bg-sand-100"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
@@ -122,7 +133,7 @@ export default function Layout() {
 
         {/* Mobile dropdown menu — stacked, full-width tap targets. */}
         {menuOpen && (
-          <nav className="md:hidden border-t border-gray-100 px-2 pb-3 pt-2">
+          <nav className="md:hidden border-t border-sand-200 px-2 pb-3 pt-2">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
@@ -130,17 +141,18 @@ export default function Layout() {
                 end={link.end}
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
-                  `block rounded-md px-3 py-3 text-base font-medium transition-colors ${
+                  `block rounded-lg px-3 py-3 text-base font-medium transition-colors ${
                     isActive
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-brand-50 text-link"
+                      : "text-ink-soft hover:bg-sand-100"
                   }`
                 }
               >
                 {link.label}
               </NavLink>
             ))}
-            <div className="mt-2 border-t border-gray-100 pt-2">
+            <div className="mt-2 border-t border-sand-200 pt-2">
+              <ThemeToggle compact />
               <AuthSlot compact onNavigate={() => setMenuOpen(false)} />
             </div>
           </nav>
@@ -151,9 +163,14 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-gray-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-gray-500 text-center">
-          AccessMap — community-powered accessibility discovery.
+      <footer className="border-t border-sand-200 bg-sand-100">
+        <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col items-center gap-2 text-center">
+          <span className="font-display text-lg font-semibold text-ink">
+            AccessMap
+          </span>
+          <p className="text-sm text-ink-soft">
+            Community-powered accessibility discovery.
+          </p>
         </div>
       </footer>
     </div>

@@ -144,7 +144,7 @@ export default function CameraCapture({ onCapture, onClose }) {
             <button
               type="button"
               onClick={usePhoto}
-              className="rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+              className="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700"
             >
               Use this photo
             </button>

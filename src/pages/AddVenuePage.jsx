@@ -293,8 +293,8 @@ export default function AddVenuePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900">Add a Venue</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <h1 className="font-display text-3xl font-semibold text-ink">Add a Venue</h1>
+      <p className="mt-1 text-sm text-ink-soft">
         Upload a few photos and let AI detect the accessibility features — no
         tedious forms.
       </p>
@@ -355,11 +355,11 @@ export default function AddVenuePage() {
       {/* Step navigation. Step 1 advances on venue-select; the final submit
           lives inside Step 4, so the shared footer hides on those. */}
       {state.step > 1 && !(state.step === 4 && state.submitState === "done") && (
-        <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
+        <div className="mt-8 flex items-center justify-between border-t border-sand-200 pt-6">
           <button
             type="button"
             onClick={() => dispatch({ type: "BACK" })}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-sand-100"
           >
             ← Back
           </button>
@@ -369,7 +369,7 @@ export default function AddVenuePage() {
               type="button"
               onClick={() => dispatch({ type: "NEXT" })}
               disabled={!canAdvance}
-              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+              className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200 disabled:text-ink-faint disabled:shadow-none"
             >
               {state.step === 2
                 ? "Analyze with AI →"

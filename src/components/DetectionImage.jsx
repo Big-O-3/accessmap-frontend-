@@ -29,7 +29,7 @@ export default function DetectionImage({ photo }) {
       {(photo.detections ?? []).map((d, i) => (
         <div
           key={i}
-          className="absolute border-2 border-indigo-500 bg-indigo-500/10 rounded"
+          className="absolute border-2 border-brand-500 bg-brand-500/10 rounded"
           style={{
             left: d.boundingBox.x * scale.x,
             top: d.boundingBox.y * scale.y,
@@ -37,7 +37,7 @@ export default function DetectionImage({ photo }) {
             height: d.boundingBox.height * scale.y,
           }}
         >
-          <span className="absolute top-0 left-0 max-w-full truncate rounded-br rounded-tl bg-indigo-600 px-1.5 py-0.5 text-xs font-medium text-white">
+          <span className="absolute top-0 left-0 max-w-full truncate rounded-br rounded-tl bg-brand-600 px-1.5 py-0.5 text-xs font-medium text-white">
             {featureLabel(d.accessibilityFeature)} ·{" "}
             {Math.round(d.confidence * 100)}%
           </span>

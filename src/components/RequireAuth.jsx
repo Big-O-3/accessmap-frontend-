@@ -11,7 +11,7 @@ export default function RequireAuth() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-sm text-gray-500">
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-sm text-ink-soft">
         Checking your session…
       </div>
     );

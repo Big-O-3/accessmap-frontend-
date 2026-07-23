@@ -13,7 +13,7 @@ export default function StatsGrid({ stats }) {
     <section aria-labelledby="stats-heading">
       <h2
         id="stats-heading"
-        className="text-xs font-semibold uppercase tracking-wide text-gray-500"
+        className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
       >
         Your activity
       </h2>
@@ -21,16 +21,16 @@ export default function StatsGrid({ stats }) {
         {tiles.map((t) => (
           <div
             key={t.label}
-            className="rounded-xl border border-gray-200 bg-white p-4 text-center"
+            className="rounded-2xl border border-sand-200 bg-surface p-5 text-center shadow-sm"
           >
-            <p className="text-2xl font-bold text-indigo-600 sm:text-3xl">
+            <p className="font-display text-3xl font-semibold text-link sm:text-4xl">
               {t.value}
             </p>
-            <p className="mt-1 text-xs text-gray-500 sm:text-sm">{t.label}</p>
+            <p className="mt-1 text-xs text-ink-soft sm:text-sm">{t.label}</p>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-xs text-gray-400">
+      <p className="mt-2 text-xs text-ink-faint">
         Tracked on this device. Server-side sync isn&apos;t wired up yet, so
         stats reset when you switch browsers or clear site data.
       </p>

@@ -87,11 +87,11 @@ export default function PlaceAutocomplete({
 
       {open && (loading || suggestions.length > 0) && (
         <ul
-          className="absolute left-0 right-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg"
+          className="absolute left-0 right-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-md border border-sand-200 bg-surface shadow-lg"
           role="listbox"
         >
           {loading && suggestions.length === 0 && (
-            <li className="px-3 py-2 text-xs text-gray-400" role="status">
+            <li className="px-3 py-2 text-xs text-ink-faint" role="status">
               Searching…
             </li>
           )}
@@ -103,10 +103,10 @@ export default function PlaceAutocomplete({
                   suppressBlur.current = true;
                 }}
                 onClick={() => handlePick(p)}
-                className="block w-full px-3 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none"
+                className="block w-full px-3 py-2 text-left text-sm hover:bg-brand-50 focus:bg-brand-50 focus:outline-none"
               >
-                <span className="block font-medium text-gray-900">{p.name}</span>
-                <span className="block truncate text-xs text-gray-500">
+                <span className="block font-medium text-ink">{p.name}</span>
+                <span className="block truncate text-xs text-ink-soft">
                   {p.displayName}
                 </span>
               </button>

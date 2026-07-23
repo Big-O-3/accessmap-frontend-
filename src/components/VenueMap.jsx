@@ -14,10 +14,10 @@ import ScoreBadge from "./ScoreBadge";
 const DEFAULT_CENTER = [47.6062, -122.3321]; // Seattle
 
 const TIER_COLOR = {
-  high: "#16a34a",
-  medium: "#d97706",
+  high: "#0d9488", // brand teal
+  medium: "#f59e0b", // accent amber
   low: "#dc2626",
-  unscored: "#9ca3af", // gray — no photo uploaded yet, so no score
+  unscored: "#a8a29e", // warm gray — no photo uploaded yet, so no score
 };
 
 // Recenters the map imperatively when the `center` prop changes (e.g. after
@@ -78,17 +78,17 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
                   <span className="font-semibold">{venue.name}</span>
                   <ScoreBadge score={venue.accessibilityScore} size="sm" />
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-ink-soft">
                   {venue.city ? `${venue.address}, ${venue.city}` : venue.address}
                 </p>
                 {venue.analyzed ? (
-                  <p className="text-xs text-indigo-600">
+                  <p className="text-xs text-link">
                     Analyzed photo — not a saved venue yet
                   </p>
                 ) : (
                   <Link
                     to={`/venue/${venue.id}`}
-                    className="text-indigo-600 hover:underline text-xs"
+                    className="text-link hover:underline text-xs font-medium"
                   >
                     View details →
                   </Link>

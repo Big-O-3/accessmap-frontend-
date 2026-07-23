@@ -9,51 +9,56 @@ export default function FilterPanel({
   hasLocation,
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-ink mb-1.5">
           City
         </label>
         <input
           type="text"
           value={city}
           onChange={(e) => onCityChange(e.target.value)}
-          placeholder="e.g. Seattle"
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+          placeholder="e.g. San Francisco"
+          className="w-full rounded-xl border border-sand-200 bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
         />
       </div>
 
       <button
         type="button"
         onClick={onUseMyLocation}
-        className={`w-full rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+        className={`w-full rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
           hasLocation
-            ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+            ? "border-brand-500 bg-brand-50 text-link"
+            : "border-sand-200 bg-surface text-ink-soft hover:bg-sand-100"
         }`}
       >
-        {hasLocation ? "Using your location" : "Near me"}
+        {hasLocation ? "✓ Using your location" : "Near me"}
       </button>
 
       <fieldset>
-        <legend className="text-sm font-medium text-gray-700 mb-2">
+        <legend className="text-sm font-medium text-ink mb-2.5">
           Accessibility features
         </legend>
-        <div className="space-y-2">
-          {FILTERABLE_FEATURES.map((feature) => (
-            <label
-              key={feature.key}
-              className="flex items-center gap-2 text-sm cursor-pointer select-none"
-            >
-              <input
-                type="checkbox"
-                checked={selectedFeatures.includes(feature.key)}
-                onChange={() => onToggleFeature(feature.key)}
-                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <span>{feature.label}</span>
-            </label>
-          ))}
+        <div className="space-y-1">
+          {FILTERABLE_FEATURES.map((feature) => {
+            const checked = selectedFeatures.includes(feature.key);
+            return (
+              <label
+                key={feature.key}
+                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm cursor-pointer select-none transition-colors ${
+                  checked ? "bg-brand-50 text-link" : "hover:bg-sand-100"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onToggleFeature(feature.key)}
+                  className="rounded border-sand-200 text-brand-600 focus:ring-brand-500"
+                />
+                <span>{feature.label}</span>
+              </label>
+            );
+          })}
         </div>
       </fieldset>
     </div>

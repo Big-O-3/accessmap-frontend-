@@ -24,17 +24,17 @@ export default function Stepper({ current }) {
                 <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ring-1 ring-inset ${
                     active
-                      ? "bg-indigo-600 text-white ring-indigo-600"
+                      ? "bg-brand-600 text-white ring-brand-600"
                       : done
-                        ? "bg-indigo-100 text-indigo-700 ring-indigo-200"
-                        : "bg-white text-gray-400 ring-gray-300"
+                        ? "bg-brand-100 text-link ring-brand-200"
+                        : "bg-surface text-ink-faint ring-sand-200"
                   }`}
                 >
                   {done ? "✓" : step.n}
                 </span>
                 <span
                   className={`hidden text-sm font-medium sm:inline ${
-                    active ? "text-indigo-700" : "text-gray-500"
+                    active ? "text-link" : "text-ink-soft"
                   }`}
                 >
                   {step.label}
@@ -44,7 +44,7 @@ export default function Stepper({ current }) {
                 <span
                   aria-hidden="true"
                   className={`h-0.5 flex-1 rounded ${
-                    done ? "bg-indigo-300" : "bg-gray-200"
+                    done ? "bg-brand-300" : "bg-sand-200"
                   }`}
                 />
               )}
@@ -52,7 +52,7 @@ export default function Stepper({ current }) {
           );
         })}
       </ol>
-      <p className="mt-2 text-center text-xs text-gray-500 sm:hidden">
+      <p className="mt-2 text-center text-xs text-ink-soft sm:hidden">
         Step {current} of {STEPS.length} · {STEPS[current - 1].label}
       </p>
     </nav>

@@ -26,8 +26,8 @@ export default function SaveButton({ venue, size = "md" }) {
         sizes[size]
       } ${
         saved
-          ? "bg-indigo-600 text-white ring-indigo-600 hover:bg-indigo-700"
-          : "bg-white text-gray-700 ring-gray-300 hover:bg-gray-50"
+          ? "bg-accent-500 text-white ring-accent-500 hover:bg-accent-600"
+          : "bg-surface text-ink-soft ring-sand-200 hover:bg-sand-100"
       }`}
     >
       <span aria-hidden="true">{saved ? "★" : "☆"}</span>

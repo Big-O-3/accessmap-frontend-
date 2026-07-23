@@ -45,19 +45,19 @@ export default function Recommendations() {
 
   return (
     <section aria-labelledby="recs-heading" className="h-full">
-      <h2 id="recs-heading" className="text-lg font-semibold text-gray-900">
+      <h2 id="recs-heading" className="font-display text-xl font-semibold text-ink">
         Recommended for you
       </h2>
-      <p className="text-xs text-gray-500">Based on accessibility scores near you</p>
+      <p className="text-xs text-ink-soft">Based on accessibility scores near you</p>
 
       {status === "loading" && (
-        <p className="mt-3 text-sm text-gray-500" role="status">
+        <p className="mt-3 text-sm text-ink-soft" role="status">
           Finding accessible venues…
         </p>
       )}
 
       {status === "error" && (
-        <p className="mt-3 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-500" role="alert">
+        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-4 text-sm text-ink-soft shadow-sm" role="alert">
           Couldn&apos;t load recommendations right now.
         </p>
       )}
@@ -65,25 +65,25 @@ export default function Recommendations() {
       {status === "done" && (
         <div className="mt-3 space-y-3">
           {items.length === 0 ? (
-            <p className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-500">
+            <p className="rounded-2xl border border-sand-200 bg-surface p-4 text-sm text-ink-soft shadow-sm">
               No venues to recommend yet.
             </p>
           ) : (
             items.map((v) => (
               <article
                 key={v.id}
-                className="rounded-xl border border-gray-200 bg-white p-4"
+                className="rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
                   <Link
                     to={`/venue/${v.id}`}
-                    className="font-semibold text-gray-900 hover:underline"
+                    className="font-display font-semibold text-ink hover:underline"
                   >
                     {v.name}
                   </Link>
                   <ScoreBadge score={v.accessibilityScore} size="sm" />
                 </div>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-ink-soft">
                   {v.address}
                   {v.city ? `, ${v.city}` : ""}
                 </p>
@@ -92,18 +92,18 @@ export default function Recommendations() {
                     {v.featureKeys.slice(0, 3).map((k) => (
                       <span
                         key={k}
-                        className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
+                        className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-link"
                       >
                         {featureLabel(k)}
                       </span>
                     ))}
                   </div>
                 )}
-                <p className="mt-2 text-xs text-gray-400">{v.reason}</p>
+                <p className="mt-2 text-xs text-ink-faint">{v.reason}</p>
                 <div className="mt-3 flex items-center gap-2">
                   <Link
                     to={`/venue/${v.id}`}
-                    className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700"
+                    className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700"
                   >
                     View
                   </Link>
@@ -114,7 +114,7 @@ export default function Recommendations() {
           )}
           <Link
             to="/search"
-            className="inline-block text-sm font-medium text-indigo-600 hover:underline"
+            className="inline-block text-sm font-medium text-link hover:underline"
           >
             See more matches →
           </Link>

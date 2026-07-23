@@ -29,7 +29,7 @@ export default function StepReviewDetections({
 
   if (photos.length === 0) {
     return (
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-ink-soft">
         No photos to review. Go back and add at least one photo.
       </p>
     );
@@ -40,10 +40,10 @@ export default function StepReviewDetections({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-ink">
           Confirm what the AI found
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-ink-soft">
           Our AI analyzed your photos. Uncheck anything it got wrong — you have
           the final say.
         </p>
@@ -56,11 +56,11 @@ export default function StepReviewDetections({
             type="button"
             onClick={() => setActive((a) => Math.max(0, a - 1))}
             disabled={active === 0}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 disabled:opacity-40"
+            className="rounded-md border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
           >
             ◀ Prev
           </button>
-          <span className="text-gray-500" aria-live="polite">
+          <span className="text-ink-soft" aria-live="polite">
             Photo {active + 1} of {photos.length}
           </span>
           <button
@@ -69,7 +69,7 @@ export default function StepReviewDetections({
               setActive((a) => Math.min(photos.length - 1, a + 1))
             }
             disabled={active === photos.length - 1}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 disabled:opacity-40"
+            className="rounded-md border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
           >
             Next ▶
           </button>
@@ -91,7 +91,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
   if (photo.status === "analyzing" || photo.status === "pending") {
     return (
       <div
-        className="rounded-xl bg-white p-8 text-center text-sm text-gray-600 ring-1 ring-gray-200"
+        className="rounded-xl bg-surface p-8 text-center text-sm text-ink-soft ring-1 ring-sand-200"
         role="status"
       >
         Analyzing photo… this can take a few seconds.
@@ -139,7 +139,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       <DetectionImage photo={{ imageUrl: photo.previewUrl, detections }} />
 
       {detections.length === 0 ? (
-        <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-gray-500 ring-1 ring-gray-200">
+        <p className="rounded-xl bg-surface px-4 py-6 text-center text-sm text-ink-soft ring-1 ring-sand-200">
           No accessibility features detected in this photo. Try a clearer photo
           of the entrance, restroom, parking, or seating.
         </p>
@@ -148,7 +148,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
           <legend className="sr-only">
             Detected accessibility features — uncheck any the AI got wrong
           </legend>
-          <ul className="divide-y divide-gray-100 rounded-xl bg-white ring-1 ring-gray-200">
+          <ul className="divide-y divide-sand-100 rounded-xl bg-surface ring-1 ring-sand-200">
             {detections.map((d, idx) => {
               const key = detKey(photo.id, idx);
               const pct = Math.round((d.confidence ?? 0) * 100);
@@ -165,13 +165,13 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
                         type="checkbox"
                         checked={!!confirmed[key]}
                         onChange={() => onToggle(photo.id, idx)}
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="h-4 w-4 rounded border-sand-200 text-brand-600 focus:ring-brand-500"
                       />
-                      <span className="text-sm font-medium text-gray-800">
+                      <span className="text-sm font-medium text-ink">
                         {featureLabel(d.accessibilityFeature)}
                       </span>
                     </span>
-                    <span className="text-xs font-semibold text-gray-500">
+                    <span className="text-xs font-semibold text-ink-soft">
                       {pct}% confidence
                     </span>
                   </label>
@@ -183,7 +183,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       )}
 
       {photo.altText && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-ink-faint">
           Suggested alt text: {photo.altText}
         </p>
       )}

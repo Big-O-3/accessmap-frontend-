@@ -1,7 +1,88 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   AccessMap design tokens — "Black & silver"
+   A monochrome graphite/silver system with a full dark mode. Components
+   reference SEMANTIC token names (bg-brand-600, text-ink, border-sand-200,
+   text-link); the values below are what those names resolve to. Dark mode
+   simply re-points the same names to darker values under the .dark class, so
+   the whole app flips theme without touching a single component.
+--------------------------------------------------------------------------- */
+@theme {
+  /* Brand ramp — graphite (used for buttons, fills, borders). Light→dark. */
+  --color-brand-50: #f4f4f5;
+  --color-brand-100: #e4e4e7;
+  --color-brand-200: #d4d4d8;
+  --color-brand-300: #a1a1aa;
+  --color-brand-400: #71717a;
+  --color-brand-500: #52525b;
+  --color-brand-600: #27272a;
+  --color-brand-700: #18181b;
+  --color-brand-800: #09090b;
+  --color-brand-900: #000000;
+
+  /* Accent — silver/chrome (replaces the old amber). */
+  --color-accent-400: #d4d4d8;
+  --color-accent-500: #a1a1aa;
+  --color-accent-600: #71717a;
+
+  /* Neutrals / surfaces. */
+  --color-sand-50: #fafafa;
+  --color-sand-100: #f4f4f5;
+  --color-sand-200: #e4e4e7;
+
+  /* Card surface — white on light, near-black on dark (see .dark below). */
+  --color-surface: #ffffff;
+
+  /* Text. */
+  --color-ink: #18181b;
+  --color-ink-soft: #52525b;
+  --color-ink-faint: #a1a1aa;
+
+  /* Interactive text / links — adaptive so it stays legible in both themes. */
+  --color-link: #18181b;
+
+  /* Type families. */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+/* -------- Dark mode: repoint the same token names to a black/silver set ----
+   Applied when <html class="dark">. Surfaces go near-black, text goes silver,
+   and the graphite brand ramp lifts a step so fills stay visible on black. */
+.dark {
+  --color-brand-50: #1f1f23;
+  --color-brand-100: #27272a;
+  --color-brand-200: #3f3f46;
+  --color-brand-300: #52525b;
+  --color-brand-400: #71717a;
+  --color-brand-500: #a1a1aa;
+  --color-brand-600: #3f3f46; /* primary button — visible on black */
+  --color-brand-700: #52525b; /* hover */
+  --color-brand-800: #d4d4d8;
+  --color-brand-900: #f4f4f5;
+
+  --color-accent-400: #52525b;
+  --color-accent-500: #a1a1aa;
+  --color-accent-600: #d4d4d8;
+
+  --color-sand-50: #0a0a0a; /* page background — black */
+  --color-sand-100: #18181b; /* cards */
+  --color-sand-200: #27272a; /* borders */
+  --color-surface: #131316; /* card surface — near-black, lifted off the page */
+
+  --color-ink: #e4e4e7; /* silver text */
+  --color-ink-soft: #a1a1aa;
+  --color-ink-faint: #71717a;
+
+  --color-link: #d4d4d8; /* light silver links on black */
+}
+
 :root {
   color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
 }
 
 html,
@@ -12,5 +93,76 @@ body,
 
 body {
   margin: 0;
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-sand-50);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth the light↔dark flip (kept to color properties so layout never jumps). */
+body,
+a,
+button,
+input,
+textarea,
+select,
+header,
+footer,
+[class*="bg-"],
+[class*="border-"],
+[class*="text-"] {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* Headings use the display face. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Accessibility-first: a clear, high-contrast focus ring. Uses the ink token
+   so it's dark on light and silver on black — never ambiguous. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- Cursor spotlight -----------------------------------------------------
+   A soft light that follows the pointer (see CursorGlow.jsx, which updates
+   --cursor-x/--cursor-y). Sits above the page but ignores pointer events.
+   Subtle in light mode, a brighter silver glow in dark mode. */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: radial-gradient(
+    260px circle at var(--cursor-x, -100px) var(--cursor-y, -100px),
+    rgba(0, 0, 0, 0.06),
+    transparent 65%
+  );
+  transition: opacity 0.3s ease;
+}
+.dark .cursor-glow {
+  background: radial-gradient(
+    280px circle at var(--cursor-x, -100px) var(--cursor-y, -100px),
+    rgba(228, 228, 231, 0.1),
+    transparent 60%
+  );
+}
+/* Respect users who prefer reduced motion — hide the moving spotlight. */
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
 }

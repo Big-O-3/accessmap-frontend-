@@ -38,29 +38,34 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="bg-gradient-to-b from-indigo-600 to-indigo-700 text-white">
-        <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">
-            Find truly accessible places
+      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-800 to-black text-white">
+        {/* Soft decorative glow so the hero doesn't read as a flat block. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-zinc-400/20 blur-3xl"
+        />
+        <div className="relative mx-auto max-w-4xl px-4 py-24 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-zinc-200 ring-1 ring-white/20">
+            ◆ Community-verified · AI-assisted
+          </span>
+          <h1 className="mt-6 font-display text-5xl sm:text-6xl font-semibold leading-[1.05]">
+            Find places that
+            <br />
+            <span className="italic text-[#ff8c69]">actually</span> welcome you
           </h1>
-          <p className="mt-4 text-lg text-indigo-100 max-w-2xl mx-auto">
-            Community-verified accessibility details and AI-detected features —
-            so the 61 million Americans with disabilities can find accessible
-            venues before they leave home.
-          </p>
           <form
             onSubmit={handleSearch}
-            className="mt-8 flex max-w-xl mx-auto gap-2 rounded-xl bg-white p-2 shadow-lg ring-1 ring-black/5"
+            className="mx-auto mt-10 flex max-w-xl gap-2 rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5"
           >
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by city…"
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+              className="flex-1 rounded-xl border border-sand-200 px-4 py-3 text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
             />
             <button
               type="submit"
-              className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
+              className="rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-700"
             >
               Search
             </button>
@@ -70,63 +75,70 @@ export default function HomePage() {
 
       <section
         aria-labelledby="how-heading"
-        className="bg-white border-b border-gray-100"
+        className="bg-surface border-b border-sand-200"
       >
-        <div className="mx-auto max-w-5xl px-4 py-14">
+        <div className="mx-auto max-w-5xl px-4 py-16">
           <h2
             id="how-heading"
-            className="text-2xl font-bold text-gray-900 text-center"
+            className="font-display text-3xl font-semibold text-ink text-center"
           >
             How it works
           </h2>
-          <ol className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step, i) => (
               <li key={step.title} className="flex flex-col items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 font-semibold text-indigo-700"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 font-display text-lg font-semibold text-white shadow-sm"
                 >
                   {i + 1}
                 </span>
-                <h3 className="font-semibold text-gray-900">{step.title}</h3>
-                <p className="text-sm text-gray-600">{step.body}</p>
+                <h3 className="font-semibold text-ink">{step.title}</h3>
+                <p className="text-sm text-ink-soft leading-relaxed">{step.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Featured venues</h2>
-          <Link to="/search" className="text-indigo-600 hover:underline text-sm">
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="font-display text-3xl font-semibold text-ink">
+            Featured venues
+          </h2>
+          <Link
+            to="/search"
+            className="text-link hover:underline text-sm font-medium"
+          >
             View all →
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {featured.map((venue) => (
             <VenueCard key={venue.id} venue={venue} />
           ))}
         </div>
       </section>
 
-      <section className="bg-white border-t border-gray-100">
-        <div className="mx-auto max-w-3xl px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Help build the map</h2>
-          <p className="mt-2 text-gray-600">
+      <section className="bg-sand-100 border-t border-sand-200">
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+          <h2 className="font-display text-3xl font-semibold text-ink">
+            Help build the map
+          </h2>
+          <p className="mt-3 text-ink-soft text-lg">
             Every photo you add makes it easier for someone to visit a new place
             with confidence.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/add-venue"
-              className="rounded-md bg-indigo-600 px-5 py-3 font-medium text-white hover:bg-indigo-700"
+              className="rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
             >
               Add a venue
             </Link>
             <Link
               to="/search"
-              className="rounded-md border border-gray-300 px-5 py-3 font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-xl border border-sand-200 bg-surface px-6 py-3 font-semibold text-ink-soft transition-colors hover:bg-sand-50"
             >
               Find accessible places
             </Link>
