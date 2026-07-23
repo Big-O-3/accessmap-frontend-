@@ -6,7 +6,7 @@
 // photo before any backend/venue exists.
 
 import { calculateAccessibilityScore } from "./score";
-import { FEATURE_BY_KEY, featureLabel } from "./features";
+import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY, featureLabel } from "./features";
 
 // All ML traffic goes through the backend now — it forwards the image to the
 // Python ML service. This keeps the ML URL and its CORS surface server-side.
@@ -88,5 +88,42 @@ export function summarizeAccessibility(detections = []) {
   }
 
   return { level, present, barriers };
+}
+
+// Build a full yes/no checklist covering every accessibility feature we know
+// about — not just the ones the model saw. Each row is one of:
+//   - "yes"           : detected in this photo
+//   - "not-detected"  : this feature wasn't found (doesn't mean absent, just not
+//                       visible / not confident)
+//   - "barrier"       : a barrier (e.g. stairs) was detected
+// Uses the existing highConfidence flag from the ML service to label whether
+// a "yes" is solid or worth a second look. Ordered so accessible features
+// come first, barriers last.
+export function featureChecklist(detections = []) {
+  const bestByType = new Map();
+  for (const d of detections) {
+    const prev = bestByType.get(d.accessibilityFeature);
+    if (!prev || d.confidence > prev.confidence) {
+      bestByType.set(d.accessibilityFeature, d);
+    }
+  }
+
+  return ACCESSIBILITY_FEATURES.map((feature) => {
+    const hit = bestByType.get(feature.key);
+    if (feature.barrier) {
+      return {
+        key: feature.key,
+        label: feature.label,
+        status: hit ? "barrier" : "not-detected",
+        highConfidence: hit?.highConfidence ?? false,
+      };
+    }
+    return {
+      key: feature.key,
+      label: feature.label,
+      status: hit ? "yes" : "not-detected",
+      highConfidence: hit?.highConfidence ?? false,
+    };
+  });
 }
 
