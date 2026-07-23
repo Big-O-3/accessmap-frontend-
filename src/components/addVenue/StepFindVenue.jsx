@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { searchVenues, createVenue } from "../../lib/api";
+import PlaceAutocomplete from "../PlaceAutocomplete";
 
 // Step 1 · Find or Create Venue.
 // Search existing venues first (avoids duplicates); a match can be selected to
@@ -129,6 +130,23 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
   const updateField = (key) => (e) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
+  // When the user picks a Nominatim suggestion, fill everything at once so
+  // they only need to review + set the category.
+  function fillFromPlace(place) {
+    setForm((f) => ({
+      ...f,
+      name: place.name,
+      address: place.address || f.address,
+      city: place.city || f.city,
+      state: place.stateCode || place.state || f.state,
+      zipCode: place.zipCode || f.zipCode,
+      latitude: place.latitude.toFixed(6),
+      longitude: place.longitude.toFixed(6),
+    }));
+    setMode("create");
+    setError(null);
+  }
+
   const hasCoords = form.latitude !== "" && form.longitude !== "";
 
   return (
@@ -217,15 +235,20 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
           >
             Name
           </label>
-          <input
+          <PlaceAutocomplete
             id="venue-name"
-            type="text"
             value={form.name}
-            onChange={updateField("name")}
-            onFocus={() => setMode("create")}
+            onChange={(v) => {
+              setForm((f) => ({ ...f, name: v }));
+              setMode("create");
+            }}
+            onPick={fillFromPlace}
             placeholder="Green Elephant Cafe"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           />
+          <p className="mt-1 text-xs text-gray-400">
+            Pick a suggestion to fill address & location automatically.
+          </p>
         </div>
 
         <div>
