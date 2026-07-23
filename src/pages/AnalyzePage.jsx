@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import DetectionImage from "../components/DetectionImage";
 import ScoreBadge from "../components/ScoreBadge";
 import CameraCapture from "../components/CameraCapture";
-import { analyzeImage, scoreFromDetections, summarizeAccessibility } from "../lib/detect";
+import {
+  analyzeImage,
+  featureChecklist,
+  scoreFromDetections,
+  summarizeAccessibility,
+} from "../lib/detect";
 import { saveAnalyzedVenue } from "../lib/api";
 
 // Plain-English verdict shown at the top of the results, keyed by summary.level.
@@ -99,6 +104,12 @@ export default function AnalyzePage() {
   const detections = result?.detections ?? [];
   const summary = result ? summarizeAccessibility(detections) : null;
   const score = result ? scoreFromDetections(detections) : null;
+  const checklist = result ? featureChecklist(detections) : [];
+  const totalAccessibleFeatures = checklist.filter(
+    (row) => row.status !== "barrier" && row.key !== "stairs_present",
+  ).length;
+  const detectedAccessibleCount = checklist.filter((row) => row.status === "yes").length;
+  const barrierCount = checklist.filter((row) => row.status === "barrier").length;
 
   // A photo object in the shape DetectionImage expects.
   const photo = previewUrl ? { imageUrl: previewUrl, detections } : null;
@@ -216,6 +227,14 @@ export default function AnalyzePage() {
                 <p className="mt-1 text-sm opacity-90">
                   {VERDICTS[summary.level].detail}
                 </p>
+                {/* Plain-English count so the "degree" is spelled out, not just a number. */}
+                <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">
+                  {detectedAccessibleCount} of {totalAccessibleFeatures} accessible
+                  features detected
+                  {barrierCount > 0
+                    ? ` · ${barrierCount} barrier${barrierCount > 1 ? "s" : ""}`
+                    : ""}
+                </p>
               </div>
               <ScoreBadge score={score} size="lg" />
             </div>
@@ -224,62 +243,60 @@ export default function AnalyzePage() {
           {/* The photo with bounding boxes drawn over detections. */}
           <DetectionImage photo={photo} />
 
-          {/* Accessible features found. */}
-          {summary.present.length > 0 && (
-            <div className="rounded-xl bg-white ring-1 ring-gray-200">
-              <h2 className="border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900">
-                Accessible features found
-              </h2>
-              <ul className="divide-y divide-gray-100">
-                {summary.present.map((f) => (
-                  <li
-                    key={f.key}
-                    className="flex items-center justify-between gap-3 px-4 py-3"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+          {/* One unified checklist so the user sees every feature we checked
+              for, not just the ones we found. Yes / Not detected / Barrier is
+              easier to scan than two separate lists with confidence percents. */}
+          <div className="rounded-xl bg-white ring-1 ring-gray-200">
+            <h2 className="border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900">
+              Accessibility checklist
+            </h2>
+            <ul className="divide-y divide-gray-100">
+              {checklist.map((row) => (
+                <li
+                  key={row.key}
+                  className="flex items-center justify-between gap-3 px-4 py-3"
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                    {row.status === "yes" && (
                       <span className="text-green-600" aria-hidden>✓</span>
-                      {f.label}
-                    </span>
-                    <span className="text-xs font-semibold text-gray-500">
-                      {Math.round(f.confidence * 100)}% confidence
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Barriers found (e.g. stairs). */}
-          {summary.barriers.length > 0 && (
-            <div className="rounded-xl bg-white ring-1 ring-red-200">
-              <h2 className="border-b border-red-100 px-4 py-3 text-sm font-semibold text-red-800">
-                Barriers detected
-              </h2>
-              <ul className="divide-y divide-red-100">
-                {summary.barriers.map((f) => (
-                  <li
-                    key={f.key}
-                    className="flex items-center justify-between gap-3 px-4 py-3"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                    )}
+                    {row.status === "barrier" && (
                       <span className="text-red-600" aria-hidden>⚠</span>
-                      {f.label}
+                    )}
+                    {row.status === "not-detected" && (
+                      <span className="text-gray-400" aria-hidden>—</span>
+                    )}
+                    {row.label}
+                  </span>
+                  {row.status === "yes" && (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        row.highConfidence
+                          ? "bg-green-100 text-green-800"
+                          : "bg-amber-100 text-amber-800"
+                      }`}
+                    >
+                      {row.highConfidence ? "Yes" : "Likely — verify"}
                     </span>
-                    <span className="text-xs font-semibold text-gray-500">
-                      {Math.round(f.confidence * 100)}% confidence
+                  )}
+                  {row.status === "barrier" && (
+                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
+                      Present
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {summary.present.length === 0 && summary.barriers.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-gray-500 ring-1 ring-gray-200">
-              No accessibility features were detected in this photo. Try a
-              clearer photo of the entrance.
+                  )}
+                  {row.status === "not-detected" && (
+                    <span className="text-xs font-semibold text-gray-400">
+                      Not detected
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <p className="border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
+              &ldquo;Not detected&rdquo; means we didn&apos;t see it in this photo
+              — the feature could still exist at the venue.
             </p>
-          )}
+          </div>
 
           {result.altTextSuggestion && (
             <p className="text-center text-xs text-gray-400">
