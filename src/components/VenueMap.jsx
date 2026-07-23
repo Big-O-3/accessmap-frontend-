@@ -17,6 +17,7 @@ const TIER_COLOR = {
   high: "#16a34a",
   medium: "#d97706",
   low: "#dc2626",
+  unscored: "#9ca3af", // gray — no photo uploaded yet, so no score
 };
 
 // Recenters the map imperatively when the `center` prop changes (e.g. after
@@ -51,7 +52,10 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
 
       {venues.map((venue) => {
         const active = venue.id === activeId;
-        const color = TIER_COLOR[scoreTier(venue.accessibilityScore)];
+        const color =
+          venue.accessibilityScore == null
+            ? TIER_COLOR.unscored
+            : TIER_COLOR[scoreTier(venue.accessibilityScore)];
         return (
           <CircleMarker
             key={venue.id}

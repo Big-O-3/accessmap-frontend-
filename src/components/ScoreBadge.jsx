@@ -7,12 +7,26 @@ const TIER_STYLES = {
 };
 
 export default function ScoreBadge({ score, size = "md" }) {
-  const tier = scoreTier(score);
   const sizes = {
     sm: "text-xs px-2 py-0.5",
     md: "text-sm px-2.5 py-1",
     lg: "text-lg px-4 py-2 font-bold",
   };
+
+  // No score until a photo has been uploaded and analyzed. Show a neutral
+  // "Not yet scored" chip instead of a misleading number.
+  if (score == null) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 rounded-full font-medium ring-1 ring-inset bg-gray-100 text-gray-600 ring-gray-500/20 ${sizes[size]}`}
+        title="No accessibility score yet — upload a photo to generate one"
+      >
+        Not yet scored
+      </span>
+    );
+  }
+
+  const tier = scoreTier(score);
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full font-semibold ring-1 ring-inset ${TIER_STYLES[tier]} ${sizes[size]}`}
