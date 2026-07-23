@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 
-// Placeholder for pages owned by other teammates (Brandon: upload, dashboard,
-// add-venue; Charles/shared: about). Keeps routing complete without stepping on
-// their work.
+// Fallback page for unbuilt routes and the 404 catch-all. Kept minimal so
+// unfinished features and unknown URLs land somewhere navigable.
 export default function StubPage({ title, owner }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center">
