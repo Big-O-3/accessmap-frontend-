@@ -180,6 +180,32 @@ export default function AnalyzePage() {
       {/* Results */}
       {status === "done" && photo && (
         <section className="mt-8 space-y-6">
+          {/* Camera guidance from the ML service — non-venue warning and/or a
+              framing hint (step back / step closer / recenter). aria-live so
+              screen readers announce it after each capture. */}
+          {(result.isVenue === false || result.framingHint) && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-600/20"
+            >
+              {result.isVenue === false && (
+                <p className="font-semibold">
+                  This doesn&apos;t look like a venue photo. Try a shot that
+                  clearly shows the entrance, storefront, or signage.
+                </p>
+              )}
+              {result.framingHint && (
+                <p className={result.isVenue === false ? "mt-1" : ""}>
+                  {result.framingHint}
+                </p>
+              )}
+              <p className="mt-2 text-xs text-amber-800/80">
+                Retake the photo for a more accurate score.
+              </p>
+            </div>
+          )}
+
           {/* Overall verdict — the "degree of accessibility" at a glance. */}
           <div
             className={`rounded-xl p-5 ring-1 ${VERDICTS[summary.level].className}`}
