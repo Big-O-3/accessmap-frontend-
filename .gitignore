@@ -28,3 +28,6 @@ dist-ssr
 *.sw?
 
 CLAUDE.md
+
+# Local AI tooling (UI/UX Pro Max skill, etc.) — personal, not shared.
+.claude/
