@@ -5,6 +5,7 @@ import {
   scoreFromDetections,
 } from "../lib/detect";
 import {
+  AuthError,
   submitContribution,
   uploadPhoto,
   analyzeUploadedPhoto,
@@ -110,7 +111,16 @@ function reducer(state, action) {
         ...state,
         photos: state.photos.map((p) =>
           p.id === action.id
-            ? { ...p, status: "error", error: action.error, detections: [] }
+            ? {
+                ...p,
+                status: "error",
+                error: action.error,
+                // A dead session is a different problem from an unreachable
+                // service, and needs different advice — flag it so the step can
+                // say "sign in again" instead of "check the ML service".
+                authError: action.authError,
+                detections: [],
+              }
             : p,
         ),
       };
@@ -225,6 +235,7 @@ export default function AddVenuePage() {
         type: "ANALYZE_ERROR",
         id,
         error: err.message || "Analysis failed.",
+        authError: err instanceof AuthError,
       });
     }
   }

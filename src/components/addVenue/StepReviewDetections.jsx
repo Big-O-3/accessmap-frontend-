@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import DetectionImage from "../DetectionImage";
 import { featureLabel } from "../../lib/features";
 
@@ -95,6 +96,30 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
         role="status"
       >
         Analyzing photo… this can take a few seconds.
+      </div>
+    );
+  }
+
+  // An expired session and an unreachable service both surface here, but the
+  // fix is completely different — retrying a 401 will never work. Say so, and
+  // point at the login page instead of at the ML service.
+  if (photo.status === "error" && photo.authError) {
+    return (
+      <div
+        role="alert"
+        className="rounded-xl bg-amber-50 p-6 text-center text-sm text-amber-900 ring-1 ring-amber-600/20"
+      >
+        <p className="font-medium">Your session expired.</p>
+        <p className="mt-1">
+          Sign in again to analyze photos. Anything on this page won&apos;t be
+          saved, so you&apos;ll need to re-add your photos afterwards.
+        </p>
+        <Link
+          to="/login"
+          className="mt-3 inline-block rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
+        >
+          Sign in again
+        </Link>
       </div>
     );
   }
