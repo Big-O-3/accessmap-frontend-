@@ -104,22 +104,40 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
   // fix is completely different — retrying a 401 will never work. Say so, and
   // point at the login page instead of at the ML service.
   if (photo.status === "error" && photo.authError) {
+    // The backend separates a genuinely expired session from a token it could
+    // not verify at all. Only the first is fixed by signing in again; offering
+    // that button for the second walks people round a loop that cannot ever
+    // succeed, because the thing to fix is on the server. Default to treating
+    // an unlabelled 401 as an expiry — that's the common case.
+    const expired = !photo.error || /expired/i.test(photo.error);
     return (
       <div
         role="alert"
         className="rounded-xl bg-amber-50 p-6 text-center text-sm text-amber-900 ring-1 ring-amber-600/20"
       >
-        <p className="font-medium">Your session expired.</p>
-        <p className="mt-1">
-          Sign in again to analyze photos. Anything on this page won&apos;t be
-          saved, so you&apos;ll need to re-add your photos afterwards.
+        <p className="font-medium">
+          {expired ? "Your session expired." : photo.error}
         </p>
-        <Link
-          to="/login"
-          className="mt-3 inline-block rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
-        >
-          Sign in again
-        </Link>
+        {expired ? (
+          <>
+            <p className="mt-1">
+              Sign in again to analyze photos. Anything on this page won&apos;t
+              be saved, so you&apos;ll need to re-add your photos afterwards.
+            </p>
+            <Link
+              to="/login"
+              className="mt-3 inline-block rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
+            >
+              Sign in again
+            </Link>
+          </>
+        ) : (
+          <p className="mt-1">
+            The server couldn&apos;t verify your sign-in, so signing in again
+            won&apos;t help — the backend&apos;s Supabase credentials need
+            attention.
+          </p>
+        )}
       </div>
     );
   }
