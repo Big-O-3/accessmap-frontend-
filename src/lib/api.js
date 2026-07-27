@@ -187,7 +187,12 @@ export async function uploadPhoto(venueId, file) {
     body: form,
   });
   if (res.status === 401) {
-    throw new AuthError();
+    // Keep the backend's wording. "Authentication required" (we sent no token)
+    // and "Invalid or expired token" (we sent one and it was rejected) are
+    // different failures with different fixes; collapsing them to the default
+    // message hides which one actually happened. request() already does this.
+    const body = await res.json().catch(() => ({}));
+    throw new AuthError(body.error || "Authentication required");
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
