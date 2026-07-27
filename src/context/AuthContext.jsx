@@ -37,9 +37,25 @@ export function AuthProvider({ children }) {
       setUser(shapeUser(session?.user));
     });
 
+    // Re-read the session whenever the tab regains focus. The session can die
+    // while we're backgrounded — refresh-token expiry, a sign-out in another
+    // tab, localStorage cleared by hand — without this tab ever hearing the
+    // event. Without this re-check `user` stays truthy in memory, RequireAuth
+    // keeps letting us through, and the dead session only surfaces as a
+    // confusing 401 partway into a flow (e.g. Add Venue step 3, after an
+    // upload). Catching it on focus fails fast instead.
+    function syncSessionOnFocus() {
+      if (document.visibilityState !== "visible") return;
+      supabase.auth.getSession().then(({ data }) => {
+        if (mounted) setUser(shapeUser(data.session?.user));
+      });
+    }
+    document.addEventListener("visibilitychange", syncSessionOnFocus);
+
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", syncSessionOnFocus);
     };
   }, []);
 
