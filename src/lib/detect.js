@@ -26,7 +26,14 @@ export async function analyzeImage(file) {
 
   const res = await fetch(`${API_URL}/api/analyze`, { method: "POST", body: form });
   if (!res.ok) {
-    throw new Error(`Analyze failed (${res.status})`);
+    // The backend already knows WHY this failed and says so in the body (e.g.
+    // "ML service error (500)", or that the model is still warming up). Showing
+    // only the status code sends people off to check ports and processes when
+    // the actual cause was sitting in the response.
+    const body = await res.json().catch(() => ({}));
+    const err = new Error(body.error || `Analyze failed (${res.status})`);
+    err.status = res.status;
+    throw err;
   }
   return res.json();
 }
