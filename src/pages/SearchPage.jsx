@@ -16,6 +16,7 @@ export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [city, setCity] = useState(() => searchParams.get("city") ?? "");
   const [selectedFeatures, setSelectedFeatures] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
   const [location, setLocation] = useState(null); // real GPS location { lat, lng }
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ export default function SearchPage() {
         const filters = {
           city,
           features: selectedFeatures,
+          types: selectedTypes,
           lat: origin.lat,
           lng: origin.lng,
         };
@@ -53,11 +55,17 @@ export default function SearchPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [city, selectedFeatures, location]);
+  }, [city, selectedFeatures, selectedTypes, location]);
 
   function toggleFeature(key) {
     setSelectedFeatures((prev) =>
       prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key],
+    );
+  }
+
+  function toggleType(key) {
+    setSelectedTypes((prev) =>
+      prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key],
     );
   }
 
@@ -83,7 +91,7 @@ export default function SearchPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [city, selectedFeatures, location]);
+  }, [city, selectedFeatures, selectedTypes, location]);
 
   const visibleVenues = venues.slice(0, visibleCount);
   const hasMore = visibleCount < venues.length;
@@ -131,6 +139,8 @@ export default function SearchPage() {
               onCityChange={setCity}
               selectedFeatures={selectedFeatures}
               onToggleFeature={toggleFeature}
+              selectedTypes={selectedTypes}
+              onToggleType={toggleType}
               onUseMyLocation={useMyLocation}
               hasLocation={!!location}
             />

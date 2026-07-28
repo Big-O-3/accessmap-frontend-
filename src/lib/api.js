@@ -52,11 +52,12 @@ async function request(path, options = {}) {
 }
 
 // GET /api/venues/search
-// filters: { city, features: string[], radius, lat, lng }
+// filters: { city, features: string[], types: string[], radius, lat, lng }
 export async function searchVenues(filters = {}) {
   const params = new URLSearchParams();
   if (filters.city) params.set("city", filters.city);
   if (filters.features?.length) params.set("features", filters.features.join(","));
+  if (filters.types?.length) params.set("types", filters.types.join(","));
   if (filters.radius) params.set("radius", filters.radius);
   if (filters.lat != null) params.set("lat", filters.lat);
   if (filters.lng != null) params.set("lng", filters.lng);

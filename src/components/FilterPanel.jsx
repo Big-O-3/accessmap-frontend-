@@ -1,10 +1,13 @@
 import { FILTERABLE_FEATURES } from "../lib/features";
+import { VENUE_TYPES } from "../lib/venueTypes";
 
 export default function FilterPanel({
   city,
   onCityChange,
-  selectedFeatures,
+  selectedFeatures = [],
   onToggleFeature,
+  selectedTypes = [],
+  onToggleType,
   onUseMyLocation,
   hasLocation,
 }) {
@@ -56,6 +59,33 @@ export default function FilterPanel({
                   className="rounded border-sand-200 text-brand-600 focus:ring-brand-500"
                 />
                 <span>{feature.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="text-sm font-medium text-ink mb-2.5">
+          Category
+        </legend>
+        <div className="space-y-1">
+          {VENUE_TYPES.map((type) => {
+            const checked = selectedTypes.includes(type.key);
+            return (
+              <label
+                key={type.key}
+                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm cursor-pointer select-none transition-colors ${
+                  checked ? "bg-brand-50 text-link" : "hover:bg-sand-100"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onToggleType(type.key)}
+                  className="rounded border-sand-200 text-brand-600 focus:ring-brand-500"
+                />
+                <span>{type.label}</span>
               </label>
             );
           })}
