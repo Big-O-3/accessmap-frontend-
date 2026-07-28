@@ -18,7 +18,7 @@ const STEPS = [
   },
   {
     title: "Visitors decide with confidence",
-    body: "Every venue gets a 0–100 accessibility score with photo evidence, so you can plan a visit before leaving home.",
+    body: "Every venue gets a clear accessibility rating — accessible, partial, or not — with photo evidence, so you can plan a visit before leaving home.",
   },
 ];
 

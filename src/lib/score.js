@@ -46,3 +46,20 @@ export function scoreTier(score) {
   if (score >= 40) return "medium";
   return "low";
 }
+
+// Plain-language verdict shown to users IN PLACE OF the raw number. The score
+// (0-100) still exists and still does the work — it's what the backend stores,
+// what search/sort and the map-pin colors use, and what decides the tier here.
+// Users just see "Accessible / Partially accessible / Not accessible" instead
+// of a figure that's hard to interpret at a glance. Returns null when there's
+// no score yet (no photo analyzed), so callers can show "Not yet scored".
+const VERDICT_LABELS = {
+  high: "Accessible",
+  medium: "Partially accessible",
+  low: "Not accessible",
+};
+
+export function scoreVerdict(score) {
+  if (score == null) return null;
+  return { tier: scoreTier(score), label: VERDICT_LABELS[scoreTier(score)] };
+}

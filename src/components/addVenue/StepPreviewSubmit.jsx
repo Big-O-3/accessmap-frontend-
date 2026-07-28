@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import ScoreBadge from "../ScoreBadge";
 import { featureLabel } from "../../lib/features";
+import { scoreVerdict } from "../../lib/score";
 
 // Step 4 · Preview & Submit.
 // Shows the auto-calculated preview score (from the same scoring model the
@@ -49,7 +50,7 @@ export default function StepPreviewSubmit({
           community verification queue.
         </p>
         <p className="mt-1 text-sm text-green-700">
-          Preview accessibility score: {result.previewScore}/100
+          Preview rating: {scoreVerdict(result.previewScore)?.label ?? "Not yet rated"}
         </p>
         <button
           type="button"
@@ -76,7 +77,7 @@ export default function StepPreviewSubmit({
 
       <div className="flex items-center justify-between rounded-xl bg-surface p-5 ring-1 ring-sand-200">
         <div>
-          <p className="text-sm text-ink-soft">Estimated accessibility score</p>
+          <p className="text-sm text-ink-soft">Estimated accessibility</p>
           <p className="text-xs text-ink-faint">
             Preview — updates as the community verifies features
           </p>
