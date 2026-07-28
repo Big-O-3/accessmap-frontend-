@@ -1,9 +1,7 @@
 import { useEffect, useReducer, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  detectionsToFeatures,
-  scoreFromDetections,
-} from "../lib/detect";
+import { detectionsToFeatures } from "../lib/detect";
+import { calculateAccessibilityScore } from "../lib/score";
 import {
   AuthError,
   submitContribution,
@@ -16,6 +14,7 @@ import Stepper from "../components/addVenue/Stepper";
 import StepFindVenue from "../components/addVenue/StepFindVenue";
 import StepUploadPhotos from "../components/addVenue/StepUploadPhotos";
 import StepReviewDetections from "../components/addVenue/StepReviewDetections";
+import StepManualChecklist from "../components/addVenue/StepManualChecklist";
 import StepPreviewSubmit from "../components/addVenue/StepPreviewSubmit";
 
 // Add Venue — the contributor flow (planning: add_venue_wireframe.md).
@@ -24,7 +23,21 @@ import StepPreviewSubmit from "../components/addVenue/StepPreviewSubmit";
 // runs directly against the Python ML service (see lib/detect.js) because photo
 // persistence on the Node backend requires auth the frontend doesn't have yet.
 
-const TOTAL_STEPS = 4;
+// The stepper has two shapes. The photo path runs the AI detection flow; the
+// manual path (only offered when adding to a venue that already exists) skips
+// photos entirely and confirms features from a checklist. Both share steps 1
+// and 2, so switching mode on step 2 keeps the current step valid.
+const STEP_FLOWS = {
+  photos: ["find", "upload", "review", "submit"],
+  manual: ["find", "checklist", "submit"],
+};
+const STEP_LABELS = {
+  find: "Venue",
+  upload: "Photos",
+  review: "AI Review",
+  checklist: "Checklist",
+  submit: "Submit",
+};
 
 // Key that uniquely identifies one detection within one photo.
 const detKey = (photoId, idx) => `${photoId}:${idx}`;
@@ -32,8 +45,14 @@ const detKey = (photoId, idx) => `${photoId}:${idx}`;
 const initialState = {
   step: 1,
   venue: null,
+  venueExisting: false, // true when the venue was chosen from search
+  // "photos": upload photos and let the AI detect features (the default, and the
+  // only path for a brand-new venue). "manual": for a venue that already exists,
+  // skip photos and confirm features from a quick checklist instead.
+  mode: "photos",
   photos: [], // { id, file, previewUrl, status, detections, altText, error }
   confirmed: {}, // { [detKey]: true }
+  manualFeatures: {}, // { [featureKey]: true } — checklist selections in manual mode
   note: "",
   submitState: "idle", // idle | submitting | done | error
   submitError: null,
@@ -43,7 +62,27 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case "SET_VENUE":
-      return { ...state, venue: action.venue };
+      // Changing the venue resets the contribution path, so a manual checklist
+      // picked for one venue doesn't carry over to another. `existing` is true
+      // when the venue was chosen from search (already in the system) — only
+      // then do we offer the skip-photos / manual-checklist path.
+      return {
+        ...state,
+        venue: action.venue,
+        venueExisting: !!action.existing,
+        mode: "photos",
+        manualFeatures: {},
+      };
+
+    case "SET_MODE":
+      return { ...state, mode: action.mode };
+
+    case "TOGGLE_MANUAL_FEATURE": {
+      const manualFeatures = { ...state.manualFeatures };
+      if (manualFeatures[action.key]) delete manualFeatures[action.key];
+      else manualFeatures[action.key] = true;
+      return { ...state, manualFeatures };
+    }
 
     case "ADD_PHOTOS":
       return { ...state, photos: [...state.photos, ...action.photos] };
@@ -137,7 +176,10 @@ function reducer(state, action) {
       return { ...state, note: action.note };
 
     case "NEXT":
-      return { ...state, step: Math.min(state.step + 1, TOTAL_STEPS) };
+      return {
+        ...state,
+        step: Math.min(state.step + 1, STEP_FLOWS[state.mode].length),
+      };
 
     case "BACK":
       return { ...state, step: Math.max(state.step - 1, 1) };
@@ -240,34 +282,47 @@ export default function AddVenuePage() {
     }
   }
 
+  const manual = state.mode === "manual";
+
+  // Features feeding the preview + submission come from whichever path is
+  // active: confirmed AI detections (photo mode) or the checklist (manual mode).
   const detections = confirmedDetections(state);
-  const features = detectionsToFeatures(detections);
-  const previewScore = scoreFromDetections(detections);
+  const features = manual
+    ? Object.keys(state.manualFeatures).map((type) => ({
+        type,
+        mlDetected: false, // contributor-confirmed, not ML — trusted at full weight
+        verifiedCount: 0,
+      }))
+    : detectionsToFeatures(detections);
+  const previewScore = calculateAccessibilityScore(features);
 
   async function handleSubmit() {
     dispatch({ type: "SUBMIT_START" });
     try {
-      // Persist the contributor's confirm/reject decisions on the already-
-      // stored detections (by DB id) before recording the contribution.
-      // Confirmed detections are marked verified; rejected ones are deleted, so
-      // only confirmed features feed the venue's score and photo evidence.
-      await Promise.all(
-        state.photos
-          .filter((p) => p.backendPhotoId && p.detections.length > 0)
-          .map((p) => {
-            const confirmedIds = [];
-            const rejectedIds = [];
-            p.detections.forEach((d, idx) => {
-              if (!d.id) return;
-              if (state.confirmed[detKey(p.id, idx)]) confirmedIds.push(d.id);
-              else rejectedIds.push(d.id);
-            });
-            return patchDetections(p.backendPhotoId, {
-              confirmed: confirmedIds,
-              rejected: rejectedIds,
-            });
-          }),
-      );
+      // Photo mode only: persist the contributor's confirm/reject decisions on
+      // the already-stored detections (by DB id) before recording the
+      // contribution. Confirmed detections are marked verified; rejected ones
+      // are deleted, so only confirmed features feed the score and photo
+      // evidence. Manual mode has no photos/detections, so this is skipped.
+      if (!manual) {
+        await Promise.all(
+          state.photos
+            .filter((p) => p.backendPhotoId && p.detections.length > 0)
+            .map((p) => {
+              const confirmedIds = [];
+              const rejectedIds = [];
+              p.detections.forEach((d, idx) => {
+                if (!d.id) return;
+                if (state.confirmed[detKey(p.id, idx)]) confirmedIds.push(d.id);
+                else rejectedIds.push(d.id);
+              });
+              return patchDetections(p.backendPhotoId, {
+                confirmed: confirmedIds,
+                rejected: rejectedIds,
+              });
+            }),
+        );
+      }
 
       const result = await submitContribution({
         venue: state.venue,
@@ -276,14 +331,18 @@ export default function AddVenuePage() {
         note: state.note,
       });
       // Record the contribution in this browser's activity feed so it shows on
-      // the dashboard (and counts toward the local contribution stat).
+      // the dashboard (and counts toward the local contribution stat). A
+      // note-only contribution (no features) gets its own wording.
       logActivity({
         type: "contributed",
         venueId: state.venue.id,
         venueName: state.venue.name,
-        detail: `Contributed ${features.length} feature${
-          features.length === 1 ? "" : "s"
-        } to ${state.venue.name}`,
+        detail:
+          features.length > 0
+            ? `Contributed ${features.length} feature${
+                features.length === 1 ? "" : "s"
+              } to ${state.venue.name}`
+            : `Added a note to ${state.venue.name}`,
       });
       dispatch({ type: "SUBMIT_SUCCESS", result });
     } catch (err) {
@@ -294,13 +353,20 @@ export default function AddVenuePage() {
     }
   }
 
+  // The step names for the active flow, and the name of the current step —
+  // used to pick which component to render and to gate the "next" action.
+  const flow = STEP_FLOWS[state.mode];
+  const stepName = flow[state.step - 1];
+  const totalSteps = flow.length;
+
   // Per-step gate for the primary "next" action.
   const canAdvance = {
-    1: !!state.venue,
-    2: state.photos.length > 0,
-    3: state.photos.some((p) => p.status === "done"),
-    4: features.length > 0,
-  }[state.step];
+    find: !!state.venue,
+    upload: state.photos.length > 0,
+    review: state.photos.some((p) => p.status === "done"),
+    checklist: features.length > 0 || state.note.trim().length > 0,
+    submit: features.length > 0 || state.note.trim().length > 0,
+  }[stepName];
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -311,29 +377,33 @@ export default function AddVenuePage() {
       </p>
 
       <div className="mt-6">
-        <Stepper current={state.step} />
+        <Stepper current={state.step} labels={flow.map((s) => STEP_LABELS[s])} />
       </div>
 
       <div className="mt-8">
-        {state.step === 1 && (
+        {stepName === "find" && (
           <StepFindVenue
             initialVenue={state.venue}
-            onVenue={(venue) => {
-              dispatch({ type: "SET_VENUE", venue });
+            onVenue={(venue, existing) => {
+              dispatch({ type: "SET_VENUE", venue, existing });
               dispatch({ type: "NEXT" });
             }}
           />
         )}
 
-        {state.step === 2 && (
+        {stepName === "upload" && (
           <StepUploadPhotos
             photos={state.photos}
             onAdd={addPhotos}
             onRemove={removePhoto}
+            // Only an existing venue can skip photos — a brand-new venue needs a
+            // photo to seed its first detections.
+            canSkip={state.venueExisting}
+            onSkip={() => dispatch({ type: "SET_MODE", mode: "manual" })}
           />
         )}
 
-        {state.step === 3 && (
+        {stepName === "review" && (
           <StepReviewDetections
             photos={state.photos}
             confirmed={state.confirmed}
@@ -345,7 +415,20 @@ export default function AddVenuePage() {
           />
         )}
 
-        {state.step === 4 && (
+        {stepName === "checklist" && (
+          <StepManualChecklist
+            venue={state.venue}
+            selected={state.manualFeatures}
+            onToggle={(key) =>
+              dispatch({ type: "TOGGLE_MANUAL_FEATURE", key })
+            }
+            onSwitchToPhotos={() =>
+              dispatch({ type: "SET_MODE", mode: "photos" })
+            }
+          />
+        )}
+
+        {stepName === "submit" && (
           <StepPreviewSubmit
             venue={state.venue}
             features={features}
@@ -364,33 +447,34 @@ export default function AddVenuePage() {
       </div>
 
       {/* Step navigation. Step 1 advances on venue-select; the final submit
-          lives inside Step 4, so the shared footer hides on those. */}
-      {state.step > 1 && !(state.step === 4 && state.submitState === "done") && (
-        <div className="mt-8 flex items-center justify-between border-t border-sand-200 pt-6">
-          <button
-            type="button"
-            onClick={() => dispatch({ type: "BACK" })}
-            className="rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-sand-100"
-          >
-            ← Back
-          </button>
-
-          {state.step < TOTAL_STEPS && (
+          lives inside the submit step, so the shared footer hides on those. */}
+      {state.step > 1 &&
+        !(stepName === "submit" && state.submitState === "done") && (
+          <div className="mt-8 flex items-center justify-between border-t border-sand-200 pt-6">
             <button
               type="button"
-              onClick={() => dispatch({ type: "NEXT" })}
-              disabled={!canAdvance}
-              className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200 disabled:text-ink-faint disabled:shadow-none"
+              onClick={() => dispatch({ type: "BACK" })}
+              className="rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-sand-100"
             >
-              {state.step === 2
-                ? "Analyze with AI →"
-                : state.step === 3
-                  ? "Next: Review →"
-                  : "Next →"}
+              ← Back
             </button>
-          )}
-        </div>
-      )}
+
+            {state.step < totalSteps && (
+              <button
+                type="button"
+                onClick={() => dispatch({ type: "NEXT" })}
+                disabled={!canAdvance}
+                className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200 disabled:text-ink-faint disabled:shadow-none"
+              >
+                {stepName === "upload"
+                  ? "Analyze with AI →"
+                  : stepName === "review"
+                    ? "Next: Review →"
+                    : "Next →"}
+              </button>
+            )}
+          </div>
+        )}
     </div>
   );
 }

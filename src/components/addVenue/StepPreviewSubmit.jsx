@@ -20,6 +20,8 @@ export default function StepPreviewSubmit({
   onSubmit,
   onViewVenue,
 }) {
+  // A contribution is submittable with at least one feature OR a written note.
+  const canSubmit = features.length > 0 || note.trim().length > 0;
   const successHeadingRef = useRef(null);
 
   // Move focus to the success heading when submission completes so screen-reader
@@ -44,10 +46,19 @@ export default function StepPreviewSubmit({
           Contribution submitted
         </p>
         <p className="mt-2 text-sm text-green-700">
-          Your {result.featuresConfirmed} confirmed feature
-          {result.featuresConfirmed === 1 ? "" : "s"} for{" "}
-          <span className="font-medium">{venue?.name}</span> entered the
-          community verification queue.
+          {result.featuresConfirmed > 0 ? (
+            <>
+              Your {result.featuresConfirmed} confirmed feature
+              {result.featuresConfirmed === 1 ? "" : "s"} for{" "}
+              <span className="font-medium">{venue?.name}</span> entered the
+              community verification queue.
+            </>
+          ) : (
+            <>
+              Your note for{" "}
+              <span className="font-medium">{venue?.name}</span> was recorded.
+            </>
+          )}
         </p>
         <p className="mt-1 text-sm text-green-700">
           Preview rating: {scoreVerdict(result.previewScore)?.label ?? "Not yet rated"}
@@ -91,8 +102,8 @@ export default function StepPreviewSubmit({
         </h3>
         {features.length === 0 ? (
           <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-600/20">
-            No features confirmed yet. Go back to the AI review step and confirm
-            at least one detection before submitting.
+            No features selected. Go back to add at least one feature, or leave a
+            note below describing this venue before submitting.
           </p>
         ) : (
           <ul className="mt-2 flex flex-wrap gap-2">
@@ -126,7 +137,7 @@ export default function StepPreviewSubmit({
       </div>
 
       <p className="rounded-lg bg-sand-100 px-3 py-2 text-xs text-ink-soft">
-        Your photos will enter the community verification queue. Features are
+        Your contribution enters the community verification queue. Features are
         confirmed by the community before they count toward the official score.
       </p>
 
@@ -142,7 +153,7 @@ export default function StepPreviewSubmit({
       <button
         type="button"
         onClick={onSubmit}
-        disabled={submitState === "submitting" || features.length === 0}
+        disabled={submitState === "submitting" || !canSubmit}
         className="w-full rounded-md bg-brand-600 px-4 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200"
       >
         {submitState === "submitting"

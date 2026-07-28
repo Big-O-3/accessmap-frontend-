@@ -24,8 +24,9 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
   const [mode, setMode] = useState(initialVenue ? "selected" : "search");
   const [selected, setSelected] = useState(initialVenue ?? null);
 
-  // Create-form fields. latitude/longitude are required by the backend, so we
-  // capture them explicitly (browser geolocation or manual entry).
+  // Create-form fields. latitude/longitude are optional — capturing them (via
+  // browser geolocation or manual entry) pins the venue on the map, but a venue
+  // can be created without them.
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -77,7 +78,9 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
 
   function chooseExisting(venue) {
     setSelected(venue);
-    onVenue(venue);
+    // Second arg flags this as an already-existing venue, so the flow can offer
+    // the skip-photos / manual-checklist path.
+    onVenue(venue, true);
   }
 
   function useMyLocation() {
@@ -107,13 +110,24 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
     e.preventDefault();
     setError(null);
 
-    // The backend requires numeric coordinates; guard before the request so the
-    // user gets clear guidance instead of a generic 400.
-    const latitude = parseFloat(form.latitude);
-    const longitude = parseFloat(form.longitude);
-    if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
-      setError("Add the venue's location — use “Use my location” or enter coordinates.");
+    // Coordinates are optional. If given they must be valid numbers (so a
+    // half-typed coordinate isn't sent as NaN); if left blank the venue is
+    // created without a map location.
+    const hasLat = form.latitude !== "";
+    const hasLng = form.longitude !== "";
+    if (hasLat !== hasLng) {
+      setError("Enter both latitude and longitude, or leave both blank.");
       return;
+    }
+    let latitude = null;
+    let longitude = null;
+    if (hasLat && hasLng) {
+      latitude = parseFloat(form.latitude);
+      longitude = parseFloat(form.longitude);
+      if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+        setError("Latitude and longitude must be valid numbers.");
+        return;
+      }
     }
 
     setCreating(true);
@@ -324,10 +338,14 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
           </select>
         </div>
 
-        {/* Location — required by the backend. Geolocation button plus manual
-            entry so keyboard users and desktops without GPS have a path. */}
+        {/* Location — optional. Adding it pins the venue on the map; without it
+            the venue is still created (just not shown on the map). Geolocation
+            button plus manual entry so keyboard users and desktops without GPS
+            have a path. */}
         <fieldset>
-          <legend className="text-sm font-medium text-ink-soft">Location</legend>
+          <legend className="text-sm font-medium text-ink-soft">
+            Location <span className="font-normal text-ink-faint">(optional)</span>
+          </legend>
           <div className="mt-1 flex items-center gap-2">
             <button
               type="button"
@@ -392,9 +410,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
 
         <button
           type="submit"
-          disabled={
-            creating || !form.name || !form.address || !form.city || !hasCoords
-          }
+          disabled={creating || !form.name || !form.address || !form.city}
           className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200"
         >
           {creating ? "Creating…" : "Create venue & continue"}

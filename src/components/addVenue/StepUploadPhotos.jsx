@@ -5,7 +5,13 @@ import { useRef, useState } from "react";
 // File objects (the frontend has no auth to persist them yet); each carries an
 // object-URL preview. Drag-and-drop plus an explicit button path for keyboard
 // and screen-reader users (the dropzone is not the only way in).
-export default function StepUploadPhotos({ photos, onAdd, onRemove }) {
+export default function StepUploadPhotos({
+  photos,
+  onAdd,
+  onRemove,
+  canSkip = false,
+  onSkip,
+}) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -71,6 +77,22 @@ export default function StepUploadPhotos({ photos, onAdd, onRemove }) {
         />
         <p className="mt-2 text-xs text-ink-faint">JPG or PNG, up to 10MB each.</p>
       </div>
+
+      {/* This venue already exists, so a photo is optional — offer a no-photo
+          path that records accessibility features from a quick checklist. */}
+      {canSkip && (
+        <p className="text-center text-sm text-ink-soft">
+          Don&apos;t have a photo?{" "}
+          <button
+            type="button"
+            onClick={onSkip}
+            className="font-medium text-link hover:underline"
+          >
+            Skip and fill a checklist instead
+          </button>
+          .
+        </p>
+      )}
 
       {photos.length > 0 && (
         <div>

@@ -1,14 +1,13 @@
 // Progress stepper for the Add Venue flow. Purely presentational — the current
 // step lives in the page's reducer. Rendered as an ordered list so screen
-// readers announce "step N of 4" and the current step is marked aria-current.
-const STEPS = [
-  { n: 1, label: "Venue" },
-  { n: 2, label: "Photos" },
-  { n: 3, label: "AI Review" },
-  { n: 4, label: "Submit" },
-];
+// readers announce "step N of M" and the current step is marked aria-current.
+// `labels` is the ordered list of step names for the active flow (the photo
+// path and the manual-checklist path have different steps), defaulting to the
+// photo path.
+const DEFAULT_LABELS = ["Venue", "Photos", "AI Review", "Submit"];
 
-export default function Stepper({ current }) {
+export default function Stepper({ current, labels = DEFAULT_LABELS }) {
+  const STEPS = labels.map((label, i) => ({ n: i + 1, label }));
   return (
     <nav aria-label="Progress">
       <ol className="flex items-center justify-between gap-1 sm:gap-2">

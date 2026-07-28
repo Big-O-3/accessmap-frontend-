@@ -145,8 +145,10 @@ export async function createVenue(input) {
 // `accessibilityScore`, which we surface under the same key.
 export async function submitContribution({ venue, features, previewScore, note, photos }) {
   if (!venue?.id) throw new Error("A venue is required.");
-  if (!features?.length) {
-    throw new Error("Confirm at least one detected feature before submitting.");
+  // A contribution needs to say something: confirmed features (from AI review or
+  // a manual checklist) or a written note. The backend enforces the same rule.
+  if (!features?.length && !note?.trim()) {
+    throw new Error("Confirm at least one feature or add a note before submitting.");
   }
 
   const data = await request("/api/contributions", {
