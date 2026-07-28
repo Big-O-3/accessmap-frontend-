@@ -9,6 +9,7 @@ import DetectionImage from "../components/DetectionImage";
 
 export default function VenueDetailPage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [venue, setVenue] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,19 @@ export default function VenueDetailPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {venue.photos.map((photo) => (
-              <DetectionImage key={photo.id} photo={photo} />
+              <DetectionImage
+                key={photo.id}
+                photo={photo}
+                // Only the uploader sees a delete control; the backend
+                // re-checks ownership regardless.
+                canDelete={!!user && photo.userId === user.id}
+                onDelete={(photoId) =>
+                  setVenue((prev) => ({
+                    ...prev,
+                    photos: prev.photos.filter((p) => p.id !== photoId),
+                  }))
+                }
+              />
             ))}
           </div>
         </section>
