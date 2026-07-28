@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DetectionImage from "../components/DetectionImage";
-import ScoreBadge from "../components/ScoreBadge";
 import CameraCapture from "../components/CameraCapture";
 import PlaceAutocomplete from "../components/PlaceAutocomplete";
+import ScanningOverlay from "../components/ScanningOverlay";
 import {
   analyzeImage,
   featureChecklist,
-  scoreFromDetections,
   summarizeAccessibility,
 } from "../lib/detect";
 import { saveAnalyzedVenue } from "../lib/api";
@@ -51,6 +50,22 @@ export default function AnalyzePage() {
   // coordinates — that's where the venue actually is, not where the phone is.
   const [pickedPlace, setPickedPlace] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
+  // The contributor's confirm/reject decision per detected feature, keyed by
+  // feature key ({ entrance_detected: true }). AI detections are a starting
+  // point — the user has the final say, exactly like the Add-Venue review step.
+  // High-confidence hits start checked; "likely" ones start unchecked so the
+  // user opts in. Everything downstream (score, verdict, counts, the boxes on
+  // the photo, and the save) reads from this set, not the raw ML output.
+  const [confirmed, setConfirmed] = useState({});
+
+  function toggleFeature(key) {
+    setConfirmed((prev) => {
+      const next = { ...prev };
+      if (next[key]) delete next[key];
+      else next[key] = true;
+      return next;
+    });
+  }
 
   // Get the browser's current position as a Promise.
   function getPosition() {
@@ -87,7 +102,8 @@ export default function AnalyzePage() {
         name: venueName.trim(),
         lat: coords.lat,
         lng: coords.lng,
-        detections,
+        // Save only what the contributor confirmed, not every raw detection.
+        detections: confirmedDetections,
       });
       navigate("/search");
     } catch (err) {
@@ -103,10 +119,20 @@ export default function AnalyzePage() {
     setPreviewUrl(URL.createObjectURL(file));
     setResult(null);
     setError(null);
+    setConfirmed({}); // clear a prior photo's decisions
     setStatus("loading");
 
     try {
       const data = await analyzeImage(file);
+      // Pre-confirm high-confidence detections (matching Add-Venue's behavior);
+      // "likely" ones are shown unchecked so the user consciously confirms them.
+      const initial = {};
+      for (const d of data.detections ?? []) {
+        if (d.highConfidence ?? d.confidence >= 0.85) {
+          initial[d.accessibilityFeature] = true;
+        }
+      }
+      setConfirmed(initial);
       setResult(data);
       setStatus("done");
     } catch (err) {
@@ -116,17 +142,34 @@ export default function AnalyzePage() {
   }
 
   const detections = result?.detections ?? [];
-  const summary = result ? summarizeAccessibility(detections) : null;
-  const score = result ? scoreFromDetections(detections) : null;
+  // Only the detections whose feature the contributor has confirmed. The score,
+  // verdict, counts, and the save all flow from this set — unchecking a feature
+  // takes it out of every one of them, so the preview reflects the user's call,
+  // not just the model's.
+  const confirmedDetections = detections.filter(
+    (d) => confirmed[d.accessibilityFeature],
+  );
+  const summary = result ? summarizeAccessibility(confirmedDetections) : null;
+  // The checklist still lists every feature (so the user sees what was and
+  // wasn't detected); the detected rows carry a checkbox driven by `confirmed`.
   const checklist = result ? featureChecklist(detections) : [];
   const totalAccessibleFeatures = checklist.filter(
     (row) => row.status !== "barrier" && row.key !== "stairs_present",
   ).length;
-  const detectedAccessibleCount = checklist.filter((row) => row.status === "yes").length;
-  const barrierCount = checklist.filter((row) => row.status === "barrier").length;
+  const confirmedAccessibleCount = checklist.filter(
+    (row) => row.status === "yes" && confirmed[row.key],
+  ).length;
+  const barrierCount = checklist.filter(
+    (row) => row.status === "barrier" && confirmed[row.key],
+  ).length;
 
-  // A photo object in the shape DetectionImage expects.
-  const photo = previewUrl ? { imageUrl: previewUrl, detections } : null;
+  // A photo object in the shape DetectionImage expects. Only confirmed
+  // detections get boxes — unchecking a feature in the checklist removes its
+  // box from the photo too, so the overlay always matches what the user has
+  // agreed the AI got right.
+  const photo = previewUrl
+    ? { imageUrl: previewUrl, detections: confirmedDetections }
+    : null;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
@@ -187,9 +230,12 @@ export default function AnalyzePage() {
       )}
 
       {status === "loading" && (
-        <p className="mt-8 text-center text-ink-soft" role="status">
-          Analyzing photo… this can take a few seconds.
-        </p>
+        <div className="mt-8">
+          <ScanningOverlay
+            imageUrl={previewUrl}
+            label="Analyzing photo… this can take a few seconds."
+          />
+        </div>
       )}
 
       {status === "error" && (
@@ -231,80 +277,105 @@ export default function AnalyzePage() {
             </div>
           )}
 
-          {/* Overall verdict — the "degree of accessibility" at a glance. */}
+          {/* Overall verdict — the "degree of accessibility" at a glance. This
+              plain-language verdict IS the main rating shown to the user; the
+              numeric score still exists under the hood (drives search, the map
+              pins, and what the backend stores) but is never surfaced here. */}
           <div
             className={`rounded-xl p-5 ring-1 ${VERDICTS[summary.level].className}`}
           >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-lg font-bold">{VERDICTS[summary.level].text}</p>
-                <p className="mt-1 text-sm opacity-90">
-                  {VERDICTS[summary.level].detail}
-                </p>
-                {/* Plain-English count so the "degree" is spelled out, not just a number. */}
-                <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">
-                  {detectedAccessibleCount} of {totalAccessibleFeatures} accessible
-                  features detected
-                  {barrierCount > 0
-                    ? ` · ${barrierCount} barrier${barrierCount > 1 ? "s" : ""}`
-                    : ""}
-                </p>
-              </div>
-              <ScoreBadge score={score} size="lg" />
-            </div>
+            <p className="text-lg font-bold">{VERDICTS[summary.level].text}</p>
+            <p className="mt-1 text-sm opacity-90">
+              {VERDICTS[summary.level].detail}
+            </p>
+            {/* Plain-English count so the "degree" is spelled out. */}
+            <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">
+              {confirmedAccessibleCount} of {totalAccessibleFeatures} accessible
+              features confirmed
+              {barrierCount > 0
+                ? ` · ${barrierCount} barrier${barrierCount > 1 ? "s" : ""}`
+                : ""}
+            </p>
           </div>
 
           {/* The photo with bounding boxes drawn over detections. */}
           <DetectionImage photo={photo} />
 
           {/* One unified checklist so the user sees every feature we checked
-              for, not just the ones we found. Yes / Not detected / Barrier is
-              easier to scan than two separate lists with confidence percents. */}
+              for, not just the ones we found. Detected features (Yes / barrier)
+              carry a checkbox — the contributor confirms or unchecks each one,
+              and the score + verdict + what gets saved all follow. Features that
+              weren't detected are shown but aren't checkable (there's nothing to
+              confirm). */}
           <div className="rounded-xl bg-surface ring-1 ring-sand-200">
             <h2 className="border-b border-sand-100 px-4 py-3 text-sm font-semibold text-ink">
               Accessibility checklist
             </h2>
+            <p className="border-b border-sand-100 px-4 py-2 text-xs text-ink-soft">
+              Uncheck anything the AI got wrong — you have the final say. Only
+              confirmed features count toward the score and get saved.
+            </p>
             <ul className="divide-y divide-sand-100">
-              {checklist.map((row) => (
-                <li
-                  key={row.key}
-                  className="flex items-center justify-between gap-3 px-4 py-3"
-                >
-                  <span className="flex items-center gap-2 text-sm font-medium text-ink">
-                    {row.status === "yes" && (
-                      <span className="text-green-600" aria-hidden>✓</span>
-                    )}
-                    {row.status === "barrier" && (
-                      <span className="text-red-600" aria-hidden>⚠</span>
-                    )}
-                    {row.status === "not-detected" && (
-                      <span className="text-ink-faint" aria-hidden>—</span>
-                    )}
-                    {row.label}
-                  </span>
-                  {row.status === "yes" && (
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                        row.highConfidence
-                          ? "bg-green-100 text-green-800"
-                          : "bg-amber-100 text-amber-800"
-                      }`}
+              {checklist.map((row) => {
+                const detected = row.status === "yes" || row.status === "barrier";
+                const isChecked = !!confirmed[row.key];
+                const inputId = `confirm-${row.key}`;
+
+                // Not-detected rows have nothing to confirm — render them as a
+                // plain, non-interactive row so the user still sees we looked.
+                if (!detected) {
+                  return (
+                    <li
+                      key={row.key}
+                      className="flex items-center justify-between gap-3 px-4 py-3"
                     >
-                      {row.highConfidence ? "Yes" : "Likely — verify"}
-                    </span>
-                  )}
-                  {row.status === "barrier" && (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
-                      Present
-                    </span>
-                  )}
-                  {row.status === "not-detected" && (
-                    <span className="text-xs font-semibold text-ink-faint">
-                      Not detected
-                    </span>
-                  )}
-                </li>
-              ))}
+                      <span className="flex items-center gap-2 text-sm font-medium text-ink-faint">
+                        <span aria-hidden>—</span>
+                        {row.label}
+                      </span>
+                      <span className="text-xs font-semibold text-ink-faint">
+                        Not detected
+                      </span>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={row.key}>
+                    <label
+                      htmlFor={inputId}
+                      className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3"
+                    >
+                      <span className="flex items-center gap-3 text-sm font-medium text-ink">
+                        <input
+                          id={inputId}
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleFeature(row.key)}
+                          className="h-4 w-4 rounded border-sand-200 text-brand-600 focus:ring-brand-500"
+                        />
+                        {row.label}
+                      </span>
+                      {row.status === "yes" && (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                            row.highConfidence
+                              ? "bg-green-100 text-green-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {row.highConfidence ? "Detected" : "Likely — verify"}
+                        </span>
+                      )}
+                      {row.status === "barrier" && (
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
+                          Barrier detected
+                        </span>
+                      )}
+                    </label>
+                  </li>
+                );
+              })}
             </ul>
             <p className="border-t border-sand-100 px-4 py-3 text-xs text-ink-soft">
               &ldquo;Not detected&rdquo; means we didn&apos;t see it in this photo
