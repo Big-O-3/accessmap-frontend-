@@ -1,10 +1,18 @@
 import { useSaveVenue } from "../hooks/useUserData";
+import { useAuth } from "../context/useAuth";
 
 // Toggle a venue in the browser's saved list. Used on venue cards and the
 // venue detail page. A real <button> with an accessible label and aria-pressed
 // so screen-reader users hear the saved/not-saved state (not color/icon only).
+//
+// Saving is only offered to signed-in users: with no session we render nothing
+// at all, so a signed-out visitor never sees the option. (The saved list lives
+// per-browser, but it's a signed-in feature that surfaces on the dashboard.)
 export default function SaveButton({ venue, size = "md" }) {
+  const { user } = useAuth();
   const { saved, toggle } = useSaveVenue(venue);
+
+  if (!user) return null;
 
   const sizes = {
     sm: "text-xs px-2 py-1",
