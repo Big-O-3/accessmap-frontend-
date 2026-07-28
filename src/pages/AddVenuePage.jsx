@@ -252,6 +252,15 @@ export default function AddVenuePage() {
   function removePhoto(id) {
     const photo = state.photos.find((p) => p.id === id);
     if (photo?.previewUrl) URL.revokeObjectURL(photo.previewUrl);
+    // If this photo was already uploaded (analyzed successfully), it exists on
+    // the venue server-side. Removing it from the flow has to delete that row
+    // too, or a photo the contributor discarded would linger on the venue —
+    // the same "error but it's still there" surprise, via the remove path.
+    // Best-effort and fire-and-forget: the row is the user's own, and the UI
+    // removal shouldn't block on the network.
+    if (photo?.backendPhotoId) {
+      deletePhoto(photo.backendPhotoId).catch(() => {});
+    }
     dispatch({ type: "REMOVE_PHOTO", id });
   }
 
