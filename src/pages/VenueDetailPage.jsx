@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getVenue, createReview } from "../lib/api";
+import { getVenue, createReview, deleteReview } from "../lib/api";
 import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY } from "../lib/features";
 import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
@@ -106,12 +106,15 @@ export default function VenueDetailPage() {
         venueId={venue.id ?? id}
         reviews={reviews}
         onAdd={(review) => setReviews((prev) => [review, ...prev])}
+        onDelete={(reviewId) =>
+          setReviews((prev) => prev.filter((r) => r.id !== reviewId))
+        }
       />
     </div>
   );
 }
 
-function ReviewsSection({ venueId, reviews, onAdd }) {
+function ReviewsSection({ venueId, reviews, onAdd, onDelete }) {
   const { user } = useAuth();
 
   return (
@@ -131,7 +134,7 @@ function ReviewsSection({ venueId, reviews, onAdd }) {
         </p>
       )}
 
-      <ReviewList reviews={reviews} />
+      <ReviewList reviews={reviews} currentUserId={user?.id} onDelete={onDelete} />
     </section>
   );
 }
@@ -293,38 +296,75 @@ function FeatureBreakdown({ features }) {
   );
 }
 
-function ReviewList({ reviews = [] }) {
+function ReviewList({ reviews = [], currentUserId, onDelete }) {
   if (reviews.length === 0) {
     return <p className="text-sm text-ink-soft">No reviews yet.</p>;
   }
   return (
     <div className="space-y-4">
       {reviews.map((review) => (
-        <article
+        <ReviewItem
           key={review.id}
-          className="rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm"
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-ink">{review.userName}</span>
-            <span
-              className="text-accent-500"
-              aria-label={`${review.rating} out of 5 stars`}
-            >
-              {"★".repeat(review.rating)}
-              <span className="text-sand-200">{"★".repeat(5 - review.rating)}</span>
-            </span>
-          </div>
-          <p className="mt-2 text-sm text-ink-soft leading-relaxed">
-            {review.comment}
-          </p>
-          <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
-            {review.visitDate && (
-              <span>Visited {new Date(review.visitDate).toLocaleDateString()}</span>
-            )}
-            <span>{review.helpfulCount ?? 0} found helpful</span>
-          </div>
-        </article>
+          review={review}
+          // Only the author sees a delete control; the backend re-checks
+          // ownership regardless, so this is purely to hide the affordance.
+          canDelete={!!currentUserId && review.userId === currentUserId}
+          onDelete={onDelete}
+        />
       ))}
     </div>
+  );
+}
+
+function ReviewItem({ review, canDelete, onDelete }) {
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleDelete() {
+    if (!window.confirm("Delete this review? This can't be undone.")) return;
+    setError(null);
+    setDeleting(true);
+    try {
+      await deleteReview(review.id);
+      onDelete?.(review.id);
+    } catch (err) {
+      setError(err.message);
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <article className="rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <span className="font-semibold text-ink">{review.userName}</span>
+        <span
+          className="text-accent-500"
+          aria-label={`${review.rating} out of 5 stars`}
+        >
+          {"★".repeat(review.rating)}
+          <span className="text-sand-200">{"★".repeat(5 - review.rating)}</span>
+        </span>
+      </div>
+      <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+        {review.comment}
+      </p>
+      <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
+        {review.visitDate && (
+          <span>Visited {new Date(review.visitDate).toLocaleDateString()}</span>
+        )}
+        <span>{review.helpfulCount ?? 0} found helpful</span>
+        {canDelete && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="ml-auto font-medium text-red-600 hover:underline disabled:opacity-50"
+          >
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
+        )}
+      </div>
+      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+    </article>
   );
 }
