@@ -154,8 +154,11 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       >
         <p className="font-medium">Couldn&apos;t analyze this photo.</p>
         <p className="mt-1">{photo.error}</p>
+        {/* Reassure the contributor that the failed analysis left nothing
+            behind — the photo is rolled back on failure (see analyzePhoto). */}
         <p className="mt-1 text-xs text-red-600">
-          Make sure the backend and ML service are reachable.
+          This photo wasn&apos;t saved to the venue. Make sure the backend and
+          ML service are reachable, then retry.
         </p>
         <button
           type="button"
