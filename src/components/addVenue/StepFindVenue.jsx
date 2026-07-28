@@ -11,6 +11,7 @@ const CATEGORIES = [
   "restaurant",
   "library",
   "museum",
+  "concert_venue",
   "market",
   "park",
   "store",
@@ -332,7 +333,9 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c} className="capitalize">
-                {c}
+                {/* Show multi-word keys like "concert_venue" as "Concert Venue"
+                    (the underscore is the stored value; spaces read nicely). */}
+                {c.replace(/_/g, " ")}
               </option>
             ))}
           </select>
