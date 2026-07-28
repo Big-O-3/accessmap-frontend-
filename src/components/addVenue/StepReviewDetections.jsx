@@ -20,11 +20,16 @@ export default function StepReviewDetections({
 }) {
   const [active, setActive] = useState(0);
 
-  // Trigger analysis for any photo that hasn't been analyzed yet, once.
+  // Analyze photos ONE AT A TIME, not all at once. The ML service runs a single
+  // inference near the memory ceiling of its instance, so firing every pending
+  // photo concurrently used to OOM-kill it (a 502 to the user). We kick off the
+  // next pending photo only when nothing else is currently analyzing; each
+  // completion re-runs this effect and starts the following one.
   useEffect(() => {
-    for (const photo of photos) {
-      if (photo.status === "pending") onAnalyze(photo.id);
-    }
+    const inFlight = photos.some((p) => p.status === "analyzing");
+    if (inFlight) return;
+    const next = photos.find((p) => p.status === "pending");
+    if (next) onAnalyze(next.id);
     // We intentionally depend only on the set of photo ids/statuses.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photos.map((p) => `${p.id}:${p.status}`).join(",")]);
