@@ -93,6 +93,20 @@ export async function createReview({ venueId, rating, comment, visitDate }) {
   });
 }
 
+// DELETE /api/reviews/:id — remove one of your own reviews (requires sign-in).
+// The backend rejects (403) anything that isn't the signed-in user's review.
+export async function deleteReview(reviewId) {
+  if (!reviewId) throw new Error("A review is required.");
+  return request(`/api/reviews/${reviewId}`, { method: "DELETE" });
+}
+
+// DELETE /api/photos/:id — remove one of your own photos (requires sign-in).
+// The backend rejects (403) anything that isn't the signed-in user's photo.
+export async function deletePhoto(photoId) {
+  if (!photoId) throw new Error("A photo is required.");
+  return request(`/api/photos/${photoId}`, { method: "DELETE" });
+}
+
 // Recommended venues for the dashboard. There's no dedicated recommendations
 // endpoint yet, so this reuses venue search: nearest-first when a location is
 // given, else highest-scored. Each result carries a plain-English `reason`.
