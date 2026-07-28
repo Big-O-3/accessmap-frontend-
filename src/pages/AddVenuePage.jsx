@@ -8,6 +8,7 @@ import {
   uploadPhoto,
   analyzeUploadedPhoto,
   patchDetections,
+  deletePhoto,
 } from "../lib/api";
 import { logActivity } from "../lib/userData";
 import Stepper from "../components/addVenue/Stepper";
@@ -109,9 +110,10 @@ function reducer(state, action) {
       };
 
     case "PHOTO_UPLOADED":
-      // Record the backend photo id as soon as upload succeeds, so a later
-      // analyze failure + retry re-analyzes the SAME photo instead of
-      // re-uploading it (which would duplicate the Cloudinary asset + row).
+      // Record the backend photo id as soon as upload succeeds so the analyze
+      // call (and, if it fails, the rollback in analyzePhoto) can reference the
+      // persisted row. On failure the id is cleared again (see ANALYZE_ERROR),
+      // so a retry re-uploads rather than pointing at a deleted row.
       return {
         ...state,
         photos: state.photos.map((p) =>
@@ -159,6 +161,10 @@ function reducer(state, action) {
                 // say "sign in again" instead of "check the ML service".
                 authError: action.authError,
                 detections: [],
+                // The persisted photo was rolled back on failure (see
+                // analyzePhoto), so drop the stale id — a retry must re-upload
+                // rather than analyze a row that no longer exists.
+                backendPhotoId: null,
               }
             : p,
         ),
@@ -253,15 +259,15 @@ export default function AddVenuePage() {
     const photo = state.photos.find((p) => p.id === id);
     if (!photo || !photo.file) return;
     dispatch({ type: "ANALYZE_START", id });
+    // Tracks the persisted photo across the two server calls so a failure after
+    // upload can roll it back. Starts from any id a prior successful upload set.
+    let backendPhotoId = photo.backendPhotoId;
     try {
       // Upload to Cloudinary (once), then analyze the stored photo so Photo +
       // Detection rows persist and detections carry DB ids.
-      let backendPhotoId = photo.backendPhotoId;
       if (!backendPhotoId) {
         const uploaded = await uploadPhoto(state.venue.id, photo.file);
         backendPhotoId = uploaded.id;
-        // Persist the id immediately so a subsequent analyze failure + retry
-        // does not upload the same photo a second time.
         dispatch({ type: "PHOTO_UPLOADED", id, backendPhotoId });
       }
       const data = await analyzeUploadedPhoto(backendPhotoId);
@@ -273,6 +279,20 @@ export default function AddVenuePage() {
         altText: data.altTextSuggestion ?? null,
       });
     } catch (err) {
+      // The photo is persisted the moment upload succeeds — before analysis
+      // runs. If analysis then fails, that photo would otherwise stay on the
+      // venue even though the contributor only ever saw an error. Roll it back
+      // so a failed analysis leaves nothing behind; ANALYZE_ERROR clears its id
+      // so a retry re-uploads cleanly. Best-effort: if cleanup fails too (e.g.
+      // the same dead session that failed analysis), there's nothing more we
+      // can safely do from the client — the error message below still informs.
+      if (backendPhotoId) {
+        try {
+          await deletePhoto(backendPhotoId);
+        } catch {
+          // ignore — leave the ANALYZE_ERROR dispatch to inform the user
+        }
+      }
       dispatch({
         type: "ANALYZE_ERROR",
         id,
