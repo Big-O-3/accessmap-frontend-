@@ -61,7 +61,10 @@ export default function HomePage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by city…"
-              className="flex-1 rounded-xl border border-sand-200 px-4 py-3 text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
+              /* The form sits on a fixed white card, so use fixed dark text and
+                 placeholder here — NOT the adaptive `text-ink`/`text-ink-faint`
+                 tokens, which turn silver in dark mode and vanish on white. */
+              className="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
             />
             <button
               type="submit"

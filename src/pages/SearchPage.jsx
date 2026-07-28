@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { searchVenues } from "../lib/api";
 import FilterPanel from "../components/FilterPanel";
 import VenueCard from "../components/VenueCard";
@@ -10,7 +11,10 @@ export default function SearchPage() {
   // list/map are geographically coherent instead of sorted by raw score.
   const SF_CENTER = { lat: 37.7793, lng: -122.4193 };
 
-  const [city, setCity] = useState("");
+  // Seed the city from the URL (?city=…) so the home-page search box carries
+  // its value over and shows up pre-filled in the search bar here.
+  const [searchParams] = useSearchParams();
+  const [city, setCity] = useState(() => searchParams.get("city") ?? "");
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [location, setLocation] = useState(null); // real GPS location { lat, lng }
   const [venues, setVenues] = useState([]);
