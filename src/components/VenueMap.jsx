@@ -31,10 +31,16 @@ function Recenter({ center }) {
 }
 
 export default function VenueMap({ venues, center, activeId, onSelect }) {
+  // Only venues with coordinates can be placed on the map. Venues added without
+  // a location are still listed elsewhere; they just don't get a pin here.
+  const mappable = venues.filter(
+    (v) => v.latitude != null && v.longitude != null,
+  );
+
   const mapCenter = center
     ? [center.lat, center.lng]
-    : venues[0]
-      ? [venues[0].latitude, venues[0].longitude]
+    : mappable[0]
+      ? [mappable[0].latitude, mappable[0].longitude]
       : DEFAULT_CENTER;
 
   return (
@@ -50,7 +56,7 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
       />
       <Recenter center={center ? [center.lat, center.lng] : null} />
 
-      {venues.map((venue) => {
+      {mappable.map((venue) => {
         const active = venue.id === activeId;
         const color =
           venue.accessibilityScore == null

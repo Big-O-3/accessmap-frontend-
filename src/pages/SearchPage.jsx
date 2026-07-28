@@ -84,12 +84,16 @@ export default function SearchPage() {
   const visibleVenues = venues.slice(0, visibleCount);
   const hasMore = visibleCount < venues.length;
 
-  // Center the map on the visitor's real location, else the nearest venue,
-  // else downtown SF as a last resort.
+  // Center the map on the visitor's real location, else the nearest venue that
+  // actually has coordinates, else downtown SF as a last resort. (Venues added
+  // without a location have null coords and can't anchor the map.)
+  const firstMappable = venues.find(
+    (v) => v.latitude != null && v.longitude != null,
+  );
   const mapCenter =
     location ??
-    (venues[0]
-      ? { lat: venues[0].latitude, lng: venues[0].longitude }
+    (firstMappable
+      ? { lat: firstMappable.latitude, lng: firstMappable.longitude }
       : SF_CENTER);
 
   return (
