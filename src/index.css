@@ -166,3 +166,55 @@ h3 {
     display: none;
   }
 }
+
+/* ---- AI scan animation ----------------------------------------------------
+   Loading state for photo analysis (ScanningOverlay.jsx). A bright line sweeps
+   the photo top→bottom while the ML service examines it, and the status label
+   pulses. Sits on top of a real photograph, so these use fixed black/white
+   rather than theme tokens — they must read the same in light and dark. */
+@keyframes scan-sweep {
+  0% {
+    top: -10%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+.animate-scan-sweep {
+  animation: scan-sweep 2.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes scan-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.animate-scan-pulse {
+  animation: scan-pulse 1.6s ease-in-out infinite;
+}
+
+/* Reduced motion: hold the scan line at rest across the middle and stop the
+   pulse, so the state still reads as "analyzing" without any movement. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scan-sweep {
+    animation: none;
+    top: 50%;
+    opacity: 1;
+  }
+  .animate-scan-pulse {
+    animation: none;
+    opacity: 1;
+  }
+}

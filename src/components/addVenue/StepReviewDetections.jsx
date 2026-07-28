@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DetectionImage from "../DetectionImage";
+import ScanningOverlay from "../ScanningOverlay";
 import { featureLabel } from "../../lib/features";
 
 // Step 3 · AI Detection Review (the primary ML feature).
@@ -91,12 +92,10 @@ export default function StepReviewDetections({
 function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
   if (photo.status === "analyzing" || photo.status === "pending") {
     return (
-      <div
-        className="rounded-xl bg-surface p-8 text-center text-sm text-ink-soft ring-1 ring-sand-200"
-        role="status"
-      >
-        Analyzing photo… this can take a few seconds.
-      </div>
+      <ScanningOverlay
+        imageUrl={photo.previewUrl}
+        label="Analyzing photo… this can take a few seconds."
+      />
     );
   }
 
