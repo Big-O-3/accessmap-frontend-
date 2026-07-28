@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Step 2 · Upload Photos.
 // No manual tagging — that's the AI's job in Step 3. Photos are held locally as
@@ -14,6 +14,23 @@ export default function StepUploadPhotos({
 }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
+
+  // Safety net for a missed drop. Without this, dropping a photo anywhere
+  // OUTSIDE the dashed box makes the browser open the image as a new page,
+  // which throws away the whole in-progress Add Venue session. Blocking the
+  // default drag/drop on the window while this step is on screen keeps a stray
+  // drop from navigating away, so the only thing a drop can do is add a photo.
+  useEffect(() => {
+    function preventDefault(e) {
+      e.preventDefault();
+    }
+    window.addEventListener("dragover", preventDefault);
+    window.addEventListener("drop", preventDefault);
+    return () => {
+      window.removeEventListener("dragover", preventDefault);
+      window.removeEventListener("drop", preventDefault);
+    };
+  }, []);
 
   function addFiles(fileList) {
     const files = Array.from(fileList ?? []).filter((f) =>
@@ -44,7 +61,13 @@ export default function StepUploadPhotos({
           e.preventDefault();
           setDragOver(true);
         }}
-        onDragLeave={() => setDragOver(false)}
+        onDragLeave={(e) => {
+          // Only clear the highlight when the cursor truly leaves the box.
+          // Without this check, dragging over the text/button inside the box
+          // fires dragLeave and makes the highlight flicker.
+          if (e.currentTarget.contains(e.relatedTarget)) return;
+          setDragOver(false);
+        }}
         onDrop={handleDrop}
         className={`rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
