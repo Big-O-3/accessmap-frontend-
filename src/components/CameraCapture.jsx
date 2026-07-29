@@ -102,7 +102,7 @@ export default function CameraCapture({ onCapture, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md px-3 py-1 text-sm text-white/90 hover:bg-white/10"
+          className="rounded-lg px-3 py-1 text-sm text-white/90 hover:bg-white/10"
           aria-label="Close camera"
         >
           Cancel
