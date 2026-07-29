@@ -23,7 +23,7 @@ export default function StatsGrid({ stats }) {
             key={t.label}
             className="rounded-2xl border border-sand-200 bg-surface p-5 text-center shadow-sm"
           >
-            <p className="font-display text-3xl font-semibold text-link sm:text-4xl">
+            <p className="font-mono text-3xl font-bold tabular-nums text-link sm:text-4xl">
               {t.value}
             </p>
             <p className="mt-1 text-xs text-ink-soft sm:text-sm">{t.label}</p>

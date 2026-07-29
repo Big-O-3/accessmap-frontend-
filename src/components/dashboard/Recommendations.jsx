@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { getRecommendations } from "../../lib/api";
 import ScoreBadge from "../ScoreBadge";
 import SaveButton from "../SaveButton";
+import Button from "../Button";
+import Pill from "../Pill";
 import { featureLabel } from "../../lib/features";
 
 // AI-style venue suggestions. There's no dedicated recommendations endpoint
@@ -45,7 +47,7 @@ export default function Recommendations() {
 
   return (
     <section aria-labelledby="recs-heading" className="h-full">
-      <h2 id="recs-heading" className="font-display text-xl font-semibold text-ink">
+      <h2 id="recs-heading" className="font-display text-xl font-extrabold text-ink">
         Recommended for you
       </h2>
       <p className="text-xs text-ink-soft">Based on accessibility scores near you</p>
@@ -90,23 +92,15 @@ export default function Recommendations() {
                 {v.featureKeys?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {v.featureKeys.slice(0, 3).map((k) => (
-                      <span
-                        key={k}
-                        className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-link"
-                      >
-                        {featureLabel(k)}
-                      </span>
+                      <Pill key={k}>{featureLabel(k)}</Pill>
                     ))}
                   </div>
                 )}
                 <p className="mt-2 text-xs text-ink-faint">{v.reason}</p>
                 <div className="mt-3 flex items-center gap-2">
-                  <Link
-                    to={`/venue/${v.id}`}
-                    className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700"
-                  >
+                  <Button as={Link} to={`/venue/${v.id}`} size="sm">
                     View
-                  </Link>
+                  </Button>
                   <SaveButton venue={v} size="sm" />
                 </div>
               </article>

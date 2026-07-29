@@ -7,7 +7,7 @@ import { timeAgo } from "../../lib/timeAgo";
 export default function RecentActivity({ activity }) {
   return (
     <section aria-labelledby="activity-heading" className="h-full">
-      <h2 id="activity-heading" className="font-display text-xl font-semibold text-ink">
+      <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
         Recent activity
       </h2>
 

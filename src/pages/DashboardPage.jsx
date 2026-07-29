@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSavedVenues, useActivity, useStats } from "../hooks/useUserData";
+import Button from "../components/Button";
 import StatsGrid from "../components/dashboard/StatsGrid";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import Recommendations from "../components/dashboard/Recommendations";
@@ -21,19 +22,16 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl font-semibold text-ink">
+          <h1 className="font-display text-3xl font-extrabold text-ink">
             Your dashboard
           </h1>
           <p className="mt-1 text-sm text-ink-soft">
             Your saved places, recent activity, and venues we recommend.
           </p>
         </div>
-        <Link
-          to="/add-venue"
-          className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-        >
+        <Button as={Link} to="/add-venue">
           + Add a venue
-        </Link>
+        </Button>
       </div>
 
       {/* Stats */}
