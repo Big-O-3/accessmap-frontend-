@@ -175,12 +175,12 @@ export default function AnalyzePage() {
     : null;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <header className="text-center">
         <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-ink">
           Check a venue's accessibility
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-ink-soft">
+        <p className="mt-2 text-base sm:text-lg text-ink-soft">
           Upload a photo and our AI will detect accessibility features — ramps,
           doors, seating, restrooms — and flag barriers like stairs, with a
           preview score.
@@ -196,7 +196,7 @@ export default function AnalyzePage() {
           <span className="block font-medium text-ink">
             Upload a photo
           </span>
-          <span className="mt-1 block text-xs text-ink-soft">
+          <span className="mt-1 block text-sm text-ink-soft">
             JPG or PNG from your device
           </span>
           <input
@@ -216,7 +216,7 @@ export default function AnalyzePage() {
           <span className="block font-medium text-ink">
             Take a photo
           </span>
-          <span className="mt-1 block text-xs text-ink-soft">
+          <span className="mt-1 block text-sm text-ink-soft">
             Use your device's camera
           </span>
         </button>
@@ -244,11 +244,11 @@ export default function AnalyzePage() {
       {status === "error" && (
         <div
           role="alert"
-          className="mt-8 rounded-xl bg-danger-soft p-4 text-center text-sm text-danger ring-1 ring-inset ring-danger-ring"
+          className="mt-8 rounded-xl bg-danger-soft p-4 text-center text-base text-danger ring-1 ring-inset ring-danger-ring"
         >
           <p className="font-semibold">Couldn't analyze the photo.</p>
           <p className="mt-1">{error}</p>
-          <p className="mt-2 text-xs opacity-80">
+          <p className="mt-2 text-sm opacity-80">
             Make sure the ML service is running on its port.
           </p>
         </div>
@@ -264,7 +264,7 @@ export default function AnalyzePage() {
             <div
               role="status"
               aria-live="polite"
-              className="rounded-xl bg-warning-soft p-4 text-sm text-warning ring-1 ring-inset ring-warning-ring"
+              className="rounded-xl bg-warning-soft p-4 text-base text-warning ring-1 ring-inset ring-warning-ring"
             >
               {result.isVenue === false && (
                 <p className="font-semibold">
@@ -277,7 +277,7 @@ export default function AnalyzePage() {
                   {result.framingHint}
                 </p>
               )}
-              <p className="mt-2 text-xs opacity-80">
+              <p className="mt-2 text-sm opacity-80">
                 Retake the photo for a more accurate score.
               </p>
             </div>
@@ -290,12 +290,12 @@ export default function AnalyzePage() {
           <div
             className={`rounded-xl p-5 ring-1 ring-inset ${VERDICTS[summary.level].className}`}
           >
-            <p className="text-lg font-bold">{VERDICTS[summary.level].text}</p>
-            <p className="mt-1 text-sm opacity-90">
+            <p className="text-xl font-bold">{VERDICTS[summary.level].text}</p>
+            <p className="mt-1 text-base opacity-90">
               {VERDICTS[summary.level].detail}
             </p>
             {/* Plain-English count so the "degree" is spelled out. */}
-            <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">
+            <p className="mt-2 text-sm font-semibold uppercase tracking-wide opacity-80">
               {confirmedAccessibleCount} of {totalAccessibleFeatures} accessible
               features confirmed
               {barrierCount > 0
@@ -314,10 +314,10 @@ export default function AnalyzePage() {
               weren't detected are shown but aren't checkable (there's nothing to
               confirm). */}
           <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-sm">
-            <h2 className="border-b border-sand-100 px-4 py-3 font-display text-sm font-extrabold text-ink">
+            <h2 className="border-b border-sand-100 px-4 py-3 font-display text-base font-extrabold text-ink">
               Accessibility checklist
             </h2>
-            <p className="border-b border-sand-100 px-4 py-2 text-xs text-ink-soft">
+            <p className="border-b border-sand-100 px-4 py-2 text-sm text-ink-soft">
               Uncheck anything the AI got wrong — you have the final say. Only
               confirmed features count toward the score and get saved.
             </p>
@@ -335,11 +335,11 @@ export default function AnalyzePage() {
                       key={row.key}
                       className="flex items-center justify-between gap-3 px-4 py-3"
                     >
-                      <span className="flex items-center gap-2 text-sm font-medium text-ink-faint">
+                      <span className="flex items-center gap-2 text-base font-medium text-ink-faint">
                         <span aria-hidden>—</span>
                         {row.label}
                       </span>
-                      <span className="text-xs font-semibold text-ink-faint">
+                      <span className="text-sm font-semibold text-ink-faint">
                         Not detected
                       </span>
                     </li>
@@ -352,7 +352,7 @@ export default function AnalyzePage() {
                       htmlFor={inputId}
                       className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3"
                     >
-                      <span className="flex items-center gap-3 text-sm font-medium text-ink">
+                      <span className="flex items-center gap-3 text-base font-medium text-ink">
                         <input
                           id={inputId}
                           type="checkbox"
@@ -364,7 +364,7 @@ export default function AnalyzePage() {
                       </span>
                       {row.status === "yes" && (
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
+                          className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ring-1 ring-inset ${
                             row.highConfidence
                               ? "bg-success-soft text-success ring-success-ring"
                               : "bg-warning-soft text-warning ring-warning-ring"
@@ -374,7 +374,7 @@ export default function AnalyzePage() {
                         </span>
                       )}
                       {row.status === "barrier" && (
-                        <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-xs font-semibold text-danger ring-1 ring-inset ring-danger-ring">
+                        <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-sm font-semibold text-danger ring-1 ring-inset ring-danger-ring">
                           Barrier detected
                         </span>
                       )}
@@ -383,14 +383,14 @@ export default function AnalyzePage() {
                 );
               })}
             </ul>
-            <p className="border-t border-sand-100 px-4 py-3 text-xs text-ink-soft">
+            <p className="border-t border-sand-100 px-4 py-3 text-sm text-ink-soft">
               &ldquo;Not detected&rdquo; means we didn&apos;t see it in this photo
               — the feature could still exist at the venue.
             </p>
           </div>
 
           {result.altTextSuggestion && (
-            <p className="text-center text-xs text-ink-faint">
+            <p className="text-center text-sm text-ink-faint">
               {result.altTextSuggestion}
             </p>
           )}
@@ -401,7 +401,7 @@ export default function AnalyzePage() {
               <div className="space-y-2 rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm">
                 <label
                   htmlFor="venue-name"
-                  className="block text-sm font-medium text-ink-soft"
+                  className="block text-base font-medium text-ink-soft"
                 >
                   Name this place
                 </label>
@@ -421,9 +421,9 @@ export default function AnalyzePage() {
                     setPickedPlace(place);
                   }}
                   placeholder="e.g. Salesforce Tower"
-                  className="w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                 />
-                <p className="text-xs text-ink-faint">
+                <p className="text-sm text-ink-faint">
                   {pickedPlace
                     ? `Saving at ${pickedPlace.displayName}.`
                     : "Pick a suggestion to save at that address, or we'll use your current location."}
@@ -447,7 +447,7 @@ export default function AnalyzePage() {
               </Button>
             ))}
 
-          <p className="text-center text-xs text-ink-faint">
+          <p className="text-center text-sm text-ink-faint">
             AI detections are a starting point — the community verifies each one
             before it counts toward a venue's official score.
           </p>
