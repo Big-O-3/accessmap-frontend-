@@ -1,81 +1,114 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   AccessMap design tokens — "Black & silver"
-   A monochrome graphite/silver system with a full dark mode. Components
-   reference SEMANTIC token names (bg-brand-600, text-ink, border-sand-200,
-   text-link); the values below are what those names resolve to. Dark mode
+   AccessMap design tokens — "Azure"
+   A confident azure-blue system with a full dark mode. Components reference
+   SEMANTIC token names (bg-brand-600, text-ink, border-sand-200, text-link,
+   text-success…); the values below are what those names resolve to. Dark mode
    simply re-points the same names to darker values under the .dark class, so
    the whole app flips theme without touching a single component.
+
+   Colors are chosen for WCAG AA contrast in BOTH themes: brand-600 (the primary
+   button fill, always paired with white text) stays dark enough for AA, while
+   the brighter brand-400 (#4C93FF) is reserved for accents, links, and borders.
 --------------------------------------------------------------------------- */
 @theme {
-  /* Brand ramp — graphite (used for buttons, fills, borders). Light→dark. */
-  --color-brand-50: #f4f4f5;
-  --color-brand-100: #e4e4e7;
-  --color-brand-200: #d4d4d8;
-  --color-brand-300: #a1a1aa;
-  --color-brand-400: #71717a;
-  --color-brand-500: #52525b;
-  --color-brand-600: #27272a;
-  --color-brand-700: #18181b;
-  --color-brand-800: #09090b;
-  --color-brand-900: #000000;
+  /* Brand ramp — azure (used for buttons, fills, borders). Light→dark. */
+  --color-brand-50: #eaf1fe;
+  --color-brand-100: #d6e4fd;
+  --color-brand-200: #b3ccfb;
+  --color-brand-300: #7fa8f6;
+  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-500: #2f7df6;
+  --color-brand-600: #1d4ed8; /* primary button — white text is AA here */
+  --color-brand-700: #1e40af; /* hover */
+  --color-brand-800: #1a388a;
+  --color-brand-900: #122a63;
 
-  /* Accent — silver/chrome (replaces the old amber). */
-  --color-accent-400: #d4d4d8;
-  --color-accent-500: #a1a1aa;
-  --color-accent-600: #71717a;
+  /* Accent — violet secondary (the azure→violet gradient's far end). */
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #6d28d9; /* white text is AA here */
+  --color-accent-600: #5b21b6;
 
-  /* Neutrals / surfaces. */
-  --color-sand-50: #fafafa;
-  --color-sand-100: #f4f4f5;
-  --color-sand-200: #e4e4e7;
+  /* Neutrals / surfaces — cool light greys. */
+  --color-sand-50: #eff2f8; /* page background */
+  --color-sand-100: #e6ebf4; /* subtle panel fill / hover */
+  --color-sand-200: #d3dbea; /* borders + unfilled stars */
 
   /* Card surface — white on light, near-black on dark (see .dark below). */
   --color-surface: #ffffff;
 
   /* Text. */
-  --color-ink: #18181b;
-  --color-ink-soft: #52525b;
-  --color-ink-faint: #a1a1aa;
+  --color-ink: #0b1b2e;
+  --color-ink-soft: #48566b;
+  --color-ink-faint: #6b7688;
 
   /* Interactive text / links — adaptive so it stays legible in both themes. */
-  --color-link: #18181b;
+  --color-link: #1d4ed8;
+
+  /* Score tiers — ONE source of truth for high/medium/low accessibility.
+     Each tier has a foreground (text/icon), a soft fill, and a ring/border.
+     Light values are darkened for AA text contrast on pale fills. */
+  --color-success: #0e7a43;
+  --color-success-soft: #e4f4ea;
+  --color-success-ring: #b7e0c6;
+  --color-warning: #8a5000;
+  --color-warning-soft: #f7ecd6;
+  --color-warning-ring: #e6cf9f;
+  --color-danger: #b42318;
+  --color-danger-soft: #fbe5e3;
+  --color-danger-ring: #f0c6c2;
+
+  /* Review stars. */
+  --color-star: #d97706;
 
   /* Type families. */
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
-/* -------- Dark mode: repoint the same token names to a black/silver set ----
-   Applied when <html class="dark">. Surfaces go near-black, text goes silver,
-   and the graphite brand ramp lifts a step so fills stay visible on black. */
+/* -------- Dark mode: repoint the same token names to a near-black azure set --
+   Applied when <html class="dark">. Surfaces go near-black, text goes off-white,
+   and the azure accents brighten so they stay vivid on black. */
 .dark {
-  --color-brand-50: #1f1f23;
-  --color-brand-100: #27272a;
-  --color-brand-200: #3f3f46;
-  --color-brand-300: #52525b;
-  --color-brand-400: #71717a;
-  --color-brand-500: #a1a1aa;
-  --color-brand-600: #3f3f46; /* primary button — visible on black */
-  --color-brand-700: #52525b; /* hover */
-  --color-brand-800: #d4d4d8;
-  --color-brand-900: #f4f4f5;
+  --color-brand-50: #14243f; /* blue-tinted chip surface */
+  --color-brand-100: #172c4c;
+  --color-brand-200: #1e3a63; /* borders on blue */
+  --color-brand-300: #2c5698;
+  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-500: #6aa6ff;
+  --color-brand-600: #2563eb; /* primary button — white text is AA on black */
+  --color-brand-700: #1d4ed8; /* hover — darkens for a clear pressed feel */
+  --color-brand-800: #6aa6ff;
+  --color-brand-900: #b9d3ff;
 
-  --color-accent-400: #52525b;
-  --color-accent-500: #a1a1aa;
-  --color-accent-600: #d4d4d8;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #7c3aed; /* white text is AA here */
+  --color-accent-600: #6d28d9;
 
-  --color-sand-50: #0a0a0a; /* page background — black */
-  --color-sand-100: #18181b; /* cards */
-  --color-sand-200: #27272a; /* borders */
-  --color-surface: #131316; /* card surface — near-black, lifted off the page */
+  --color-sand-50: #08090b; /* page background — near-black */
+  --color-sand-100: #12151b; /* subtle panel fill / hover */
+  --color-sand-200: #262a33; /* borders + unfilled stars */
+  --color-surface: #101318; /* card surface — lifted off the page */
 
-  --color-ink: #e4e4e7; /* silver text */
-  --color-ink-soft: #a1a1aa;
-  --color-ink-faint: #71717a;
+  --color-ink: #f4f6f8; /* off-white text */
+  --color-ink-soft: #a6adb8;
+  --color-ink-faint: #6e7682;
 
-  --color-link: #d4d4d8; /* light silver links on black */
+  --color-link: #6aa6ff; /* bright azure links on black */
+
+  /* Tiers brighten and use translucent fills so they glow on the dark page. */
+  --color-success: #33d083;
+  --color-success-soft: rgba(51, 208, 131, 0.14);
+  --color-success-ring: rgba(51, 208, 131, 0.34);
+  --color-warning: #ffb454;
+  --color-warning-soft: rgba(255, 180, 84, 0.14);
+  --color-warning-ring: rgba(255, 180, 84, 0.34);
+  --color-danger: #ff6b60;
+  --color-danger-soft: rgba(255, 107, 96, 0.15);
+  --color-danger-ring: rgba(255, 107, 96, 0.36);
+
+  --color-star: #fbbf24;
 }
 
 :root {
