@@ -263,7 +263,7 @@ export default function HomePage() {
   return (
     <div>
       {/* ===================== HERO ===================== */}
-      <section className="mx-auto max-w-4xl px-4 pt-20 pb-12 text-center sm:pt-28">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center sm:pt-28">
         <Reveal delay={0.05}>
           <span className="inline-flex items-center gap-2 rounded-full border border-sand-200 bg-surface/70 px-4 py-1.5 text-sm font-semibold text-ink-soft backdrop-blur">
             <span className="text-gradient">◆</span> Community-verified ·
@@ -305,14 +305,14 @@ export default function HomePage() {
         </Reveal>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="h-px bg-gradient-to-r from-transparent via-sand-200 to-transparent" />
       </div>
 
       {/* ===================== HOW IT WORKS (pinned) ===================== */}
       <section
         aria-labelledby="how-heading"
-        className="mx-auto max-w-6xl px-4 py-16 sm:py-24"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24"
       >
         <Reveal className="max-w-2xl">
           <h2
@@ -355,7 +355,7 @@ export default function HomePage() {
                   <h3 className="font-display text-xl font-extrabold text-ink sm:text-2xl">
                     {step.title}
                   </h3>
-                  <p className="mt-2 max-w-md leading-relaxed text-ink-soft">
+                  <p className="mt-2 max-w-md text-lg leading-relaxed text-ink-soft">
                     {step.body}
                   </p>
                 </li>
@@ -366,7 +366,7 @@ export default function HomePage() {
       </section>
 
       {/* ===================== BEAT — why it matters ===================== */}
-      <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16 text-center sm:py-24">
         <Reveal>
           <p className="font-display text-5xl font-black tracking-tight sm:text-7xl">
             <span ref={countRef} className="text-gradient font-mono tabular-nums">
@@ -384,7 +384,7 @@ export default function HomePage() {
       {/* ===================== FEATURED VENUES ===================== */}
       <section
         aria-labelledby="featured-heading"
-        className="mx-auto max-w-6xl px-4 py-16"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16"
       >
         <Reveal className="mb-8 flex items-end justify-between gap-4">
           <div>
@@ -394,7 +394,7 @@ export default function HomePage() {
             >
               Featured venues
             </h2>
-            <p className="mt-2 text-ink-soft">
+            <p className="mt-2 text-lg text-ink-soft">
               A few places the community has mapped recently.
             </p>
           </div>
@@ -456,7 +456,7 @@ export default function HomePage() {
       </section>
 
       {/* ===================== CTA ===================== */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl border border-sand-200 bg-surface p-10 text-center shadow-lg sm:p-16">
             <div
