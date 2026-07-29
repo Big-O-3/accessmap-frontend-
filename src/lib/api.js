@@ -101,6 +101,20 @@ export async function deleteReview(reviewId) {
   return request(`/api/reviews/${reviewId}`, { method: "DELETE" });
 }
 
+// POST /api/reviews/:id/helpful — mark a review as helpful (requires sign-in).
+// Returns the updated review with its new helpfulCount.
+export async function markReviewHelpful(reviewId) {
+  if (!reviewId) throw new Error("A review is required.");
+  return request(`/api/reviews/${reviewId}/helpful`, { method: "POST" });
+}
+
+// DELETE /api/reviews/:id/helpful — undo a helpful mark (requires sign-in).
+// Returns the updated review with its new helpfulCount.
+export async function unmarkReviewHelpful(reviewId) {
+  if (!reviewId) throw new Error("A review is required.");
+  return request(`/api/reviews/${reviewId}/helpful`, { method: "DELETE" });
+}
+
 // DELETE /api/photos/:id — remove one of your own photos (requires sign-in).
 // The backend rejects (403) anything that isn't the signed-in user's photo.
 export async function deletePhoto(photoId) {

@@ -8,6 +8,7 @@
 
 const SAVED_KEY = "accessmap:savedVenues";
 const ACTIVITY_KEY = "accessmap:activity";
+const HELPFUL_KEY = "accessmap:helpfulReviews";
 const ACTIVITY_LIMIT = 50; // keep the feed bounded
 
 const listeners = new Set();
@@ -18,11 +19,13 @@ const listeners = new Set();
 // a write happens (emit() clears it).
 let savedCache = null;
 let activityCache = null;
+let helpfulCache = null;
 let statsCache = null;
 
 function invalidate() {
   savedCache = null;
   activityCache = null;
+  helpfulCache = null;
   statsCache = null;
 }
 
@@ -135,6 +138,39 @@ export function logActivity(event) {
   const next = [entry, ...getActivity()].slice(0, ACTIVITY_LIMIT);
   write(ACTIVITY_KEY, next);
   emit();
+}
+
+// --- helpful reviews --------------------------------------------------------
+
+// Which review ids this browser has marked "helpful". Same per-browser
+// philosophy as saved venues: without per-user server state, tracking it here
+// keeps one browser from inflating a review's helpful count by re-clicking, and
+// lets the button render its "you found this helpful" state after a reload.
+
+export function getHelpfulReviews() {
+  if (helpfulCache === null) {
+    const list = read(HELPFUL_KEY, []);
+    helpfulCache = Array.isArray(list) ? list : [];
+  }
+  return helpfulCache;
+}
+
+export function hasMarkedHelpful(reviewId) {
+  return getHelpfulReviews().includes(reviewId);
+}
+
+// Record (or clear) this browser's "helpful" mark for a review. No-ops when the
+// stored state already matches, so callers can call it freely.
+export function setMarkedHelpful(reviewId, marked) {
+  const list = getHelpfulReviews();
+  const already = list.includes(reviewId);
+  if (marked && !already) {
+    write(HELPFUL_KEY, [reviewId, ...list]);
+    emit();
+  } else if (!marked && already) {
+    write(HELPFUL_KEY, list.filter((id) => id !== reviewId));
+    emit();
+  }
 }
 
 // --- derived stats ----------------------------------------------------------
