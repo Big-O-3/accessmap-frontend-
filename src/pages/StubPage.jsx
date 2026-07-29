@@ -8,13 +8,13 @@ export default function StubPage({ title, owner }) {
   return (
     <div className="mx-auto max-w-lg px-4 py-16 sm:py-24">
       <div className="rounded-2xl border border-sand-200 bg-surface p-8 text-center shadow-sm sm:p-10">
-        <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-link ring-1 ring-inset ring-brand-200">
+        <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-link ring-1 ring-inset ring-brand-200">
           Coming soon
         </span>
         <h1 className="mt-4 font-display text-3xl font-extrabold text-ink">
           {title}
         </h1>
-        <p className="mt-2 text-sm text-ink-soft">
+        <p className="mt-2 text-base text-ink-soft">
           This page is planned{owner ? ` (owned by ${owner})` : ""} and not
           built yet. In the meantime, you can keep exploring venues.
         </p>
