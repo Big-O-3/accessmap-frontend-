@@ -87,7 +87,7 @@ export default function PlaceAutocomplete({
 
       {open && (loading || suggestions.length > 0) && (
         <ul
-          className="absolute left-0 right-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-md border border-sand-200 bg-surface shadow-lg"
+          className="absolute left-0 right-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-xl border border-sand-200 bg-surface shadow-lg"
           role="listbox"
         >
           {loading && suggestions.length === 0 && (

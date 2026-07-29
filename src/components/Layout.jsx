@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
+import BottomNav from "./BottomNav";
 import CursorGlow from "./CursorGlow";
+
+const MARK_GRADIENT =
+  "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))";
 
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -23,18 +27,15 @@ function navLinkClass({ isActive }) {
   }`;
 }
 
-// Small auth control shown at the right of the header (and inside the mobile
-// drawer). Reads user state from AuthContext; renders "Log in / Sign up" while
-// signed out and "Hi, <username> · Log out" while signed in.
-function AuthSlot({ compact = false, onNavigate }) {
+// Auth control at the right of the header. On desktop it greets the signed-in
+// user and offers log out (or a log-in button when signed out). The `mobile`
+// variant is trimmed: just a log-out button when signed in, and nothing when
+// signed out (mobile log-in lives in the bottom tab bar).
+function AuthSlot({ mobile = false, onNavigate }) {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   if (loading) return null;
-
-  const wrap = compact
-    ? "flex flex-col gap-1"
-    : "flex items-center gap-2 text-sm";
 
   async function handleLogout() {
     const ok = window.confirm(
@@ -47,19 +48,24 @@ function AuthSlot({ compact = false, onNavigate }) {
   }
 
   if (user) {
-    return (
-      <div className={wrap}>
-        <span className={compact ? "px-3 py-2 text-sm text-ink-soft" : "text-ink-soft"}>
-          Hi, {user.username}
-        </span>
+    if (mobile) {
+      return (
         <button
           type="button"
           onClick={handleLogout}
-          className={
-            compact
-              ? "rounded-lg px-3 py-3 text-left text-base font-medium text-ink-soft hover:bg-sand-100"
-              : "rounded-lg px-3 py-2 font-medium text-ink-soft hover:bg-sand-100"
-          }
+          className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-sand-100"
+        >
+          Log out
+        </button>
+      );
+    }
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-ink-soft">Hi, {user.username}</span>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="rounded-lg px-3 py-2 font-medium text-ink-soft hover:bg-sand-100"
         >
           Log out
         </button>
@@ -67,40 +73,65 @@ function AuthSlot({ compact = false, onNavigate }) {
     );
   }
 
+  if (mobile) return null;
+
   return (
-    <div className={wrap}>
-      <NavLink
-        to="/login"
-        onClick={onNavigate}
-        className={({ isActive }) =>
-          `${compact ? "block" : "inline-block"} rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${
-            isActive
-              ? "bg-brand-700 text-white"
-              : "bg-brand-600 text-white hover:bg-brand-700"
-          }`
-        }
-      >
-        Log in
-      </NavLink>
-    </div>
+    <NavLink
+      to="/login"
+      className={({ isActive }) =>
+        `inline-block rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${
+          isActive
+            ? "bg-brand-700 text-white"
+            : "bg-brand-600 text-white hover:bg-brand-700"
+        }`
+      }
+    >
+      Log in
+    </NavLink>
   );
 }
 
 export default function Layout() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
   const navLinks = user ? [...PUBLIC_LINKS, ...AUTH_LINKS] : PUBLIC_LINKS;
 
+  // Glass nav gains a border + shadow once the page is scrolled at all.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="min-h-full flex flex-col bg-sand-50 text-ink">
+    <div className="min-h-full flex flex-col text-ink">
+      {/* First focusable element: lets keyboard users jump past the nav. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+      >
+        Skip to content
+      </a>
+
       <CursorGlow />
-      <header className="sticky top-0 z-30 border-b border-sand-200 bg-sand-50/85 backdrop-blur">
+
+      <header
+        className={`sticky top-0 z-30 backdrop-blur-xl transition-all ${
+          scrolled
+            ? "border-b border-sand-200 bg-sand-50/90 shadow-sm"
+            : "border-b border-transparent bg-sand-50/60"
+        }`}
+      >
         <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 group">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white text-lg shadow-sm transition-transform group-hover:scale-105">
+            <span
+              className="grid h-9 w-9 place-items-center rounded-xl text-lg text-white shadow-sm transition-transform group-hover:scale-105"
+              style={{ background: MARK_GRADIENT }}
+            >
               ◆
             </span>
-            <span className="font-display text-xl font-semibold tracking-tight text-ink">
+            <span className="font-display text-xl font-extrabold tracking-tight text-ink">
               AccessMap
             </span>
           </NavLink>
@@ -108,7 +139,12 @@ export default function Layout() {
           {/* Desktop nav — full row of links plus the auth slot. */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <NavLink key={link.to} to={link.to} end={link.end} className={navLinkClass}>
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={navLinkClass}
+              >
                 {link.label}
               </NavLink>
             ))}
@@ -118,54 +154,22 @@ export default function Layout() {
             </div>
           </nav>
 
-          {/* Mobile menu toggle — a large, easy-to-tap hamburger button. */}
-          <button
-            type="button"
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-ink-soft hover:bg-sand-100"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {/* Simple hamburger / close icon drawn with spans. */}
-            <span className="text-2xl leading-none">{menuOpen ? "×" : "≡"}</span>
-          </button>
+          {/* Mobile top bar — theme toggle plus log out; navigation is the
+              bottom tab bar. */}
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <AuthSlot mobile />
+          </div>
         </div>
-
-        {/* Mobile dropdown menu — stacked, full-width tap targets. */}
-        {menuOpen && (
-          <nav className="md:hidden border-t border-sand-200 px-2 pb-3 pt-2">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.end}
-                onClick={() => setMenuOpen(false)}
-                className={({ isActive }) =>
-                  `block rounded-lg px-3 py-3 text-base font-medium transition-colors ${
-                    isActive
-                      ? "bg-brand-50 text-link"
-                      : "text-ink-soft hover:bg-sand-100"
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-            <div className="mt-2 border-t border-sand-200 pt-2">
-              <ThemeToggle compact />
-              <AuthSlot compact onNavigate={() => setMenuOpen(false)} />
-            </div>
-          </nav>
-        )}
       </header>
 
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <Outlet />
       </main>
 
       <footer className="border-t border-sand-200 bg-sand-100">
-        <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col items-center gap-2 text-center">
-          <span className="font-display text-lg font-semibold text-ink">
+        <div className="mx-auto max-w-6xl px-4 pt-8 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 flex flex-col items-center gap-2 text-center">
+          <span className="font-display text-lg font-extrabold text-ink">
             AccessMap
           </span>
           <p className="text-sm text-ink-soft">
@@ -173,6 +177,9 @@ export default function Layout() {
           </p>
         </div>
       </footer>
+
+      {/* Mobile-only bottom navigation. */}
+      <BottomNav signedIn={!!user} />
     </div>
   );
 }

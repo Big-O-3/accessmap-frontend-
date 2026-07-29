@@ -51,13 +51,16 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
           type="button"
           onClick={handleDelete}
           disabled={deleting}
-          className="absolute top-2 right-2 rounded-lg bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-red-600 disabled:opacity-50"
+          className="absolute top-2 right-2 rounded-lg bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-danger disabled:opacity-50"
         >
           {deleting ? "Deleting…" : "Delete"}
         </button>
       )}
       {error && (
-        <p className="absolute bottom-2 left-2 right-2 rounded bg-red-600/90 px-2 py-1 text-xs text-white">
+        <p
+          role="alert"
+          className="absolute bottom-2 left-2 right-2 rounded-lg bg-black/75 px-2 py-1 text-xs text-white ring-1 ring-inset ring-danger-ring backdrop-blur-sm"
+        >
           {error}
         </p>
       )}

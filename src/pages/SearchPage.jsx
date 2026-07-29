@@ -4,13 +4,34 @@ import { searchVenues } from "../lib/api";
 import FilterPanel from "../components/FilterPanel";
 import VenueCard from "../components/VenueCard";
 import VenueMap from "../components/VenueMap";
+import BottomSheet from "../components/BottomSheet";
+import Card from "../components/Card";
+
+// Default search origin: downtown San Francisco. Used to order results
+// nearest-first even before the visitor shares their real location, so the
+// list/map are geographically coherent instead of sorted by raw score. Kept at
+// module scope so it's a stable reference across renders.
+const SF_CENTER = { lat: 37.7793, lng: -122.4193 };
+
+const VIEWS = ["split", "list", "map"];
+
+function FilterGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <path d="M3 5h18M6 12h12M10 19h4" />
+    </svg>
+  );
+}
 
 export default function SearchPage() {
-  // Default search origin: downtown San Francisco. Used to order results
-  // nearest-first even before the visitor shares their real location, so the
-  // list/map are geographically coherent instead of sorted by raw score.
-  const SF_CENTER = { lat: 37.7793, lng: -122.4193 };
-
   // Seed the city from the URL (?city=…) so the home-page search box carries
   // its value over and shows up pre-filled in the search bar here.
   const [searchParams] = useSearchParams();
@@ -23,6 +44,7 @@ export default function SearchPage() {
   const [error, setError] = useState(null);
   const [activeId, setActiveId] = useState(null);
   const [view, setView] = useState("split"); // split | list | map
+  const [filtersOpen, setFiltersOpen] = useState(false); // mobile filter sheet
 
   // Re-run search whenever filters change (debounced for the city text input).
   useEffect(() => {
@@ -95,6 +117,11 @@ export default function SearchPage() {
 
   const visibleVenues = venues.slice(0, visibleCount);
   const hasMore = visibleCount < venues.length;
+  const activeFilterCount =
+    selectedFeatures.length +
+    selectedTypes.length +
+    (city ? 1 : 0) +
+    (location ? 1 : 0);
 
   // Center the map on the visitor's real location, else the nearest venue that
   // actually has coordinates, else downtown SF as a last resort. (Venues added
@@ -108,18 +135,53 @@ export default function SearchPage() {
       ? { lat: firstMappable.latitude, lng: firstMappable.longitude }
       : SF_CENTER);
 
+  const filterPanel = (
+    <FilterPanel
+      city={city}
+      onCityChange={setCity}
+      selectedFeatures={selectedFeatures}
+      onToggleFeature={toggleFeature}
+      selectedTypes={selectedTypes}
+      onToggleType={toggleType}
+      onUseMyLocation={useMyLocation}
+      hasLocation={!!location}
+    />
+  );
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="font-display text-3xl font-semibold text-ink">
-          Find accessible venues
-        </h1>
-        <div className="flex rounded-xl border border-sand-200 bg-surface overflow-hidden text-sm shadow-sm">
-          {["split", "list", "map"].map((v) => (
+      <h1 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+        Find accessible venues
+      </h1>
+
+      <div className="mt-4 mb-6 flex items-center gap-3">
+        {/* Mobile: open the filter sheet. Hidden on desktop, where the
+            sidebar is always visible. */}
+        <button
+          type="button"
+          onClick={() => setFiltersOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-sm hover:bg-sand-100 lg:hidden"
+        >
+          <FilterGlyph />
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-0.5 rounded-full bg-brand-600 px-1.5 text-xs font-bold tabular-nums text-white">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+
+        <div
+          role="group"
+          aria-label="Result view"
+          className="ml-auto flex overflow-hidden rounded-xl border border-sand-200 bg-surface text-sm shadow-sm"
+        >
+          {VIEWS.map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-4 py-2 capitalize font-medium transition-colors ${
+              aria-pressed={view === v}
+              className={`px-4 py-2 font-medium capitalize transition-colors ${
                 view === v
                   ? "bg-brand-600 text-white"
                   : "bg-surface text-ink-soft hover:bg-sand-100"
@@ -131,25 +193,20 @@ export default function SearchPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <aside className="lg:col-span-1">
-          <div className="rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm sticky top-20">
-            <FilterPanel
-              city={city}
-              onCityChange={setCity}
-              selectedFeatures={selectedFeatures}
-              onToggleFeature={toggleFeature}
-              selectedTypes={selectedTypes}
-              onToggleType={toggleType}
-              onUseMyLocation={useMyLocation}
-              hasLocation={!!location}
-            />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        {/* Desktop sidebar. On mobile the same panel lives in the sheet. */}
+        <aside className="hidden lg:col-span-1 lg:block">
+          <div className="sticky top-20 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm">
+            {filterPanel}
           </div>
         </aside>
 
         <section className="lg:col-span-3">
           {error && (
-            <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+            <div
+              role="alert"
+              className="mb-4 rounded-xl border border-danger-ring bg-danger-soft px-4 py-2 text-sm text-danger"
+            >
               {error}
             </div>
           )}
@@ -164,14 +221,26 @@ export default function SearchPage() {
                 {loading ? (
                   <SkeletonList />
                 ) : venues.length === 0 ? (
-                  <p className="text-ink-soft text-sm py-8 text-center">
-                    No venues match your filters.
-                  </p>
+                  <Card className="p-8 text-center">
+                    <p className="font-display text-lg font-bold text-ink">
+                      No venues match your filters
+                    </p>
+                    <p className="mt-2 text-ink-soft">
+                      Try removing a filter or searching a different city.
+                    </p>
+                  </Card>
                 ) : (
                   <>
                     <p className="text-sm text-ink-soft">
-                      Showing {visibleVenues.length} of {venues.length} venue
-                      {venues.length !== 1 && "s"}, closest first
+                      Showing{" "}
+                      <span className="font-mono tabular-nums">
+                        {visibleVenues.length}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-mono tabular-nums">
+                        {venues.length}
+                      </span>{" "}
+                      venue{venues.length !== 1 && "s"}, closest first
                     </p>
                     {visibleVenues.map((venue) => (
                       <VenueCard
@@ -183,14 +252,18 @@ export default function SearchPage() {
                     ))}
                     {hasMore && (
                       <button
-                        onClick={() =>
-                          setVisibleCount((c) => c + PAGE_SIZE)
-                        }
+                        onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
                         className="w-full rounded-xl border border-brand-200 bg-surface px-4 py-2.5 text-sm font-semibold text-link transition-colors hover:bg-brand-50"
                       >
                         See more (
-                        {Math.min(PAGE_SIZE, venues.length - visibleCount)} of{" "}
-                        {venues.length - visibleCount} remaining)
+                        <span className="font-mono tabular-nums">
+                          {Math.min(PAGE_SIZE, venues.length - visibleCount)}
+                        </span>{" "}
+                        of{" "}
+                        <span className="font-mono tabular-nums">
+                          {venues.length - visibleCount}
+                        </span>{" "}
+                        remaining)
                       </button>
                     )}
                   </>
@@ -199,7 +272,7 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              <div className="h-[60vh] min-h-[320px] lg:h-[600px] rounded-2xl overflow-hidden border border-sand-200 shadow-sm">
+              <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:h-[600px]">
                 <VenueMap
                   venues={venues}
                   center={mapCenter}
@@ -211,23 +284,31 @@ export default function SearchPage() {
           </div>
         </section>
       </div>
+
+      <BottomSheet
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        title="Filters"
+      >
+        {filterPanel}
+      </BottomSheet>
     </div>
   );
 }
 
 function SkeletonList() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" aria-hidden="true">
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="rounded-2xl border border-sand-200 bg-surface p-4 animate-pulse"
+          className="animate-pulse rounded-2xl border border-sand-200 bg-surface p-4"
         >
-          <div className="h-4 w-1/2 bg-sand-200 rounded" />
-          <div className="mt-2 h-3 w-2/3 bg-sand-100 rounded" />
+          <div className="h-4 w-1/2 rounded bg-sand-200" />
+          <div className="mt-2 h-3 w-2/3 rounded bg-sand-100" />
           <div className="mt-3 flex gap-2">
-            <div className="h-5 w-20 bg-sand-100 rounded-full" />
-            <div className="h-5 w-24 bg-sand-100 rounded-full" />
+            <div className="h-5 w-20 rounded-full bg-sand-100" />
+            <div className="h-5 w-24 rounded-full bg-sand-100" />
           </div>
         </div>
       ))}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Button from "../Button";
 
 // Step 2 · Upload Photos.
 // No manual tagging — that's the AI's job in Step 3. Photos are held locally as
@@ -48,7 +49,7 @@ export default function StepUploadPhotos({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-ink">Upload photos</h2>
+        <h2 className="font-display text-lg font-extrabold text-ink">Upload photos</h2>
         <p className="mt-1 text-sm text-ink-soft">
           No forms to fill out — our AI reads the photos in the next step.
         </p>
@@ -79,13 +80,13 @@ export default function StepUploadPhotos({
         <p className="mt-1 text-xs text-ink-soft">
           Tip: entrance, bathroom, parking, and seating photos work best.
         </p>
-        <button
+        <Button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          className="mt-4"
         >
           Choose from device
-        </button>
+        </Button>
         <input
           ref={inputRef}
           type="file"

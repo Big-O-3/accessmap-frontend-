@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -9,16 +9,44 @@ import {
 import "leaflet/dist/leaflet.css";
 import { Link } from "react-router-dom";
 import { scoreTier } from "../lib/score";
+import { TIER_COLOR_VAR } from "../lib/tierStyles";
 import ScoreBadge from "./ScoreBadge";
 
 const DEFAULT_CENTER = [47.6062, -122.3321]; // Seattle
 
-const TIER_COLOR = {
-  high: "#0d9488", // brand teal
-  medium: "#f59e0b", // accent amber
-  low: "#dc2626",
-  unscored: "#a8a29e", // warm gray — no photo uploaded yet, so no score
-};
+// Read the pin colors straight from the theme's tier tokens (the same
+// --color-success/warning/danger the badges and pills use) so the map never
+// drifts from the rest of the UI and adapts to light/dark automatically.
+// Leaflet needs a concrete color string, so we resolve the CSS variables with
+// getComputedStyle rather than a class.
+function readTierColors() {
+  const styles = getComputedStyle(document.documentElement);
+  const read = (name) => styles.getPropertyValue(name).trim();
+  return {
+    high: read(TIER_COLOR_VAR.high),
+    medium: read(TIER_COLOR_VAR.medium),
+    low: read(TIER_COLOR_VAR.low),
+    // No score yet (no photo uploaded) — a muted neutral, not a tier color.
+    unscored: read("--color-ink-faint"),
+  };
+}
+
+// Keep the resolved colors in sync with the theme: the toggle flips the `.dark`
+// class on <html>, which re-points the tokens, so we re-read on that change.
+function useTierColors() {
+  const [colors, setColors] = useState(readTierColors);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setColors(readTierColors()));
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return colors;
+}
 
 // Recenters the map imperatively when the `center` prop changes (e.g. after
 // "near me" or when the first search result comes in).
@@ -31,6 +59,8 @@ function Recenter({ center }) {
 }
 
 export default function VenueMap({ venues, center, activeId, onSelect }) {
+  const tierColors = useTierColors();
+
   // Only venues with coordinates can be placed on the map. Venues added without
   // a location are still listed elsewhere; they just don't get a pin here.
   const mappable = venues.filter(
@@ -60,8 +90,8 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
         const active = venue.id === activeId;
         const color =
           venue.accessibilityScore == null
-            ? TIER_COLOR.unscored
-            : TIER_COLOR[scoreTier(venue.accessibilityScore)];
+            ? tierColors.unscored
+            : tierColors[scoreTier(venue.accessibilityScore)];
         return (
           <CircleMarker
             key={venue.id}

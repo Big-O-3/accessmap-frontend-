@@ -1,88 +1,147 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   AccessMap design tokens — "Black & silver"
-   A monochrome graphite/silver system with a full dark mode. Components
-   reference SEMANTIC token names (bg-brand-600, text-ink, border-sand-200,
-   text-link); the values below are what those names resolve to. Dark mode
+   AccessMap design tokens — "Azure"
+   A confident azure-blue system with a full dark mode. Components reference
+   SEMANTIC token names (bg-brand-600, text-ink, border-sand-200, text-link,
+   text-success…); the values below are what those names resolve to. Dark mode
    simply re-points the same names to darker values under the .dark class, so
    the whole app flips theme without touching a single component.
+
+   Colors are chosen for WCAG AA contrast in BOTH themes: brand-600 (the primary
+   button fill, always paired with white text) stays dark enough for AA, while
+   the brighter brand-400 (#4C93FF) is reserved for accents, links, and borders.
 --------------------------------------------------------------------------- */
 @theme {
-  /* Brand ramp — graphite (used for buttons, fills, borders). Light→dark. */
-  --color-brand-50: #f4f4f5;
-  --color-brand-100: #e4e4e7;
-  --color-brand-200: #d4d4d8;
-  --color-brand-300: #a1a1aa;
-  --color-brand-400: #71717a;
-  --color-brand-500: #52525b;
-  --color-brand-600: #27272a;
-  --color-brand-700: #18181b;
-  --color-brand-800: #09090b;
-  --color-brand-900: #000000;
+  /* Brand ramp — azure (used for buttons, fills, borders). Light→dark. */
+  --color-brand-50: #eaf1fe;
+  --color-brand-100: #d6e4fd;
+  --color-brand-200: #b3ccfb;
+  --color-brand-300: #7fa8f6;
+  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-500: #2f7df6;
+  --color-brand-600: #1d4ed8; /* primary button — white text is AA here */
+  --color-brand-700: #1e40af; /* hover */
+  --color-brand-800: #1a388a;
+  --color-brand-900: #122a63;
 
-  /* Accent — silver/chrome (replaces the old amber). */
-  --color-accent-400: #d4d4d8;
-  --color-accent-500: #a1a1aa;
-  --color-accent-600: #71717a;
+  /* Accent — violet secondary (the azure→violet gradient's far end). */
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #6d28d9; /* white text is AA here */
+  --color-accent-600: #5b21b6;
 
-  /* Neutrals / surfaces. */
-  --color-sand-50: #fafafa;
-  --color-sand-100: #f4f4f5;
-  --color-sand-200: #e4e4e7;
+  /* Neutrals / surfaces — cool light greys. */
+  --color-sand-50: #eff2f8; /* page background */
+  --color-sand-100: #e6ebf4; /* subtle panel fill / hover */
+  --color-sand-200: #d3dbea; /* borders + unfilled stars */
 
   /* Card surface — white on light, near-black on dark (see .dark below). */
   --color-surface: #ffffff;
 
   /* Text. */
-  --color-ink: #18181b;
-  --color-ink-soft: #52525b;
-  --color-ink-faint: #a1a1aa;
+  --color-ink: #0b1b2e;
+  --color-ink-soft: #48566b;
+  --color-ink-faint: #6b7688;
 
   /* Interactive text / links — adaptive so it stays legible in both themes. */
-  --color-link: #18181b;
+  --color-link: #1d4ed8;
 
-  /* Type families. */
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Score tiers — ONE source of truth for high/medium/low accessibility.
+     Each tier has a foreground (text/icon), a soft fill, and a ring/border.
+     Light values are darkened for AA text contrast on pale fills. */
+  --color-success: #0e7a43;
+  --color-success-soft: #e4f4ea;
+  --color-success-ring: #b7e0c6;
+  --color-warning: #8a5000;
+  --color-warning-soft: #f7ecd6;
+  --color-warning-ring: #e6cf9f;
+  --color-danger: #b42318;
+  --color-danger-soft: #fbe5e3;
+  --color-danger-ring: #f0c6c2;
+
+  /* Review stars. */
+  --color-star: #d97706;
+
+  /* Type families. Overpass gives headings a bold, geometric voice; Atkinson
+     Hyperlegible is a low-vision-friendly body face; Overpass Mono is used for
+     numbers (scores, distances, stats) so figures line up. */
+  --font-display: "Overpass", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Overpass Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-/* -------- Dark mode: repoint the same token names to a black/silver set ----
-   Applied when <html class="dark">. Surfaces go near-black, text goes silver,
-   and the graphite brand ramp lifts a step so fills stay visible on black. */
+/* -------- Dark mode: repoint the same token names to a near-black azure set --
+   Applied when <html class="dark">. Surfaces go near-black, text goes off-white,
+   and the azure accents brighten so they stay vivid on black. */
 .dark {
-  --color-brand-50: #1f1f23;
-  --color-brand-100: #27272a;
-  --color-brand-200: #3f3f46;
-  --color-brand-300: #52525b;
-  --color-brand-400: #71717a;
-  --color-brand-500: #a1a1aa;
-  --color-brand-600: #3f3f46; /* primary button — visible on black */
-  --color-brand-700: #52525b; /* hover */
-  --color-brand-800: #d4d4d8;
-  --color-brand-900: #f4f4f5;
+  --color-brand-50: #14243f; /* blue-tinted chip surface */
+  --color-brand-100: #172c4c;
+  --color-brand-200: #1e3a63; /* borders on blue */
+  --color-brand-300: #2c5698;
+  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-500: #6aa6ff;
+  --color-brand-600: #2563eb; /* primary button — white text is AA on black */
+  --color-brand-700: #1d4ed8; /* hover — darkens for a clear pressed feel */
+  --color-brand-800: #6aa6ff;
+  --color-brand-900: #b9d3ff;
 
-  --color-accent-400: #52525b;
-  --color-accent-500: #a1a1aa;
-  --color-accent-600: #d4d4d8;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #7c3aed; /* white text is AA here */
+  --color-accent-600: #6d28d9;
 
-  --color-sand-50: #0a0a0a; /* page background — black */
-  --color-sand-100: #18181b; /* cards */
-  --color-sand-200: #27272a; /* borders */
-  --color-surface: #131316; /* card surface — near-black, lifted off the page */
+  --color-sand-50: #08090b; /* page background — near-black */
+  --color-sand-100: #12151b; /* subtle panel fill / hover */
+  --color-sand-200: #262a33; /* borders + unfilled stars */
+  --color-surface: #101318; /* card surface — lifted off the page */
 
-  --color-ink: #e4e4e7; /* silver text */
-  --color-ink-soft: #a1a1aa;
-  --color-ink-faint: #71717a;
+  --color-ink: #f4f6f8; /* off-white text */
+  --color-ink-soft: #a6adb8;
+  --color-ink-faint: #6e7682;
 
-  --color-link: #d4d4d8; /* light silver links on black */
+  --color-link: #6aa6ff; /* bright azure links on black */
+
+  /* Tiers brighten and use translucent fills so they glow on the dark page. */
+  --color-success: #33d083;
+  --color-success-soft: rgba(51, 208, 131, 0.14);
+  --color-success-ring: rgba(51, 208, 131, 0.34);
+  --color-warning: #ffb454;
+  --color-warning-soft: rgba(255, 180, 84, 0.14);
+  --color-warning-ring: rgba(255, 180, 84, 0.34);
+  --color-danger: #ff6b60;
+  --color-danger-soft: rgba(255, 107, 96, 0.15);
+  --color-danger-ring: rgba(255, 107, 96, 0.36);
+
+  --color-star: #fbbf24;
 }
 
 :root {
   color-scheme: light;
+
+  /* Decorative atmosphere (see body::before/::after). Kept as plain custom
+     properties — not Tailwind tokens — because they're background art, not
+     colors components reference. */
+  --aurora: radial-gradient(58% 48% at 80% -8%, rgba(37, 99, 235, 0.16) 0%, transparent 55%),
+    radial-gradient(46% 40% at 10% 10%, rgba(124, 92, 255, 0.13) 0%, transparent 60%),
+    radial-gradient(52% 46% at 98% 34%, rgba(255, 110, 150, 0.1) 0%, transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, var(--color-sand-50) 46%);
+  --grain-opacity: 0.03;
+  --grain-blend: multiply;
+
+  /* Azure→violet brand gradient for headline accents and gradient fills.
+     Light-mode stops stay dark enough for AA on large text over white. */
+  --grad-brand: linear-gradient(120deg, #2563eb, #4c93ff 52%, #7c5cff);
 }
 .dark {
   color-scheme: dark;
+
+  --aurora: radial-gradient(70% 55% at 78% -5%, rgba(76, 147, 255, 0.45) 0%, transparent 55%),
+    radial-gradient(50% 45% at 4% 18%, rgba(124, 92, 255, 0.12) 0%, transparent 60%),
+    linear-gradient(180deg, #0d0f13 0%, var(--color-sand-50) 42%);
+  --grain-opacity: 0.05;
+  --grain-blend: overlay;
+
+  /* Lighter stops so the gradient stays vivid (and legible) on near-black. */
+  --grad-brand: linear-gradient(120deg, #8fbeff, #4c93ff 58%, #b98bff);
 }
 
 html,
@@ -118,12 +177,115 @@ footer,
     color 0.25s ease;
 }
 
-/* Headings use the display face. */
+/* Headings use the display face with a heavy, tightly-tracked weight so they
+   read as confident and distinctive (components can still override per use). */
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+/* App content sits above the fixed atmosphere layer below. */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Atmosphere: aurora + grain -------------------------------------------
+   A soft, slowly drifting color field (body::before) and a faint film grain
+   (body::after) behind everything. Both are decorative, pinned to the viewport
+   at z-index 0, and ignore pointer events. Real content renders on solid
+   surfaces above this, so text contrast never depends on the background. The
+   drift animation is disabled under prefers-reduced-motion below. */
+body {
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--aurora);
+  opacity: 0.95;
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes aurora {
+  to {
+    transform: translate3d(-30px, 20px, 0) scale(1.06);
+  }
+}
+
+/* ---- Scroll reveal --------------------------------------------------------
+   Elements tagged `rv` start faded + shifted down and animate in when the
+   useReveal hook (src/hooks/useReveal.js) adds the `in` class as they scroll
+   into view. Stagger a group by setting --rv-delay inline. */
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--rv-delay, 0s);
+}
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Paint text with the brand gradient (headline accent words, big beats). Only
+   use on large/bold text, where the gradient's lightest stop still clears AA. */
+.text-gradient {
+  background-image: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Reduced motion: hold the aurora still and show revealed content immediately,
+   so nothing depends on movement to appear or be understood. */
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+  .rv {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Reduced transparency: drop the glass/blur effects to solid surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  * {
+    backdrop-filter: none !important;
+  }
+  body::before,
+  body::after {
+    display: none;
+  }
+}
+
+/* More contrast: strengthen borders and unfilled-star greys in both themes. */
+@media (prefers-contrast: more) {
+  :root {
+    --color-sand-200: #b3bed4;
+  }
+  .dark {
+    --color-sand-200: #3c4557;
+  }
 }
 
 /* Accessibility-first: a clear, high-contrast focus ring. Uses the ink token

@@ -7,12 +7,14 @@ import {
   markReviewHelpful,
   unmarkReviewHelpful,
 } from "../lib/api";
-import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY } from "../lib/features";
+import { ACCESSIBILITY_FEATURES } from "../lib/features";
 import { hasMarkedHelpful, setMarkedHelpful } from "../lib/userData";
 import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
 import SaveButton from "../components/SaveButton";
 import DetectionImage from "../components/DetectionImage";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
 export default function VenueDetailPage() {
   const { id } = useParams();
@@ -40,8 +42,15 @@ export default function VenueDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-10 text-ink-faint animate-pulse">
-        Loading venue…
+      <div className="mx-auto max-w-4xl px-4 py-6">
+        <p role="status" className="sr-only">
+          Loading venue…
+        </p>
+        <div className="animate-pulse rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm">
+          <div className="h-8 w-2/3 rounded bg-sand-100" />
+          <div className="mt-3 h-4 w-1/2 rounded bg-sand-100" />
+          <div className="mt-6 h-10 w-40 rounded-xl bg-sand-100" />
+        </div>
       </div>
     );
   }
@@ -49,10 +58,16 @@ export default function VenueDetailPage() {
   if (error || !venue) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-10">
-        <p className="text-red-600">{error || "Venue not found."}</p>
-        <Link to="/search" className="text-link hover:underline text-sm">
-          ← Back to search
-        </Link>
+        <Card className="p-8 text-center">
+          <p role="alert" className="text-ink">
+            {error || "Venue not found."}
+          </p>
+          <div className="mt-4 flex justify-center">
+            <Button as={Link} to="/search" variant="outline">
+              ← Back to search
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -65,14 +80,14 @@ export default function VenueDetailPage() {
     <div className="mx-auto max-w-4xl px-4 py-6">
       <Link
         to="/search"
-        className="text-link hover:underline text-sm mb-4 inline-block font-medium"
+        className="mb-4 inline-block text-sm font-medium text-link hover:underline"
       >
         ← Back to search
       </Link>
 
-      <div className="flex items-start justify-between gap-4 flex-wrap rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm">
         <div>
-          <h1 className="font-display text-4xl font-semibold text-ink leading-tight">
+          <h1 className="font-display text-4xl font-extrabold leading-tight text-ink">
             {venue.name}
           </h1>
           <p className="mt-1 text-ink-soft">
@@ -83,14 +98,14 @@ export default function VenueDetailPage() {
           <ScoreBadge score={venue.accessibilityScore} size="lg" />
           <div className="flex items-center gap-2">
             <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
-            <a
+            <Button
+              as="a"
               href={directionsUrl}
               target="_blank"
               rel="noreferrer"
-              className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
             >
               Get directions
-            </a>
+            </Button>
           </div>
         </div>
       </div>
@@ -99,10 +114,10 @@ export default function VenueDetailPage() {
 
       {venue.photos?.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-display text-2xl font-semibold text-ink mb-4">
+          <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
             AI-analyzed photos
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {venue.photos.map((photo) => (
               <DetectionImage
                 key={photo.id}
@@ -139,15 +154,20 @@ function ReviewsSection({ venueId, reviews, onAdd, onDelete }) {
 
   return (
     <section className="mt-8">
-      <h2 className="font-display text-2xl font-semibold text-ink mb-4">
-        Community reviews {reviews.length > 0 && `(${reviews.length})`}
+      <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
+        Community reviews{" "}
+        {reviews.length > 0 && (
+          <span className="font-mono tabular-nums text-ink-soft">
+            ({reviews.length})
+          </span>
+        )}
       </h2>
 
       {user ? (
         <ReviewForm venueId={venueId} onAdd={onAdd} />
       ) : (
         <p className="mb-4 rounded-xl border border-sand-200 bg-sand-100 px-4 py-3 text-sm text-ink-soft">
-          <Link to="/login" className="text-link font-medium hover:underline">
+          <Link to="/login" className="font-medium text-link hover:underline">
             Sign in
           </Link>{" "}
           to leave a review.
@@ -187,10 +207,10 @@ function ReviewForm({ venueId, onAdd }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm space-y-4"
+      className="mb-6 space-y-4 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm"
     >
       <div>
-        <span className="block text-sm font-medium text-ink mb-1.5">
+        <span className="mb-1.5 block text-sm font-medium text-ink">
           Your rating
         </span>
         <div className="flex gap-1" role="radiogroup" aria-label="Star rating">
@@ -204,7 +224,7 @@ function ReviewForm({ venueId, onAdd }) {
               aria-label={`${star} star${star > 1 ? "s" : ""}`}
               aria-checked={rating === star}
               role="radio"
-              className="text-2xl leading-none text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 rounded"
+              className="rounded text-2xl leading-none text-star focus:outline-none focus:ring-2 focus:ring-star"
             >
               {(hovered || rating) >= star ? "★" : "☆"}
             </button>
@@ -215,7 +235,7 @@ function ReviewForm({ venueId, onAdd }) {
       <div>
         <label
           htmlFor="review-comment"
-          className="block text-sm font-medium text-ink mb-1.5"
+          className="mb-1.5 block text-sm font-medium text-ink"
         >
           Your review
         </label>
@@ -232,7 +252,7 @@ function ReviewForm({ venueId, onAdd }) {
       <div>
         <label
           htmlFor="review-date"
-          className="block text-sm font-medium text-ink mb-1.5"
+          className="mb-1.5 block text-sm font-medium text-ink"
         >
           Visit date <span className="text-ink-faint">(optional)</span>
         </label>
@@ -245,15 +265,15 @@ function ReviewForm({ venueId, onAdd }) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-danger">
+          {error}
+        </p>
+      )}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={submitting}>
         {submitting ? "Posting…" : "Post review"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -263,45 +283,51 @@ function FeatureBreakdown({ features }) {
 
   return (
     <section className="mt-8">
-      <h2 className="font-display text-2xl font-semibold text-ink mb-4">
+      <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
         Accessibility features
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {ACCESSIBILITY_FEATURES.map((meta) => {
           const feature = byKey[meta.key];
           const present = !!feature;
           const verified = (feature?.verifiedCount ?? 0) >= 3;
+          // Present positive features read green, barriers red, and anything
+          // not reported stays neutral and dimmed — color is never the only
+          // signal (the status text on the right says the same thing).
+          const boxClass = !present
+            ? "border-sand-200 bg-sand-50 opacity-70"
+            : meta.barrier
+              ? "border-danger-ring bg-danger-soft"
+              : "border-success-ring bg-success-soft";
           return (
             <div
               key={meta.key}
-              className={`flex items-center justify-between rounded-xl border p-4 ${
-                present
-                  ? meta.barrier
-                    ? "border-red-200 bg-red-50"
-                    : "border-brand-200 bg-brand-50"
-                  : "border-sand-200 bg-sand-50 opacity-60"
-              }`}
+              className={`flex items-center justify-between rounded-xl border p-4 ${boxClass}`}
             >
-              <div className="flex items-center gap-2">
-                <div>
-                  <p className="text-sm font-semibold text-ink">{meta.label}</p>
-                  {feature?.mlDetected && (
-                    <p className="text-xs text-ink-soft">
-                      AI-detected · {Math.round((feature.confidence ?? 0) * 100)}%
-                      confidence
-                    </p>
-                  )}
-                </div>
+              <div>
+                <p className="text-sm font-semibold text-ink">{meta.label}</p>
+                {feature?.mlDetected && (
+                  <p className="text-xs text-ink-soft">
+                    AI-detected ·{" "}
+                    <span className="font-mono tabular-nums">
+                      {Math.round((feature.confidence ?? 0) * 100)}%
+                    </span>{" "}
+                    confidence
+                  </p>
+                )}
               </div>
               <div className="text-right">
                 {present ? (
                   verified ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success ring-1 ring-inset ring-success-ring">
                       ✓ Verified
                     </span>
                   ) : (
                     <span className="text-xs text-ink-soft">
-                      {feature.verifiedCount ?? 0} verifications
+                      <span className="font-mono tabular-nums">
+                        {feature.verifiedCount ?? 0}
+                      </span>{" "}
+                      verifications
                     </span>
                   )
                 ) : (
@@ -388,14 +414,14 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
       <div className="flex items-center justify-between">
         <span className="font-semibold text-ink">{review.userName}</span>
         <span
-          className="text-accent-500"
+          className="text-star"
           aria-label={`${review.rating} out of 5 stars`}
         >
           {"★".repeat(review.rating)}
           <span className="text-sand-200">{"★".repeat(5 - review.rating)}</span>
         </span>
       </div>
-      <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
         {review.comment}
       </p>
       <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
@@ -414,23 +440,31 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
                 : "border-sand-200 text-ink-soft hover:bg-sand-100"
             }`}
           >
-            Helpful · {helpfulCount}
+            Helpful ·{" "}
+            <span className="font-mono tabular-nums">{helpfulCount}</span>
           </button>
         ) : (
-          <span>{helpfulCount} found helpful</span>
+          <span>
+            <span className="font-mono tabular-nums">{helpfulCount}</span> found
+            helpful
+          </span>
         )}
         {canDelete && (
           <button
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="ml-auto font-medium text-red-600 hover:underline disabled:opacity-50"
+            className="ml-auto font-medium text-danger hover:underline disabled:opacity-50"
           >
             {deleting ? "Deleting…" : "Delete"}
           </button>
         )}
       </div>
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-2 text-xs text-danger">
+          {error}
+        </p>
+      )}
     </article>
   );
 }

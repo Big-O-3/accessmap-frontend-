@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DetectionImage from "../DetectionImage";
 import ScanningOverlay from "../ScanningOverlay";
+import Button from "../Button";
 import { featureLabel } from "../../lib/features";
 
 // Step 3 · AI Detection Review (the primary ML feature).
@@ -47,7 +48,7 @@ export default function StepReviewDetections({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold text-ink">
+        <h2 className="font-display text-lg font-extrabold text-ink">
           Confirm what the AI found
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
@@ -63,7 +64,7 @@ export default function StepReviewDetections({
             type="button"
             onClick={() => setActive((a) => Math.max(0, a - 1))}
             disabled={active === 0}
-            className="rounded-md border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
+            className="rounded-xl border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
           >
             ◀ Prev
           </button>
@@ -76,7 +77,7 @@ export default function StepReviewDetections({
               setActive((a) => Math.min(photos.length - 1, a + 1))
             }
             disabled={active === photos.length - 1}
-            className="rounded-md border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
+            className="rounded-xl border border-sand-200 px-3 py-1.5 text-ink-soft disabled:opacity-40"
           >
             Next ▶
           </button>
@@ -117,9 +118,9 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
     return (
       <div
         role="alert"
-        className="rounded-xl bg-amber-50 p-6 text-center text-sm text-amber-900 ring-1 ring-amber-600/20"
+        className="rounded-xl bg-warning-soft p-6 text-center text-sm text-warning ring-1 ring-inset ring-warning-ring"
       >
-        <p className="font-medium">
+        <p className="font-semibold">
           {expired ? "Your session expired." : photo.error}
         </p>
         {expired ? (
@@ -128,12 +129,9 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
               Sign in again to analyze photos. Anything on this page won&apos;t
               be saved, so you&apos;ll need to re-add your photos afterwards.
             </p>
-            <Link
-              to="/login"
-              className="mt-3 inline-block rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
-            >
+            <Button as={Link} to="/login" size="sm" className="mt-3">
               Sign in again
-            </Link>
+            </Button>
           </>
         ) : (
           <p className="mt-1">
@@ -150,23 +148,19 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
     return (
       <div
         role="alert"
-        className="rounded-xl bg-red-50 p-6 text-center text-sm text-red-700 ring-1 ring-red-600/20"
+        className="rounded-xl bg-danger-soft p-6 text-center text-sm text-danger ring-1 ring-inset ring-danger-ring"
       >
-        <p className="font-medium">Couldn&apos;t analyze this photo.</p>
+        <p className="font-semibold">Couldn&apos;t analyze this photo.</p>
         <p className="mt-1">{photo.error}</p>
         {/* Reassure the contributor that the failed analysis left nothing
             behind — the photo is rolled back on failure (see analyzePhoto). */}
-        <p className="mt-1 text-xs text-red-600">
+        <p className="mt-1 text-xs opacity-80">
           This photo wasn&apos;t saved to the venue. Make sure the backend and
           ML service are reachable, then retry.
         </p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-3 rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
-        >
+        <Button type="button" onClick={onRetry} size="sm" className="mt-3">
           Retry
-        </button>
+        </Button>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import ScoreBadge from "./ScoreBadge";
 import SaveButton from "./SaveButton";
+import Pill from "./Pill";
 import { featureLabel } from "../lib/features";
 
 export default function VenueCard({ venue, active, onHover }) {
@@ -37,24 +38,29 @@ export default function VenueCard({ venue, active, onHover }) {
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {venue.featureKeys.map((key) => (
-          <span
-            key={key}
-            className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-link"
-            title={featureLabel(key)}
-          >
+          <Pill key={key} dot title={featureLabel(key)}>
             {featureLabel(key)}
-          </span>
+          </Pill>
         ))}
       </div>
 
       <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
         {venue.distance != null && (
           <span className="font-medium text-link">
-            {venue.distance.toFixed(1)} mi
+            <span className="font-mono tabular-nums">
+              {venue.distance.toFixed(1)}
+            </span>{" "}
+            mi
           </span>
         )}
-        <span>{venue.totalReviews} reviews</span>
-        <span>{venue.totalPhotos} photos</span>
+        <span>
+          <span className="font-mono tabular-nums">{venue.totalReviews}</span>{" "}
+          reviews
+        </span>
+        <span>
+          <span className="font-mono tabular-nums">{venue.totalPhotos}</span>{" "}
+          photos
+        </span>
       </div>
     </Wrapper>
   );
