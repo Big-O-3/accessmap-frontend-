@@ -71,9 +71,11 @@ export function AuthProvider({ children }) {
     if (error) throw new Error(error.message);
   }, []);
 
-  // Returns { needsConfirmation: boolean }. If Supabase has email confirmation
-  // turned on, signUp returns no session and the user must click a link in the
-  // confirmation email before they can sign in.
+  // Returns { needsConfirmation: boolean }. Whether confirmation is required is
+  // a Supabase dashboard setting (Authentication → Email → Confirm email), not
+  // decided here: with it on, signUp returns no session and the user must click
+  // the emailed link before signing in; with it off, a session comes back and
+  // the caller can log them straight in. We just report which case happened.
   const signUpWithEmail = useCallback(async (email, password) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw new Error(error.message);
