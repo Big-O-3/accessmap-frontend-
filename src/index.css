@@ -62,9 +62,12 @@
   /* Review stars. */
   --color-star: #d97706;
 
-  /* Type families. */
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Type families. Overpass gives headings a bold, geometric voice; Atkinson
+     Hyperlegible is a low-vision-friendly body face; Overpass Mono is used for
+     numbers (scores, distances, stats) so figures line up. */
+  --font-display: "Overpass", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Overpass Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 /* -------- Dark mode: repoint the same token names to a near-black azure set --
@@ -151,11 +154,13 @@ footer,
     color 0.25s ease;
 }
 
-/* Headings use the display face. */
+/* Headings use the display face with a heavy, tightly-tracked weight so they
+   read as confident and distinctive (components can still override per use). */
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: -0.02em;
 }
 
