@@ -126,6 +126,10 @@
     linear-gradient(180deg, #ffffff 0%, var(--color-sand-50) 46%);
   --grain-opacity: 0.03;
   --grain-blend: multiply;
+
+  /* Azure→violet brand gradient for headline accents and gradient fills.
+     Light-mode stops stay dark enough for AA on large text over white. */
+  --grad-brand: linear-gradient(120deg, #2563eb, #4c93ff 52%, #7c5cff);
 }
 .dark {
   color-scheme: dark;
@@ -135,6 +139,9 @@
     linear-gradient(180deg, #0d0f13 0%, var(--color-sand-50) 42%);
   --grain-opacity: 0.05;
   --grain-blend: overlay;
+
+  /* Lighter stops so the gradient stays vivid (and legible) on near-black. */
+  --grad-brand: linear-gradient(120deg, #8fbeff, #4c93ff 58%, #b98bff);
 }
 
 html,
@@ -236,6 +243,15 @@ body::after {
 .rv.in {
   opacity: 1;
   transform: none;
+}
+
+/* Paint text with the brand gradient (headline accent words, big beats). Only
+   use on large/bold text, where the gradient's lightest stop still clears AA. */
+.text-gradient {
+  background-image: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Reduced motion: hold the aurora still and show revealed content immediately,

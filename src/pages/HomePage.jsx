@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { searchVenues } from "../lib/api";
 import VenueCard from "../components/VenueCard";
+import Reveal from "../components/Reveal";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import useCountUp from "../hooks/useCountUp";
 
 const STEPS = [
   {
@@ -18,18 +22,238 @@ const STEPS = [
   },
   {
     title: "Visitors decide with confidence",
-    body: "Every venue gets a clear accessibility rating — accessible, partial, or not — with photo evidence, so you can plan a visit before leaving home.",
+    body: "Every venue gets a 0–100 accessibility score with photo evidence, so you can plan a visit before leaving home.",
   },
 ];
+
+function SearchGlyph({ className }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+function CameraGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-10 w-10"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 8h3l1.5-2h7L17 8h3v11H4z" />
+      <circle cx="12" cy="13" r="3.2" />
+    </svg>
+  );
+}
+
+// A single cross-fading layer inside the story phone. Only the active step's
+// layer is shown; the rest fade out.
+function Layer({ show, children }) {
+  return (
+    <div
+      className={`absolute inset-0 transition-opacity duration-500 ${
+        show ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function DetectionTag({ className, label, conf }) {
+  return (
+    <div
+      className={`absolute rounded-lg border-2 border-dashed border-brand-400 ${className}`}
+    >
+      <span className="absolute -top-3 left-0 whitespace-nowrap rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+        {label} <span className="font-mono">{conf}</span>
+      </span>
+    </div>
+  );
+}
+
+// The sticky "phone" that walks through the four steps as the text scrolls by
+// (the Apple-style "take a closer look" pattern). Purely decorative — the same
+// story is spelled out in the numbered text steps beside it, so nothing here is
+// required to understand how AccessMap works.
+function StoryPhone({ activeStep }) {
+  return (
+    <div className="mx-auto w-full max-w-[18rem]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-sand-200 bg-surface shadow-xl">
+        <div
+          className="relative aspect-[4/5]"
+          style={{ background: "linear-gradient(150deg,#23485e,#0f2230)" }}
+        >
+          {/* 1 — a fresh photo */}
+          <Layer show={activeStep === 0}>
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-white/90">
+              <CameraGlyph />
+              <span className="rounded-full bg-black/35 px-3 py-1 text-xs font-semibold backdrop-blur">
+                Entrance photo
+              </span>
+            </div>
+          </Layer>
+
+          {/* 2 — AI detections drawn on the photo */}
+          <Layer show={activeStep === 1}>
+            <DetectionTag
+              className="left-6 top-10 h-24 w-20"
+              label="Ramp"
+              conf="0.94"
+            />
+            <DetectionTag
+              className="bottom-14 right-6 h-20 w-16"
+              label="Wide door"
+              conf="0.88"
+            />
+          </Layer>
+
+          {/* 3 — community verification */}
+          <Layer show={activeStep === 2}>
+            <div className="flex h-full items-center justify-center p-4">
+              <span className="rounded-2xl bg-black/45 px-4 py-3 text-center text-sm font-semibold text-white backdrop-blur">
+                <span className="text-success">✓</span> Verified by 3 people
+              </span>
+            </div>
+          </Layer>
+
+          {/* 4 — the live score */}
+          <Layer show={activeStep === 3}>
+            <div className="flex h-full flex-col justify-end p-4">
+              <div className="rounded-2xl bg-black/50 p-3 backdrop-blur">
+                <div className="flex items-baseline justify-between text-white">
+                  <span className="font-mono text-3xl font-bold tabular-nums">
+                    88
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-success">
+                    Accessible
+                  </span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/15">
+                  <div
+                    className="h-full rounded-full transition-[width] duration-1000 ease-out"
+                    style={{
+                      width: activeStep >= 3 ? "88%" : "0%",
+                      backgroundImage: "var(--grad-brand)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </Layer>
+        </div>
+
+        {/* Caption + progress dots follow the active step. */}
+        <div className="p-4">
+          <div className="flex gap-1.5" aria-hidden="true">
+            {STEPS.map((step, i) => (
+              <span
+                key={step.title}
+                className={`h-1.5 rounded-full transition-all ${
+                  activeStep === i ? "w-6 bg-brand-500" : "w-1.5 bg-sand-200"
+                }`}
+              />
+            ))}
+          </div>
+          <p className="mt-3 font-display font-bold text-ink">
+            {STEPS[activeStep].title}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeaturedSkeleton() {
+  return (
+    <div className="grid gap-5 md:grid-cols-3" aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm"
+        >
+          <div className="h-5 w-2/3 animate-pulse rounded bg-sand-100" />
+          <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-sand-100" />
+          <div className="mt-4 flex gap-1.5">
+            <div className="h-6 w-24 animate-pulse rounded-full bg-sand-100" />
+            <div className="h-6 w-20 animate-pulse rounded-full bg-sand-100" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [featured, setFeatured] = useState([]);
+  const [status, setStatus] = useState("loading"); // loading | ready | error
+
+  // Which "How it works" step is centered in the viewport (drives the phone).
+  const [activeStep, setActiveStep] = useState(0);
+  const stepsRef = useRef(null);
+  // Read once: reduced-motion users get the calm, all-visible layout.
+  const [reduced] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+
+  // The "61 million" beat counts up when it scrolls into view.
+  const [countRef, count] = useCountUp(61);
 
   useEffect(() => {
-    searchVenues({}).then((data) => setFeatured(data.venues.slice(0, 3)));
+    let alive = true;
+    searchVenues({})
+      .then((data) => {
+        if (!alive) return;
+        setFeatured(data.venues.slice(0, 3));
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (alive) setStatus("error");
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
+
+  // Track the active step with a thin "trip line" across the middle of the
+  // screen: whichever step block crosses it becomes active. Skipped entirely
+  // for reduced-motion users (the phone just stays on step one).
+  useEffect(() => {
+    if (reduced || !("IntersectionObserver" in window)) return;
+    const container = stepsRef.current;
+    if (!container) return;
+
+    const items = container.querySelectorAll("[data-step]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveStep(Number(entry.target.dataset.step));
+          }
+        }
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+    );
+    items.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [reduced]);
 
   function handleSearch(e) {
     e.preventDefault();
@@ -38,115 +262,229 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-800 to-black text-white">
-        {/* Soft decorative glow so the hero doesn't read as a flat block. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-zinc-400/20 blur-3xl"
-        />
-        <div className="relative mx-auto max-w-4xl px-4 py-24 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-zinc-200 ring-1 ring-white/20">
-            ◆ Community-verified · AI-assisted
+      {/* ===================== HERO ===================== */}
+      <section className="mx-auto max-w-4xl px-4 pt-20 pb-12 text-center sm:pt-28">
+        <Reveal delay={0.05}>
+          <span className="inline-flex items-center gap-2 rounded-full border border-sand-200 bg-surface/70 px-4 py-1.5 text-sm font-semibold text-ink-soft backdrop-blur">
+            <span className="text-gradient">◆</span> Community-verified ·
+            AI-assisted
           </span>
-          <h1 className="mt-6 font-display text-5xl sm:text-6xl font-semibold leading-[1.05]">
-            Find places that
-            <br />
-            <span className="italic text-[#ff8c69]">actually</span> welcome you
-          </h1>
+        </Reveal>
+        <Reveal
+          as="h1"
+          delay={0.12}
+          className="mt-6 font-display text-5xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-6xl"
+        >
+          Find truly <span className="text-gradient">accessible</span> places
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={0.2}
+          className="mx-auto mt-6 max-w-2xl text-lg text-ink-soft"
+        >
+          Community-verified accessibility details and AI-detected features — so
+          you can find a venue that welcomes you before you leave home.
+        </Reveal>
+        <Reveal delay={0.28} className="mx-auto mt-9 max-w-xl">
           <form
             onSubmit={handleSearch}
-            className="mx-auto mt-10 flex max-w-xl gap-2 rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5"
+            className="flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-lg"
           >
+            <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by city…"
-              /* The form sits on a fixed white card, so use fixed dark text and
-                 placeholder here — NOT the adaptive `text-ink`/`text-ink-faint`
-                 tokens, which turn silver in dark mode and vanish on white. */
-              className="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
+              aria-label="Search venues by city"
+              className="min-w-0 flex-1 bg-transparent py-2 text-ink outline-none placeholder:text-ink-faint"
             />
-            <button
-              type="submit"
-              className="rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-700"
-            >
+            <Button type="submit" size="lg">
               Search
-            </button>
+            </Button>
           </form>
-        </div>
+        </Reveal>
       </section>
 
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-sand-200 to-transparent" />
+      </div>
+
+      {/* ===================== HOW IT WORKS (pinned) ===================== */}
       <section
         aria-labelledby="how-heading"
-        className="bg-surface border-b border-sand-200"
+        className="mx-auto max-w-6xl px-4 py-16 sm:py-24"
       >
-        <div className="mx-auto max-w-5xl px-4 py-16">
+        <Reveal className="max-w-2xl">
           <h2
             id="how-heading"
-            className="font-display text-3xl font-semibold text-ink text-center"
+            className="font-display text-3xl font-extrabold text-ink sm:text-4xl"
           >
             How it works
           </h2>
-          <ol className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step, i) => (
-              <li key={step.title} className="flex flex-col items-start gap-3">
-                <span
-                  aria-hidden="true"
-                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 font-display text-lg font-semibold text-white shadow-sm"
+          <p className="mt-3 text-lg text-ink-soft">
+            From one quick photo to a score you can trust — here's the path every
+            venue takes.
+          </p>
+        </Reveal>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          {/* Sticky visual — desktop only, so mobile stays a calm list. */}
+          <div className="hidden lg:block">
+            <div className="lg:sticky lg:top-24">
+              <StoryPhone activeStep={activeStep} />
+            </div>
+          </div>
+
+          <ol ref={stepsRef} className="space-y-6 lg:space-y-0">
+            {STEPS.map((step, i) => {
+              const dim = !reduced && activeStep !== i;
+              return (
+                <li
+                  key={step.title}
+                  data-step={i}
+                  className={`rounded-3xl border border-sand-200 bg-surface p-6 shadow-sm transition-opacity duration-500 lg:flex lg:min-h-[70vh] lg:flex-col lg:justify-center lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
+                    dim ? "lg:opacity-40" : "lg:opacity-100"
+                  }`}
                 >
-                  {i + 1}
-                </span>
-                <h3 className="font-semibold text-ink">{step.title}</h3>
-                <p className="text-sm text-ink-soft leading-relaxed">{step.body}</p>
-              </li>
-            ))}
+                  <span
+                    aria-hidden="true"
+                    className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-600 font-display text-xl font-extrabold text-white shadow-md"
+                  >
+                    {i + 1}
+                  </span>
+                  <h3 className="font-display text-xl font-extrabold text-ink sm:text-2xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 max-w-md leading-relaxed text-ink-soft">
+                    {step.body}
+                  </p>
+                </li>
+              );
+            })}
           </ol>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="flex items-end justify-between mb-6">
-          <h2 className="font-display text-3xl font-semibold text-ink">
-            Featured venues
-          </h2>
+      {/* ===================== BEAT — why it matters ===================== */}
+      <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+        <Reveal>
+          <p className="font-display text-5xl font-black tracking-tight sm:text-7xl">
+            <span ref={countRef} className="text-gradient font-mono tabular-nums">
+              {count}
+            </span>
+            <span className="text-gradient">M+</span>
+          </p>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
+            Americans live with a disability. AccessMap helps them know a place
+            is accessible before they leave home.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* ===================== FEATURED VENUES ===================== */}
+      <section
+        aria-labelledby="featured-heading"
+        className="mx-auto max-w-6xl px-4 py-16"
+      >
+        <Reveal className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h2
+              id="featured-heading"
+              className="font-display text-3xl font-extrabold text-ink sm:text-4xl"
+            >
+              Featured venues
+            </h2>
+            <p className="mt-2 text-ink-soft">
+              A few places the community has mapped recently.
+            </p>
+          </div>
           <Link
             to="/search"
-            className="text-link hover:underline text-sm font-medium"
+            className="whitespace-nowrap text-sm font-semibold text-link hover:underline"
           >
             View all →
           </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {featured.map((venue) => (
-            <VenueCard key={venue.id} venue={venue} />
-          ))}
-        </div>
+        </Reveal>
+
+        {status === "loading" && (
+          <>
+            <p role="status" className="sr-only">
+              Loading featured venues…
+            </p>
+            <FeaturedSkeleton />
+          </>
+        )}
+
+        {status === "error" && (
+          <Card className="p-6 text-center">
+            <p role="alert" className="text-ink-soft">
+              We couldn't load featured venues right now.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button as={Link} to="/search" variant="outline">
+                Browse all venues
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length === 0 && (
+          <Card className="p-8 text-center">
+            <p className="font-display text-lg font-bold text-ink">
+              No venues yet
+            </p>
+            <p className="mt-2 text-ink-soft">
+              Be the first to put an accessible place on the map.
+            </p>
+            <div className="mt-5 flex justify-center">
+              <Button as={Link} to="/add-venue">
+                Add a venue
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length > 0 && (
+          <div className="grid gap-5 md:grid-cols-3">
+            {featured.map((venue, i) => (
+              <Reveal key={venue.id} delay={i * 0.08}>
+                <VenueCard venue={venue} />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </section>
 
-      <section className="bg-sand-100 border-t border-sand-200">
-        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-          <h2 className="font-display text-3xl font-semibold text-ink">
-            Help build the map
-          </h2>
-          <p className="mt-3 text-ink-soft text-lg">
-            Every photo you add makes it easier for someone to visit a new place
-            with confidence.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link
-              to="/add-venue"
-              className="rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-            >
-              Add a venue
-            </Link>
-            <Link
-              to="/search"
-              className="rounded-xl border border-sand-200 bg-surface px-6 py-3 font-semibold text-ink-soft transition-colors hover:bg-sand-50"
-            >
-              Find accessible places
-            </Link>
+      {/* ===================== CTA ===================== */}
+      <section className="mx-auto max-w-6xl px-4 pb-20">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl border border-sand-200 bg-surface p-10 text-center shadow-lg sm:p-16">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 -top-24 h-64"
+              style={{
+                background:
+                  "radial-gradient(50% 60% at 50% 0%, var(--color-brand-400), transparent 70%)",
+                opacity: 0.22,
+              }}
+            />
+            <h2 className="relative font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Help build the map
+            </h2>
+            <p className="relative mx-auto mt-3 max-w-xl text-lg text-ink-soft">
+              Every photo you add makes it easier for someone to visit a new
+              place with confidence.
+            </p>
+            <div className="relative mt-8 flex flex-wrap justify-center gap-3">
+              <Button as={Link} to="/add-venue" size="lg">
+                Add a venue
+              </Button>
+              <Button as={Link} to="/search" variant="outline" size="lg">
+                Find accessible places
+              </Button>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   );
