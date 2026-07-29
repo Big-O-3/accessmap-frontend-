@@ -51,7 +51,7 @@ export default function Stepper({ current, labels = DEFAULT_LABELS }) {
           );
         })}
       </ol>
-      <p className="mt-2 text-center text-xs text-ink-soft sm:hidden">
+      <p className="mt-2 text-center text-sm text-ink-soft sm:hidden">
         Step {current} of {STEPS.length} · {STEPS[current - 1].label}
       </p>
     </nav>

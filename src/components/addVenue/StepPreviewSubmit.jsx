@@ -43,11 +43,11 @@ export default function StepPreviewSubmit({
         <p
           ref={successHeadingRef}
           tabIndex={-1}
-          className="font-display text-lg font-extrabold text-success outline-none"
+          className="font-display text-xl font-extrabold text-success outline-none"
         >
           Contribution submitted
         </p>
-        <p className="mt-2 text-sm text-ink-soft">
+        <p className="mt-2 text-base text-ink-soft">
           {result.featuresConfirmed > 0 ? (
             <>
               Your {result.featuresConfirmed} confirmed feature
@@ -63,7 +63,7 @@ export default function StepPreviewSubmit({
             </>
           )}
         </p>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-base text-ink-soft">
           Preview rating:{" "}
           {scoreVerdict(result.previewScore)?.label ?? "Not yet rated"}
         </p>
@@ -77,10 +77,10 @@ export default function StepPreviewSubmit({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-lg font-extrabold text-ink">
+        <h2 className="font-display text-xl font-extrabold text-ink">
           Preview &amp; submit
         </h2>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-base text-ink-soft">
           {venue?.name}
           {venue?.address ? ` · ${venue.address}` : ""}
         </p>
@@ -88,8 +88,8 @@ export default function StepPreviewSubmit({
 
       <div className="flex items-center justify-between rounded-xl bg-surface p-5 ring-1 ring-sand-200">
         <div>
-          <p className="text-sm text-ink-soft">Estimated accessibility</p>
-          <p className="text-xs text-ink-faint">
+          <p className="text-base text-ink-soft">Estimated accessibility</p>
+          <p className="text-sm text-ink-faint">
             Preview — updates as the community verifies features
           </p>
         </div>
@@ -97,11 +97,11 @@ export default function StepPreviewSubmit({
       </div>
 
       <div>
-        <h3 className="text-sm font-medium text-ink-soft">
+        <h3 className="text-base font-medium text-ink-soft">
           Confirmed features ({features.length})
         </h3>
         {features.length === 0 ? (
-          <p className="mt-2 rounded-xl bg-warning-soft px-3 py-2 text-sm text-warning ring-1 ring-inset ring-warning-ring">
+          <p className="mt-2 rounded-xl bg-warning-soft px-3 py-2 text-base text-warning ring-1 ring-inset ring-warning-ring">
             No features selected. Go back to add at least one feature, or leave a
             note below describing this venue before submitting.
           </p>
@@ -119,7 +119,7 @@ export default function StepPreviewSubmit({
       <div>
         <label
           htmlFor="contribution-note"
-          className="block text-sm font-medium text-ink-soft"
+          className="block text-base font-medium text-ink-soft"
         >
           Add a note (optional)
         </label>
@@ -129,11 +129,11 @@ export default function StepPreviewSubmit({
           onChange={(e) => onNoteChange(e.target.value)}
           rows={3}
           placeholder="e.g. Ramp is on the left side of the main entrance."
-          className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
-      <p className="rounded-lg bg-sand-100 px-3 py-2 text-xs text-ink-soft">
+      <p className="rounded-lg bg-sand-100 px-3 py-2 text-sm text-ink-soft">
         Your contribution enters the community verification queue. Features are
         confirmed by the community before they count toward the official score.
       </p>
@@ -141,7 +141,7 @@ export default function StepPreviewSubmit({
       {submitState === "error" && (
         <p
           role="alert"
-          className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger ring-1 ring-inset ring-danger-ring"
+          className="rounded-xl bg-danger-soft px-3 py-2 text-base text-danger ring-1 ring-inset ring-danger-ring"
         >
           {submitError}
         </p>

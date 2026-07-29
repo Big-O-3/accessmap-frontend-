@@ -37,7 +37,7 @@ export default function StepReviewDetections({
 
   if (photos.length === 0) {
     return (
-      <p className="text-sm text-ink-soft">
+      <p className="text-base text-ink-soft">
         No photos to review. Go back and add at least one photo.
       </p>
     );
@@ -48,10 +48,10 @@ export default function StepReviewDetections({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="font-display text-lg font-extrabold text-ink">
+        <h2 className="font-display text-xl font-extrabold text-ink">
           Confirm what the AI found
         </h2>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-base text-ink-soft">
           Our AI analyzed your photos. Uncheck anything it got wrong — you have
           the final say.
         </p>
@@ -59,7 +59,7 @@ export default function StepReviewDetections({
 
       {/* Photo pager */}
       {photos.length > 1 && (
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-base">
           <button
             type="button"
             onClick={() => setActive((a) => Math.max(0, a - 1))}
@@ -118,7 +118,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
     return (
       <div
         role="alert"
-        className="rounded-xl bg-warning-soft p-6 text-center text-sm text-warning ring-1 ring-inset ring-warning-ring"
+        className="rounded-xl bg-warning-soft p-6 text-center text-base text-warning ring-1 ring-inset ring-warning-ring"
       >
         <p className="font-semibold">
           {expired ? "Your session expired." : photo.error}
@@ -148,13 +148,13 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
     return (
       <div
         role="alert"
-        className="rounded-xl bg-danger-soft p-6 text-center text-sm text-danger ring-1 ring-inset ring-danger-ring"
+        className="rounded-xl bg-danger-soft p-6 text-center text-base text-danger ring-1 ring-inset ring-danger-ring"
       >
         <p className="font-semibold">Couldn&apos;t analyze this photo.</p>
         <p className="mt-1">{photo.error}</p>
         {/* Reassure the contributor that the failed analysis left nothing
             behind — the photo is rolled back on failure (see analyzePhoto). */}
-        <p className="mt-1 text-xs opacity-80">
+        <p className="mt-1 text-sm opacity-80">
           This photo wasn&apos;t saved to the venue. Make sure the backend and
           ML service are reachable, then retry.
         </p>
@@ -183,7 +183,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       <DetectionImage photo={{ imageUrl: photo.previewUrl, detections }} />
 
       {detections.length === 0 ? (
-        <p className="rounded-xl bg-surface px-4 py-6 text-center text-sm text-ink-soft ring-1 ring-sand-200">
+        <p className="rounded-xl bg-surface px-4 py-6 text-center text-base text-ink-soft ring-1 ring-sand-200">
           No accessibility features detected in this photo. Try a clearer photo
           of the entrance, restroom, parking, or seating.
         </p>
@@ -211,11 +211,11 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
                         onChange={() => onToggle(photo.id, idx)}
                         className="h-4 w-4 rounded border-sand-200 text-brand-600 focus:ring-brand-500"
                       />
-                      <span className="text-sm font-medium text-ink">
+                      <span className="text-base font-medium text-ink">
                         {featureLabel(d.accessibilityFeature)}
                       </span>
                     </span>
-                    <span className="text-xs font-semibold text-ink-soft">
+                    <span className="text-sm font-semibold text-ink-soft">
                       {pct}% confidence
                     </span>
                   </label>
@@ -227,7 +227,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       )}
 
       {photo.altText && (
-        <p className="text-xs text-ink-faint">
+        <p className="text-sm text-ink-faint">
           Suggested alt text: {photo.altText}
         </p>
       )}

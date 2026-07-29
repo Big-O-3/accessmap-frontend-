@@ -16,10 +16,10 @@ export default function StepManualChecklist({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="font-display text-lg font-extrabold text-ink">
+        <h2 className="font-display text-xl font-extrabold text-ink">
           Tell us what&apos;s accessible
         </h2>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-base text-ink-soft">
           Adding to <span className="font-medium text-ink">{venue?.name}</span>{" "}
           without a photo. Tick everything you know about — leave the rest
           unchecked.
@@ -46,12 +46,12 @@ export default function StepManualChecklist({
                       onChange={() => onToggle(feature.key)}
                       className="h-4 w-4 rounded border-sand-200 text-brand-600 focus:ring-brand-500"
                     />
-                    <span className="text-sm font-medium text-ink">
+                    <span className="text-base font-medium text-ink">
                       {feature.label}
                     </span>
                   </span>
                   {feature.barrier && (
-                    <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-xs font-semibold text-danger ring-1 ring-inset ring-danger-ring">
+                    <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-sm font-semibold text-danger ring-1 ring-inset ring-danger-ring">
                       Barrier
                     </span>
                   )}
@@ -62,7 +62,7 @@ export default function StepManualChecklist({
         </ul>
       </fieldset>
 
-      <p className="text-sm text-ink-soft">
+      <p className="text-base text-ink-soft">
         Have a photo instead?{" "}
         <button
           type="button"

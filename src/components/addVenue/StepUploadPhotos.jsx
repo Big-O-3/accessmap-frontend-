@@ -49,8 +49,8 @@ export default function StepUploadPhotos({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-lg font-extrabold text-ink">Upload photos</h2>
-        <p className="mt-1 text-sm text-ink-soft">
+        <h2 className="font-display text-xl font-extrabold text-ink">Upload photos</h2>
+        <p className="mt-1 text-base text-ink-soft">
           No forms to fill out — our AI reads the photos in the next step.
         </p>
       </div>
@@ -77,7 +77,7 @@ export default function StepUploadPhotos({
         }`}
       >
         <p className="font-medium text-ink">Drag &amp; drop photos here</p>
-        <p className="mt-1 text-xs text-ink-soft">
+        <p className="mt-1 text-sm text-ink-soft">
           Tip: entrance, bathroom, parking, and seating photos work best.
         </p>
         <Button
@@ -99,13 +99,13 @@ export default function StepUploadPhotos({
             e.target.value = ""; // allow re-selecting the same file
           }}
         />
-        <p className="mt-2 text-xs text-ink-faint">JPG or PNG, up to 10MB each.</p>
+        <p className="mt-2 text-sm text-ink-faint">JPG or PNG, up to 10MB each.</p>
       </div>
 
       {/* This venue already exists, so a photo is optional — offer a no-photo
           path that records accessibility features from a quick checklist. */}
       {canSkip && (
-        <p className="text-center text-sm text-ink-soft">
+        <p className="text-center text-base text-ink-soft">
           Don&apos;t have a photo?{" "}
           <button
             type="button"
@@ -120,7 +120,7 @@ export default function StepUploadPhotos({
 
       {photos.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-ink-soft">
+          <h3 className="text-base font-medium text-ink-soft">
             Uploaded ({photos.length})
           </h3>
           <ul className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">

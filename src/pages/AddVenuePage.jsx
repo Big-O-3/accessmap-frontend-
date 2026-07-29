@@ -399,9 +399,9 @@ export default function AddVenuePage() {
   }[stepName];
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-display text-3xl font-extrabold text-ink">Add a Venue</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-base text-ink-soft">
         Upload a few photos and let AI detect the accessibility features — no
         tedious forms.
       </p>
