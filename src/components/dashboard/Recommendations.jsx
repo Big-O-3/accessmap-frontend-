@@ -50,16 +50,16 @@ export default function Recommendations() {
       <h2 id="recs-heading" className="font-display text-xl font-extrabold text-ink">
         Recommended for you
       </h2>
-      <p className="text-xs text-ink-soft">Based on accessibility scores near you</p>
+      <p className="text-sm text-ink-soft">Based on accessibility scores near you</p>
 
       {status === "loading" && (
-        <p className="mt-3 text-sm text-ink-soft" role="status">
+        <p className="mt-3 text-base text-ink-soft" role="status">
           Finding accessible venues…
         </p>
       )}
 
       {status === "error" && (
-        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-4 text-sm text-ink-soft shadow-sm" role="alert">
+        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-4 text-base text-ink-soft shadow-sm" role="alert">
           Couldn&apos;t load recommendations right now.
         </p>
       )}
@@ -67,7 +67,7 @@ export default function Recommendations() {
       {status === "done" && (
         <div className="mt-3 space-y-3">
           {items.length === 0 ? (
-            <p className="rounded-2xl border border-sand-200 bg-surface p-4 text-sm text-ink-soft shadow-sm">
+            <p className="rounded-2xl border border-sand-200 bg-surface p-4 text-base text-ink-soft shadow-sm">
               No venues to recommend yet.
             </p>
           ) : (
@@ -85,7 +85,7 @@ export default function Recommendations() {
                   </Link>
                   <ScoreBadge score={v.accessibilityScore} size="sm" />
                 </div>
-                <p className="mt-1 text-sm text-ink-soft">
+                <p className="mt-1 text-base text-ink-soft">
                   {v.address}
                   {v.city ? `, ${v.city}` : ""}
                 </p>
@@ -96,7 +96,7 @@ export default function Recommendations() {
                     ))}
                   </div>
                 )}
-                <p className="mt-2 text-xs text-ink-faint">{v.reason}</p>
+                <p className="mt-2 text-sm text-ink-faint">{v.reason}</p>
                 <div className="mt-3 flex items-center gap-2">
                   <Button as={Link} to={`/venue/${v.id}`} size="sm">
                     View
@@ -108,7 +108,7 @@ export default function Recommendations() {
           )}
           <Link
             to="/search"
-            className="inline-block text-sm font-medium text-link hover:underline"
+            className="inline-block text-base font-medium text-link hover:underline"
           >
             See more matches →
           </Link>

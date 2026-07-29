@@ -13,7 +13,7 @@ export default function StatsGrid({ stats }) {
     <section aria-labelledby="stats-heading">
       <h2
         id="stats-heading"
-        className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
+        className="text-sm font-semibold uppercase tracking-wide text-ink-faint"
       >
         Your activity
       </h2>
@@ -26,11 +26,11 @@ export default function StatsGrid({ stats }) {
             <p className="font-mono text-3xl font-bold tabular-nums text-link sm:text-4xl">
               {t.value}
             </p>
-            <p className="mt-1 text-xs text-ink-soft sm:text-sm">{t.label}</p>
+            <p className="mt-1 text-sm text-ink-soft sm:text-base">{t.label}</p>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-xs text-ink-faint">
+      <p className="mt-2 text-sm text-ink-faint">
         Tracked on this device. Server-side sync isn&apos;t wired up yet, so
         stats reset when you switch browsers or clear site data.
       </p>

@@ -16,10 +16,10 @@ export default function SavedVenues({ saved }) {
         // Nothing saved yet — explain what the save button does and point back
         // to search, rather than showing a lone find-more tile with no context.
         <div className="mt-3 rounded-2xl border border-sand-200 bg-surface p-8 text-center shadow-sm">
-          <p className="font-display text-lg font-bold text-ink">
+          <p className="font-display text-xl font-bold text-ink">
             No saved venues yet
           </p>
-          <p className="mt-2 text-sm text-ink-soft">
+          <p className="mt-2 text-base text-ink-soft">
             Tap the save button on any venue to keep it here for quick access.
           </p>
           <div className="mt-4 flex justify-center">
@@ -43,7 +43,7 @@ export default function SavedVenues({ saved }) {
                   {v.name}
                 </Link>
                 {v.city && (
-                  <p className="mt-0.5 text-xs text-ink-soft">{v.city}</p>
+                  <p className="mt-0.5 text-sm text-ink-soft">{v.city}</p>
                 )}
               </div>
               <div className="mt-3 flex items-center justify-between gap-2">
@@ -56,7 +56,7 @@ export default function SavedVenues({ saved }) {
           {/* Find-more tile. */}
           <Link
             to="/search"
-            className="flex min-h-[7rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sand-200 p-4 text-center text-sm font-semibold text-link transition-colors hover:border-brand-400 hover:bg-brand-50/40"
+            className="flex min-h-[7rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-sand-200 p-4 text-center text-base font-semibold text-link transition-colors hover:border-brand-400 hover:bg-brand-50/40"
           >
             + Find more venues
           </Link>

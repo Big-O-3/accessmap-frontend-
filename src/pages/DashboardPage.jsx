@@ -18,14 +18,14 @@ export default function DashboardPage() {
   const stats = useStats();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="flex flex-col gap-4 rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-3xl font-extrabold text-ink">
             Your dashboard
           </h1>
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="mt-1 text-base text-ink-soft">
             Your saved places, recent activity, and venues we recommend.
           </p>
         </div>

@@ -12,7 +12,7 @@ export default function RecentActivity({ activity }) {
       </h2>
 
       {activity.length === 0 ? (
-        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-6 text-center text-sm text-ink-soft shadow-sm">
+        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-6 text-center text-base text-ink-soft shadow-sm">
           No activity yet. Save a venue or add one to get started.
         </p>
       ) : (
@@ -20,14 +20,14 @@ export default function RecentActivity({ activity }) {
           {activity.map((a) => (
             <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
-                <p className="text-sm text-ink">
+                <p className="text-base text-ink">
                   {a.venueId ? (
                     <ActivityText detail={a.detail} venueId={a.venueId} venueName={a.venueName} />
                   ) : (
                     a.detail
                   )}
                 </p>
-                <p className="mt-0.5 text-xs text-ink-faint">{timeAgo(a.createdAt)}</p>
+                <p className="mt-0.5 text-sm text-ink-faint">{timeAgo(a.createdAt)}</p>
               </div>
             </li>
           ))}
