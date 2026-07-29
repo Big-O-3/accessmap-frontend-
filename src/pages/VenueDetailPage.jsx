@@ -42,7 +42,7 @@ export default function VenueDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-6">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6">
         <p role="status" className="sr-only">
           Loading venue…
         </p>
@@ -57,7 +57,7 @@ export default function VenueDetailPage() {
 
   if (error || !venue) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-10">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
         <Card className="p-8 text-center">
           <p role="alert" className="text-ink">
             {error || "Venue not found."}
@@ -77,10 +77,10 @@ export default function VenueDetailPage() {
   )}`;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6">
       <Link
         to="/search"
-        className="mb-4 inline-block text-sm font-medium text-link hover:underline"
+        className="mb-4 inline-block text-base font-medium text-link hover:underline"
       >
         ← Back to search
       </Link>
@@ -90,7 +90,7 @@ export default function VenueDetailPage() {
           <h1 className="font-display text-4xl font-extrabold leading-tight text-ink">
             {venue.name}
           </h1>
-          <p className="mt-1 text-ink-soft">
+          <p className="mt-1 text-lg text-ink-soft">
             {venue.address}, {venue.city}, {venue.state} {venue.zipCode}
           </p>
         </div>
@@ -166,7 +166,7 @@ function ReviewsSection({ venueId, reviews, onAdd, onDelete }) {
       {user ? (
         <ReviewForm venueId={venueId} onAdd={onAdd} />
       ) : (
-        <p className="mb-4 rounded-xl border border-sand-200 bg-sand-100 px-4 py-3 text-sm text-ink-soft">
+        <p className="mb-4 rounded-xl border border-sand-200 bg-sand-100 px-4 py-3 text-base text-ink-soft">
           <Link to="/login" className="font-medium text-link hover:underline">
             Sign in
           </Link>{" "}
@@ -210,7 +210,7 @@ function ReviewForm({ venueId, onAdd }) {
       className="mb-6 space-y-4 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm"
     >
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-ink">
+        <span className="mb-1.5 block text-base font-medium text-ink">
           Your rating
         </span>
         <div className="flex gap-1" role="radiogroup" aria-label="Star rating">
@@ -235,7 +235,7 @@ function ReviewForm({ venueId, onAdd }) {
       <div>
         <label
           htmlFor="review-comment"
-          className="mb-1.5 block text-sm font-medium text-ink"
+          className="mb-1.5 block text-base font-medium text-ink"
         >
           Your review
         </label>
@@ -245,14 +245,14 @@ function ReviewForm({ venueId, onAdd }) {
           onChange={(e) => setComment(e.target.value)}
           rows={3}
           placeholder="Share how accessible this place was for you…"
-          className="w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
       <div>
         <label
           htmlFor="review-date"
-          className="mb-1.5 block text-sm font-medium text-ink"
+          className="mb-1.5 block text-base font-medium text-ink"
         >
           Visit date <span className="text-ink-faint">(optional)</span>
         </label>
@@ -261,12 +261,12 @@ function ReviewForm({ venueId, onAdd }) {
           type="date"
           value={visitDate}
           onChange={(e) => setVisitDate(e.target.value)}
-          className="rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="rounded-xl border border-sand-200 px-3 py-2 text-base text-ink focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
       {error && (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-base text-danger">
           {error}
         </p>
       )}
@@ -305,9 +305,9 @@ function FeatureBreakdown({ features }) {
               className={`flex items-center justify-between rounded-xl border p-4 ${boxClass}`}
             >
               <div>
-                <p className="text-sm font-semibold text-ink">{meta.label}</p>
+                <p className="text-base font-semibold text-ink">{meta.label}</p>
                 {feature?.mlDetected && (
-                  <p className="text-xs text-ink-soft">
+                  <p className="text-sm text-ink-soft">
                     AI-detected ·{" "}
                     <span className="font-mono tabular-nums">
                       {Math.round((feature.confidence ?? 0) * 100)}%
@@ -319,11 +319,11 @@ function FeatureBreakdown({ features }) {
               <div className="text-right">
                 {present ? (
                   verified ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success ring-1 ring-inset ring-success-ring">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-sm font-semibold text-success ring-1 ring-inset ring-success-ring">
                       ✓ Verified
                     </span>
                   ) : (
-                    <span className="text-xs text-ink-soft">
+                    <span className="text-sm text-ink-soft">
                       <span className="font-mono tabular-nums">
                         {feature.verifiedCount ?? 0}
                       </span>{" "}
@@ -331,7 +331,7 @@ function FeatureBreakdown({ features }) {
                     </span>
                   )
                 ) : (
-                  <span className="text-xs text-ink-faint">Not reported</span>
+                  <span className="text-sm text-ink-faint">Not reported</span>
                 )}
               </div>
             </div>
@@ -344,7 +344,7 @@ function FeatureBreakdown({ features }) {
 
 function ReviewList({ reviews = [], currentUserId, onDelete }) {
   if (reviews.length === 0) {
-    return <p className="text-sm text-ink-soft">No reviews yet.</p>;
+    return <p className="text-base text-ink-soft">No reviews yet.</p>;
   }
   return (
     <div className="space-y-4">
@@ -421,10 +421,10 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
           <span className="text-sand-200">{"★".repeat(5 - review.rating)}</span>
         </span>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+      <p className="mt-2 text-base leading-relaxed text-ink-soft">
         {review.comment}
       </p>
-      <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
+      <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
         {review.visitDate && (
           <span>Visited {new Date(review.visitDate).toLocaleDateString()}</span>
         )}
@@ -461,7 +461,7 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         )}
       </div>
       {error && (
-        <p role="alert" className="mt-2 text-xs text-danger">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       )}
