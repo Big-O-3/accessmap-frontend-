@@ -12,9 +12,9 @@ import { tierPlate } from "../lib/tierStyles";
 // this badge, the feature chips, and the map pins all speak the same palette.
 export default function ScoreBadge({ score, size = "md" }) {
   const sizes = {
-    sm: "text-xs px-2 py-0.5",
-    md: "text-sm px-2.5 py-1",
-    lg: "text-sm px-4 py-2",
+    sm: "text-sm px-2.5 py-0.5",
+    md: "text-base px-3 py-1",
+    lg: "text-lg px-4 py-2",
   };
 
   const verdict = scoreVerdict(score);

@@ -15,9 +15,9 @@ const VARIANTS = {
 };
 
 const SIZES = {
-  sm: "text-xs px-3 rounded-lg min-h-9",
-  md: "text-sm px-4 rounded-xl min-h-11",
-  lg: "text-base px-5 rounded-xl min-h-12",
+  sm: "text-sm px-3.5 rounded-lg min-h-9",
+  md: "text-base px-4 rounded-xl min-h-11",
+  lg: "text-lg px-6 rounded-xl min-h-12",
 };
 
 export default function Button({
