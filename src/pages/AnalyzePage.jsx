@@ -4,6 +4,7 @@ import DetectionImage from "../components/DetectionImage";
 import CameraCapture from "../components/CameraCapture";
 import PlaceAutocomplete from "../components/PlaceAutocomplete";
 import ScanningOverlay from "../components/ScanningOverlay";
+import Button from "../components/Button";
 import {
   analyzeImage,
   featureChecklist,
@@ -12,26 +13,28 @@ import {
 import { saveAnalyzedVenue } from "../lib/api";
 
 // Plain-English verdict shown at the top of the results, keyed by summary.level.
+// Colors come from the shared tier tokens (success / warning / danger) so the
+// verdict matches score plates, map pins, and banners everywhere else.
 const VERDICTS = {
   accessible: {
     text: "Looks accessible",
     detail: "Accessible features detected, with no barriers spotted in this photo.",
-    className: "bg-green-50 text-green-800 ring-green-600/20",
+    className: "bg-success-soft text-success ring-success-ring",
   },
   partial: {
     text: "Partially accessible",
     detail: "Some accessible features detected, but also a barrier — check the details.",
-    className: "bg-amber-50 text-amber-800 ring-amber-600/20",
+    className: "bg-warning-soft text-warning ring-warning-ring",
   },
   "not-accessible": {
     text: "Barriers detected",
     detail: "A barrier was detected and no accessible features were found in this photo.",
-    className: "bg-red-50 text-red-800 ring-red-600/20",
+    className: "bg-danger-soft text-danger ring-danger-ring",
   },
   unknown: {
     text: "No features detected",
     detail: "Nothing recognizable was found. Try a clearer photo of the entrance.",
-    className: "bg-sand-100 text-ink-soft ring-ink-soft/20",
+    className: "bg-sand-100 text-ink-soft ring-sand-200",
   },
 };
 
@@ -174,7 +177,7 @@ export default function AnalyzePage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
       <header className="text-center">
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold text-ink">
+        <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-ink">
           Check a venue's accessibility
         </h1>
         <p className="mt-2 text-sm sm:text-base text-ink-soft">
@@ -239,10 +242,13 @@ export default function AnalyzePage() {
       )}
 
       {status === "error" && (
-        <div className="mt-8 rounded-lg bg-red-50 p-4 text-center text-sm text-red-700 ring-1 ring-red-600/20">
-          <p className="font-medium">Couldn't analyze the photo.</p>
+        <div
+          role="alert"
+          className="mt-8 rounded-xl bg-danger-soft p-4 text-center text-sm text-danger ring-1 ring-inset ring-danger-ring"
+        >
+          <p className="font-semibold">Couldn't analyze the photo.</p>
           <p className="mt-1">{error}</p>
-          <p className="mt-2 text-xs text-red-600">
+          <p className="mt-2 text-xs opacity-80">
             Make sure the ML service is running on its port.
           </p>
         </div>
@@ -258,7 +264,7 @@ export default function AnalyzePage() {
             <div
               role="status"
               aria-live="polite"
-              className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-600/20"
+              className="rounded-xl bg-warning-soft p-4 text-sm text-warning ring-1 ring-inset ring-warning-ring"
             >
               {result.isVenue === false && (
                 <p className="font-semibold">
@@ -271,7 +277,7 @@ export default function AnalyzePage() {
                   {result.framingHint}
                 </p>
               )}
-              <p className="mt-2 text-xs text-amber-800/80">
+              <p className="mt-2 text-xs opacity-80">
                 Retake the photo for a more accurate score.
               </p>
             </div>
@@ -282,7 +288,7 @@ export default function AnalyzePage() {
               numeric score still exists under the hood (drives search, the map
               pins, and what the backend stores) but is never surfaced here. */}
           <div
-            className={`rounded-xl p-5 ring-1 ${VERDICTS[summary.level].className}`}
+            className={`rounded-xl p-5 ring-1 ring-inset ${VERDICTS[summary.level].className}`}
           >
             <p className="text-lg font-bold">{VERDICTS[summary.level].text}</p>
             <p className="mt-1 text-sm opacity-90">
@@ -307,8 +313,8 @@ export default function AnalyzePage() {
               and the score + verdict + what gets saved all follow. Features that
               weren't detected are shown but aren't checkable (there's nothing to
               confirm). */}
-          <div className="rounded-xl bg-surface ring-1 ring-sand-200">
-            <h2 className="border-b border-sand-100 px-4 py-3 text-sm font-semibold text-ink">
+          <div className="overflow-hidden rounded-2xl border border-sand-200 bg-surface shadow-sm">
+            <h2 className="border-b border-sand-100 px-4 py-3 font-display text-sm font-extrabold text-ink">
               Accessibility checklist
             </h2>
             <p className="border-b border-sand-100 px-4 py-2 text-xs text-ink-soft">
@@ -358,17 +364,17 @@ export default function AnalyzePage() {
                       </span>
                       {row.status === "yes" && (
                         <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
                             row.highConfidence
-                              ? "bg-green-100 text-green-800"
-                              : "bg-amber-100 text-amber-800"
+                              ? "bg-success-soft text-success ring-success-ring"
+                              : "bg-warning-soft text-warning ring-warning-ring"
                           }`}
                         >
                           {row.highConfidence ? "Detected" : "Likely — verify"}
                         </span>
                       )}
                       {row.status === "barrier" && (
-                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
+                        <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-xs font-semibold text-danger ring-1 ring-inset ring-danger-ring">
                           Barrier detected
                         </span>
                       )}
@@ -392,7 +398,7 @@ export default function AnalyzePage() {
           {/* Connect this analysis to the map — save it as a place. */}
           {(summary.present.length > 0 || summary.barriers.length > 0) &&
             (showNameInput ? (
-              <div className="space-y-2 rounded-xl bg-surface p-4 ring-1 ring-sand-200">
+              <div className="space-y-2 rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm">
                 <label
                   htmlFor="venue-name"
                   className="block text-sm font-medium text-ink-soft"
@@ -415,30 +421,30 @@ export default function AnalyzePage() {
                     setPickedPlace(place);
                   }}
                   placeholder="e.g. Salesforce Tower"
-                  className="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
+                  className="w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                 />
                 <p className="text-xs text-ink-faint">
                   {pickedPlace
                     ? `Saving at ${pickedPlace.displayName}.`
                     : "Pick a suggestion to save at that address, or we'll use your current location."}
                 </p>
-                <button
+                <Button
                   type="button"
                   onClick={confirmPlaceOnMap}
                   disabled={placing}
-                  className="w-full rounded-lg bg-brand-600 px-4 py-3 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-60"
+                  className="w-full"
                 >
                   {placing ? "Saving…" : "Save & show on map"}
-                </button>
+                </Button>
               </div>
             ) : (
-              <button
+              <Button
                 type="button"
                 onClick={() => setShowNameInput(true)}
-                className="w-full rounded-lg bg-brand-600 px-4 py-3 font-medium text-white transition-colors hover:bg-brand-700"
+                className="w-full"
               >
                 Place this result on the map
-              </button>
+              </Button>
             ))}
 
           <p className="text-center text-xs text-ink-faint">
