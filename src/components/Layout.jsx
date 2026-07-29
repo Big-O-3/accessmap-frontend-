@@ -20,7 +20,7 @@ const AUTH_LINKS = [
 ];
 
 function navLinkClass({ isActive }) {
-  return `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+  return `px-3 py-2 rounded-lg text-base font-medium transition-colors ${
     isActive
       ? "bg-brand-50 text-link"
       : "text-ink-soft hover:bg-sand-100 hover:text-ink"
@@ -53,14 +53,14 @@ function AuthSlot({ mobile = false, onNavigate }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-sand-100"
+          className="rounded-lg px-3 py-2 text-base font-medium text-ink-soft hover:bg-sand-100"
         >
           Log out
         </button>
       );
     }
     return (
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-base">
         <span className="text-ink-soft">Hi, {user.username}</span>
         <button
           type="button"
@@ -79,7 +79,7 @@ function AuthSlot({ mobile = false, onNavigate }) {
     <NavLink
       to="/login"
       className={({ isActive }) =>
-        `inline-block rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${
+        `inline-block rounded-lg px-4 py-2 text-base font-semibold shadow-sm transition-colors ${
           isActive
             ? "bg-brand-700 text-white"
             : "bg-brand-600 text-white hover:bg-brand-700"
@@ -123,7 +123,7 @@ export default function Layout() {
             : "border-b border-transparent bg-sand-50/60"
         }`}
       >
-        <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 group">
             <span
               className="grid h-9 w-9 place-items-center rounded-xl text-lg text-white shadow-sm transition-transform group-hover:scale-105"
@@ -168,11 +168,11 @@ export default function Layout() {
       </main>
 
       <footer className="border-t border-sand-200 bg-sand-100">
-        <div className="mx-auto max-w-6xl px-4 pt-8 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 flex flex-col items-center gap-2 text-center">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 flex flex-col items-center gap-2 text-center">
           <span className="font-display text-lg font-extrabold text-ink">
             AccessMap
           </span>
-          <p className="text-sm text-ink-soft">
+          <p className="text-base text-ink-soft">
             Community-powered accessibility discovery.
           </p>
         </div>
