@@ -16,7 +16,7 @@ export default function StepManualChecklist({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold text-ink">
+        <h2 className="font-display text-lg font-extrabold text-ink">
           Tell us what&apos;s accessible
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
@@ -51,7 +51,7 @@ export default function StepManualChecklist({
                     </span>
                   </span>
                   {feature.barrier && (
-                    <span className="text-xs font-semibold text-red-600">
+                    <span className="rounded-full bg-danger-soft px-2.5 py-0.5 text-xs font-semibold text-danger ring-1 ring-inset ring-danger-ring">
                       Barrier
                     </span>
                   )}

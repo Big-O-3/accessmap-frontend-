@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { searchVenues, createVenue } from "../../lib/api";
 import PlaceAutocomplete from "../PlaceAutocomplete";
+import Button from "../Button";
 
 // Step 1 · Find or Create Venue.
 // Search existing venues first (avoids duplicates); a match can be selected to
@@ -167,7 +168,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-ink">
+        <h2 className="font-display text-lg font-extrabold text-ink">
           Find or create a venue
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
@@ -191,7 +192,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
           onFocus={() => setMode("search")}
           onChange={(e) => setTerm(e.target.value)}
           placeholder="e.g. Seattle Central Library"
-          className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
 
         {searching && (
@@ -210,7 +211,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
                     type="button"
                     onClick={() => chooseExisting(v)}
                     aria-pressed={isSelected}
-                    className={`flex w-full items-center justify-between gap-3 rounded-md border px-3 py-2 text-left text-sm transition-colors ${
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left text-sm transition-colors ${
                       isSelected
                         ? "border-brand-500 bg-brand-50"
                         : "border-sand-200 bg-surface hover:bg-sand-100"
@@ -259,7 +260,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
             }}
             onPick={fillFromPlace}
             placeholder="Green Elephant Cafe"
-            className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+            className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
           />
           <p className="mt-1 text-xs text-ink-faint">
             Pick a suggestion to fill address & location automatically.
@@ -279,7 +280,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
             value={form.address}
             onChange={updateField("address")}
             placeholder="88 Elm St"
-            className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+            className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
           />
         </div>
 
@@ -297,7 +298,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
               value={form.city}
               onChange={updateField("city")}
               placeholder="Seattle"
-              className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -313,7 +314,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
               value={form.state}
               onChange={updateField("state")}
               placeholder="WA"
-              className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
           </div>
         </div>
@@ -329,7 +330,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
             id="venue-category"
             value={form.venueType}
             onChange={updateField("venueType")}
-            className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm capitalize outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+            className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm capitalize text-ink outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c} className="capitalize">
@@ -354,7 +355,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
               type="button"
               onClick={useMyLocation}
               disabled={locating}
-              className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-60 ${
+              className={`rounded-xl border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-60 ${
                 hasCoords
                   ? "border-brand-500 bg-brand-50 text-link"
                   : "border-sand-200 text-ink-soft hover:bg-sand-100"
@@ -381,7 +382,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
                 value={form.latitude}
                 onChange={updateField("latitude")}
                 placeholder="Latitude"
-                className="w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                className="w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
             </div>
             <div>
@@ -396,7 +397,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
                 value={form.longitude}
                 onChange={updateField("longitude")}
                 placeholder="Longitude"
-                className="w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                className="w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
             </div>
           </div>
@@ -405,19 +406,19 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
         {error && (
           <p
             role="alert"
-            className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20"
+            className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger ring-1 ring-inset ring-danger-ring"
           >
             {error}
           </p>
         )}
 
-        <button
+        <Button
           type="submit"
           disabled={creating || !form.name || !form.address || !form.city}
-          className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200"
+          className="w-full"
         >
           {creating ? "Creating…" : "Create venue & continue"}
-        </button>
+        </Button>
       </form>
     </div>
   );

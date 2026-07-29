@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import ScoreBadge from "../ScoreBadge";
+import Button from "../Button";
+import Pill from "../Pill";
 import { featureLabel } from "../../lib/features";
 import { scoreVerdict } from "../../lib/score";
 
@@ -36,40 +38,38 @@ export default function StepPreviewSubmit({
     return (
       <div
         role="status"
-        className="rounded-xl bg-green-50 p-6 text-center ring-1 ring-green-600/20"
+        className="rounded-2xl bg-success-soft p-6 text-center ring-1 ring-inset ring-success-ring"
       >
         <p
           ref={successHeadingRef}
           tabIndex={-1}
-          className="text-lg font-semibold text-green-800 outline-none"
+          className="font-display text-lg font-extrabold text-success outline-none"
         >
           Contribution submitted
         </p>
-        <p className="mt-2 text-sm text-green-700">
+        <p className="mt-2 text-sm text-ink-soft">
           {result.featuresConfirmed > 0 ? (
             <>
               Your {result.featuresConfirmed} confirmed feature
               {result.featuresConfirmed === 1 ? "" : "s"} for{" "}
-              <span className="font-medium">{venue?.name}</span> entered the
-              community verification queue.
+              <span className="font-medium text-ink">{venue?.name}</span> entered
+              the community verification queue.
             </>
           ) : (
             <>
               Your note for{" "}
-              <span className="font-medium">{venue?.name}</span> was recorded.
+              <span className="font-medium text-ink">{venue?.name}</span> was
+              recorded.
             </>
           )}
         </p>
-        <p className="mt-1 text-sm text-green-700">
-          Preview rating: {scoreVerdict(result.previewScore)?.label ?? "Not yet rated"}
+        <p className="mt-1 text-sm text-ink-soft">
+          Preview rating:{" "}
+          {scoreVerdict(result.previewScore)?.label ?? "Not yet rated"}
         </p>
-        <button
-          type="button"
-          onClick={onViewVenue}
-          className="mt-4 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-        >
+        <Button type="button" onClick={onViewVenue} className="mt-4">
           View venue →
-        </button>
+        </Button>
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function StepPreviewSubmit({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-ink">
+        <h2 className="font-display text-lg font-extrabold text-ink">
           Preview &amp; submit
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
@@ -101,18 +101,15 @@ export default function StepPreviewSubmit({
           Confirmed features ({features.length})
         </h3>
         {features.length === 0 ? (
-          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-600/20">
+          <p className="mt-2 rounded-xl bg-warning-soft px-3 py-2 text-sm text-warning ring-1 ring-inset ring-warning-ring">
             No features selected. Go back to add at least one feature, or leave a
             note below describing this venue before submitting.
           </p>
         ) : (
           <ul className="mt-2 flex flex-wrap gap-2">
             {features.map((f) => (
-              <li
-                key={f.type}
-                className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-link"
-              >
-                {featureLabel(f.type)}
+              <li key={f.type}>
+                <Pill dot>{featureLabel(f.type)}</Pill>
               </li>
             ))}
           </ul>
@@ -132,7 +129,7 @@ export default function StepPreviewSubmit({
           onChange={(e) => onNoteChange(e.target.value)}
           rows={3}
           placeholder="e.g. Ramp is on the left side of the main entrance."
-          className="mt-1 w-full rounded-md border border-sand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
@@ -144,22 +141,20 @@ export default function StepPreviewSubmit({
       {submitState === "error" && (
         <p
           role="alert"
-          className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20"
+          className="rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger ring-1 ring-inset ring-danger-ring"
         >
           {submitError}
         </p>
       )}
 
-      <button
+      <Button
         type="button"
         onClick={onSubmit}
         disabled={submitState === "submitting" || !canSubmit}
-        className="w-full rounded-md bg-brand-600 px-4 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200"
+        className="w-full"
       >
-        {submitState === "submitting"
-          ? "Submitting…"
-          : "Submit contribution ✓"}
-      </button>
+        {submitState === "submitting" ? "Submitting…" : "Submit contribution ✓"}
+      </Button>
     </div>
   );
 }

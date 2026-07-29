@@ -11,6 +11,7 @@ import {
   deletePhoto,
 } from "../lib/api";
 import { logActivity } from "../lib/userData";
+import Button from "../components/Button";
 import Stepper from "../components/addVenue/Stepper";
 import StepFindVenue from "../components/addVenue/StepFindVenue";
 import StepUploadPhotos from "../components/addVenue/StepUploadPhotos";
@@ -399,7 +400,7 @@ export default function AddVenuePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="font-display text-3xl font-semibold text-ink">Add a Venue</h1>
+      <h1 className="font-display text-3xl font-extrabold text-ink">Add a Venue</h1>
       <p className="mt-1 text-sm text-ink-soft">
         Upload a few photos and let AI detect the accessibility features — no
         tedious forms.
@@ -480,27 +481,26 @@ export default function AddVenuePage() {
       {state.step > 1 &&
         !(stepName === "submit" && state.submitState === "done") && (
           <div className="mt-8 flex items-center justify-between border-t border-sand-200 pt-6">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => dispatch({ type: "BACK" })}
-              className="rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-sand-100"
             >
               ← Back
-            </button>
+            </Button>
 
             {state.step < totalSteps && (
-              <button
+              <Button
                 type="button"
                 onClick={() => dispatch({ type: "NEXT" })}
                 disabled={!canAdvance}
-                className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-sand-200 disabled:text-ink-faint disabled:shadow-none"
               >
                 {stepName === "upload"
                   ? "Analyze with AI →"
                   : stepName === "review"
                     ? "Next: Review →"
                     : "Next →"}
-              </button>
+              </Button>
             )}
           </div>
         )}
