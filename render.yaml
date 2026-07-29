@@ -5,8 +5,8 @@
 # opened directly. Without a catch-all rewrite the host returns its own 404
 # ("Not Found") for anything but /, because only /index.html exists on disk.
 #
-# The public/_redirects file in this repo is the Netlify/Cloudflare convention
-# and is IGNORED by Render. On Render the SPA fallback is a rewrite rule, below:
+# A public/_redirects file is the Netlify/Cloudflare convention for this and is
+# IGNORED by Render. On Render the SPA fallback is a rewrite rule, below:
 # every path that isn't a real static asset is served index.html (HTTP 200), so
 # React Router boots and resolves the route on the client.
 services:

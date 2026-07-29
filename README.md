@@ -12,5 +12,6 @@ non-asset path, or refreshing anything but `/` returns the host's own 404.
   (`/*` → `/index.html`). If configuring by hand instead, add a Redirect/Rewrite
   rule in the static site's dashboard: Source `/*`, Destination `/index.html`,
   Action **Rewrite**. Render **ignores** `public/_redirects`.
-- **Netlify / Cloudflare Pages**: handled by [`public/_redirects`](./public/_redirects)
-  (`/*  /index.html  200`).
+- **Netlify / Cloudflare Pages**: add a `public/_redirects` file containing
+  `/*  /index.html  200`. (Not committed — the current host is Render, which
+  ignores it.)
