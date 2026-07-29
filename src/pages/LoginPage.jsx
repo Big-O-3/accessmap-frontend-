@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import Button from "../components/Button";
 
 export default function LoginPage() {
   const { loginWithGoogle, loginWithEmail, signUpWithEmail } = useAuth();
@@ -72,7 +73,7 @@ export default function LoginPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-12">
       <div className="rounded-2xl border border-sand-200 bg-surface p-8 shadow-sm">
-      <h1 className="font-display text-3xl font-semibold text-ink">
+      <h1 className="font-display text-3xl font-extrabold text-ink">
         {mode === "login" ? "Welcome back" : "Create your account"}
       </h1>
       <p className="mt-1 text-sm text-ink-soft">
@@ -82,16 +83,18 @@ export default function LoginPage() {
       </p>
 
       {redirectHint && (
-        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-brand-600/20">
+        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-inset ring-brand-200">
           Sign in to continue to <span className="font-medium">{redirectHint}</span>.
         </p>
       )}
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="lg"
         onClick={onGoogle}
         disabled={submitting}
-        className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-sand-200 bg-surface px-4 py-3 font-semibold text-ink-soft transition-colors hover:bg-sand-100 disabled:opacity-60"
+        className="mt-6 w-full"
       >
         <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
           <path
@@ -100,7 +103,7 @@ export default function LoginPage() {
           />
         </svg>
         {submitting ? "Please wait…" : "Continue with Google"}
-      </button>
+      </Button>
 
       <div className="my-6 flex items-center gap-3 text-xs uppercase text-ink-faint">
         <span className="h-px flex-1 bg-sand-200" />
@@ -138,17 +141,13 @@ export default function LoginPage() {
             className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-sm text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
           />
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-xl bg-brand-600 px-4 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:opacity-60"
-        >
+        <Button type="submit" size="lg" disabled={submitting} className="w-full">
           {submitting
             ? "Please wait…"
             : mode === "login"
               ? "Log in"
               : "Create account"}
-        </button>
+        </Button>
       </form>
 
       <p className="mt-4 text-center text-sm text-ink-soft">
@@ -158,7 +157,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => switchMode("signup")}
-              className="font-semibold text-link hover:text-link"
+              className="font-semibold text-link hover:underline"
             >
               Sign up
             </button>
@@ -169,7 +168,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => switchMode("login")}
-              className="font-semibold text-link hover:text-link"
+              className="font-semibold text-link hover:underline"
             >
               Log in
             </button>
@@ -178,13 +177,19 @@ export default function LoginPage() {
       </p>
 
       {info && (
-        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-brand-600/20">
+        <p
+          role="status"
+          className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-link ring-1 ring-inset ring-brand-200"
+        >
           {info}
         </p>
       )}
 
       {error && (
-        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">
+        <p
+          role="alert"
+          className="mt-4 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger ring-1 ring-inset ring-danger-ring"
+        >
           {error}
         </p>
       )}
