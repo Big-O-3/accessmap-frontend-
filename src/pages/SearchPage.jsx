@@ -149,7 +149,7 @@ export default function SearchPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
       <h1 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
         Find accessible venues
       </h1>
@@ -160,7 +160,7 @@ export default function SearchPage() {
         <button
           type="button"
           onClick={() => setFiltersOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl border border-sand-200 bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-sm hover:bg-sand-100 lg:hidden"
+          className="inline-flex items-center gap-2 rounded-xl border border-sand-200 bg-surface px-4 py-2 text-base font-semibold text-ink shadow-sm hover:bg-sand-100 lg:hidden"
         >
           <FilterGlyph />
           Filters
@@ -174,7 +174,7 @@ export default function SearchPage() {
         <div
           role="group"
           aria-label="Result view"
-          className="ml-auto flex overflow-hidden rounded-xl border border-sand-200 bg-surface text-sm shadow-sm"
+          className="ml-auto flex overflow-hidden rounded-xl border border-sand-200 bg-surface text-base shadow-sm"
         >
           {VIEWS.map((v) => (
             <button
@@ -205,7 +205,7 @@ export default function SearchPage() {
           {error && (
             <div
               role="alert"
-              className="mb-4 rounded-xl border border-danger-ring bg-danger-soft px-4 py-2 text-sm text-danger"
+              className="mb-4 rounded-xl border border-danger-ring bg-danger-soft px-4 py-2 text-base text-danger"
             >
               {error}
             </div>
@@ -222,16 +222,16 @@ export default function SearchPage() {
                   <SkeletonList />
                 ) : venues.length === 0 ? (
                   <Card className="p-8 text-center">
-                    <p className="font-display text-lg font-bold text-ink">
+                    <p className="font-display text-xl font-bold text-ink">
                       No venues match your filters
                     </p>
-                    <p className="mt-2 text-ink-soft">
+                    <p className="mt-2 text-lg text-ink-soft">
                       Try removing a filter or searching a different city.
                     </p>
                   </Card>
                 ) : (
                   <>
-                    <p className="text-sm text-ink-soft">
+                    <p className="text-base text-ink-soft">
                       Showing{" "}
                       <span className="font-mono tabular-nums">
                         {visibleVenues.length}
@@ -253,7 +253,7 @@ export default function SearchPage() {
                     {hasMore && (
                       <button
                         onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                        className="w-full rounded-xl border border-brand-200 bg-surface px-4 py-2.5 text-sm font-semibold text-link transition-colors hover:bg-brand-50"
+                        className="w-full rounded-xl border border-brand-200 bg-surface px-4 py-2.5 text-base font-semibold text-link transition-colors hover:bg-brand-50"
                       >
                         See more (
                         <span className="font-mono tabular-nums">

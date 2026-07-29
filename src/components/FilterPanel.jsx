@@ -14,7 +14,7 @@ export default function FilterPanel({
   return (
     <div className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-ink mb-1.5">
+        <label className="block text-base font-medium text-ink mb-1.5">
           City
         </label>
         <input
@@ -22,14 +22,14 @@ export default function FilterPanel({
           value={city}
           onChange={(e) => onCityChange(e.target.value)}
           placeholder="e.g. San Francisco"
-          className="w-full rounded-xl border border-sand-200 bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
+          className="w-full rounded-xl border border-sand-200 bg-surface px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
         />
       </div>
 
       <button
         type="button"
         onClick={onUseMyLocation}
-        className={`w-full rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+        className={`w-full rounded-xl border px-3 py-2 text-base font-semibold transition-colors ${
           hasLocation
             ? "border-brand-500 bg-brand-50 text-link"
             : "border-sand-200 bg-surface text-ink-soft hover:bg-sand-100"
@@ -39,7 +39,7 @@ export default function FilterPanel({
       </button>
 
       <fieldset>
-        <legend className="text-sm font-medium text-ink mb-2.5">
+        <legend className="text-base font-medium text-ink mb-2.5">
           Accessibility features
         </legend>
         <div className="space-y-1">
@@ -48,7 +48,7 @@ export default function FilterPanel({
             return (
               <label
                 key={feature.key}
-                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm cursor-pointer select-none transition-colors ${
+                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-base cursor-pointer select-none transition-colors ${
                   checked ? "bg-brand-50 text-link" : "hover:bg-sand-100"
                 }`}
               >
@@ -66,7 +66,7 @@ export default function FilterPanel({
       </fieldset>
 
       <fieldset>
-        <legend className="text-sm font-medium text-ink mb-2.5">
+        <legend className="text-base font-medium text-ink mb-2.5">
           Category
         </legend>
         <div className="space-y-1">
@@ -75,7 +75,7 @@ export default function FilterPanel({
             return (
               <label
                 key={type.key}
-                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm cursor-pointer select-none transition-colors ${
+                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-base cursor-pointer select-none transition-colors ${
                   checked ? "bg-brand-50 text-link" : "hover:bg-sand-100"
                 }`}
               >

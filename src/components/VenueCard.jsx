@@ -26,7 +26,7 @@ export default function VenueCard({ venue, active, onHover }) {
           <h3 className="font-display text-lg font-semibold text-ink leading-snug">
             {venue.name}
           </h3>
-          <p className="text-sm text-ink-soft">
+          <p className="text-base text-ink-soft">
             {venue.city ? `${venue.address}, ${venue.city}` : venue.address}
           </p>
         </div>
@@ -44,7 +44,7 @@ export default function VenueCard({ venue, active, onHover }) {
         ))}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-xs text-ink-faint">
+      <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
         {venue.distance != null && (
           <span className="font-medium text-link">
             <span className="font-mono tabular-nums">
