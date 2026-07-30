@@ -61,6 +61,41 @@ function CameraGlyph() {
   );
 }
 
+function PlusGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+function MapPinGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
 // A single cross-fading layer inside the story phone. Only the active step's
 // layer is shown; the rest fade out.
 function Layer({ show, children }) {
@@ -193,6 +228,136 @@ function FeaturedSkeleton() {
   );
 }
 
+// One of the two smaller quick-action tiles under the primary "Scan" tile.
+function SecondaryTile({ to, glyph, label }) {
+  return (
+    <Link
+      to={to}
+      className="flex flex-col gap-3 rounded-3xl border border-sand-200 bg-surface p-4 shadow-sm transition-transform active:scale-[0.98]"
+    >
+      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+        {glyph}
+      </span>
+      <span className="font-display text-base font-bold text-ink">{label}</span>
+    </Link>
+  );
+}
+
+// The phone home screen: an app-style, task-first layout that replaces the
+// marketing page on small screens (below md). Search sits up top, the primary
+// actions are big thumb-friendly tiles, and a short venue list rounds it out.
+// It reuses the featured-venue data the page already fetched, so there's no
+// extra request. The full marketing story still shows on tablet/desktop.
+function MobileHome({ query, setQuery, handleSearch, featured, status }) {
+  return (
+    <div className="px-4 pt-6 pb-4">
+      <h1 className="font-display text-3xl font-extrabold leading-tight text-ink">
+        Find accessible places
+      </h1>
+      <p className="mt-1 text-base text-ink-soft">
+        Community-verified, AI-assisted.
+      </p>
+
+      {/* Search — the fastest path to a venue, so it leads. */}
+      <form
+        onSubmit={handleSearch}
+        className="mt-5 flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-sm"
+      >
+        <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by city…"
+          aria-label="Search venues by city"
+          className="min-w-0 flex-1 bg-transparent py-2 text-base text-ink outline-none placeholder:text-ink-faint"
+        />
+        <Button type="submit">Search</Button>
+      </form>
+
+      {/* Primary actions, sized for thumbs. Scan leads as the hero task. */}
+      <div className="mt-8 grid grid-cols-2 gap-3">
+        <Link
+          to="/analyze"
+          className="col-span-2 flex items-center gap-4 rounded-3xl p-5 text-white shadow-lg transition-transform active:scale-[0.98]"
+          style={{ background: MARK_GRADIENT }}
+        >
+          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-white/20">
+            <CameraGlyph />
+          </span>
+          <span>
+            <span className="block font-display text-lg font-extrabold">
+              Scan a place
+            </span>
+            <span className="block text-sm text-white/85">
+              Detect accessibility from a photo
+            </span>
+          </span>
+        </Link>
+        <SecondaryTile to="/add-venue" glyph={<PlusGlyph />} label="Add a venue" />
+        <SecondaryTile to="/search" glyph={<MapPinGlyph />} label="Explore map" />
+      </div>
+
+      {/* A short taste of the map — full list is one tap away. */}
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="font-display text-xl font-extrabold text-ink">
+          Featured venues
+        </h2>
+        <Link to="/search" className="text-sm font-semibold text-link">
+          View all →
+        </Link>
+      </div>
+
+      <div className="mt-3">
+        {status === "loading" && (
+          <>
+            <p role="status" className="sr-only">
+              Loading featured venues…
+            </p>
+            <FeaturedSkeleton />
+          </>
+        )}
+
+        {status === "error" && (
+          <Card className="p-5 text-center">
+            <p role="alert" className="text-ink-soft">
+              We couldn't load venues right now.
+            </p>
+            <div className="mt-3 flex justify-center">
+              <Button as={Link} to="/search" variant="outline">
+                Browse all venues
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length === 0 && (
+          <Card className="p-6 text-center">
+            <p className="font-display text-lg font-bold text-ink">
+              No venues yet
+            </p>
+            <p className="mt-1 text-ink-soft">
+              Be the first to map an accessible place.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button as={Link} to="/add-venue">
+                Add a venue
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length > 0 && (
+          <div className="space-y-3">
+            {featured.map((venue) => (
+              <VenueCard key={venue.id} venue={venue} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -256,6 +421,19 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* Phones get a compact, app-style home (search + quick actions + a short
+          venue list). Everything below is the full marketing story for md+. */}
+      <div className="md:hidden">
+        <MobileHome
+          query={query}
+          setQuery={setQuery}
+          handleSearch={handleSearch}
+          featured={featured}
+          status={status}
+        />
+      </div>
+
+      <div className="hidden md:block">
       {/* ===================== HERO ===================== */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center sm:pt-28">
         <Reveal delay={0.05}>
@@ -482,6 +660,7 @@ export default function HomePage() {
           </div>
         </Reveal>
       </section>
+      </div>
     </div>
   );
 }
