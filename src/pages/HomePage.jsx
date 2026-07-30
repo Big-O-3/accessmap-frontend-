@@ -22,7 +22,7 @@ const STEPS = [
   },
   {
     title: "Visitors decide with confidence",
-    body: "Every venue gets a 0–100 accessibility score with photo evidence, so you can plan a visit before leaving home.",
+    body: "Every venue shows a clear rating — Accessible, Partially accessible, or Not accessible — backed by photo evidence, so you can plan a visit before leaving home.",
   },
 ];
 
@@ -93,7 +93,7 @@ function DetectionTag({ className, label, conf }) {
 // required to understand how AccessMap works.
 function StoryPhone({ activeStep }) {
   return (
-    <div className="mx-auto w-full max-w-[18rem]">
+    <div className="mx-auto w-full max-w-[clamp(20rem,26vw,28rem)]">
       <div className="relative overflow-hidden rounded-[2rem] border border-sand-200 bg-surface shadow-xl">
         <div
           className="relative aspect-[4/5]"
@@ -132,27 +132,21 @@ function StoryPhone({ activeStep }) {
             </div>
           </Layer>
 
-          {/* 4 — the live score */}
+          {/* 4 — the plain-language rating users actually see (no raw number) */}
           <Layer show={activeStep === 3}>
             <div className="flex h-full flex-col justify-end p-4">
-              <div className="rounded-2xl bg-black/50 p-3 backdrop-blur">
-                <div className="flex items-baseline justify-between text-white">
-                  <span className="font-mono text-3xl font-bold tabular-nums">
-                    88
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-success">
-                    Accessible
+              <div className="rounded-2xl bg-black/50 p-4 backdrop-blur">
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                  Accessibility
+                </span>
+                <div className="mt-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1.5 text-base font-semibold text-success ring-1 ring-inset ring-success-ring">
+                    <span aria-hidden="true">✓</span> Accessible
                   </span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/15">
-                  <div
-                    className="h-full rounded-full transition-[width] duration-1000 ease-out"
-                    style={{
-                      width: activeStep >= 3 ? "88%" : "0%",
-                      backgroundImage: "var(--grad-brand)",
-                    }}
-                  />
-                </div>
+                <p className="mt-3 text-xs leading-relaxed text-white/70">
+                  A clear rating from real photos — no number to decode.
+                </p>
               </div>
             </div>
           </Layer>
@@ -328,9 +322,11 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* Sticky visual — desktop only, so mobile stays a calm list. */}
+          {/* Sticky visual — desktop only, so mobile stays a calm list.
+              Vertically centered in the viewport so the phone lines up with the
+              active step as it scrolls past the middle of the screen. */}
           <div className="hidden lg:block">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:items-center">
               <StoryPhone activeStep={activeStep} />
             </div>
           </div>
