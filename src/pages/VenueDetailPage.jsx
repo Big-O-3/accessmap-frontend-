@@ -198,9 +198,20 @@ function ReviewForm({ venueId, onAdd }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  // Today in the visitor's local timezone as YYYY-MM-DD. Used to stop the visit
+  // date from being set in the future (both the date picker and the check below).
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+    // A visit can't happen in the future. YYYY-MM-DD strings compare in date
+    // order, so this also catches a value typed past the picker's max.
+    if (visitDate && visitDate > today) {
+      setError("Visit date can't be in the future.");
+      return;
+    }
     setSubmitting(true);
     try {
       const review = await createReview({ venueId, rating, comment, visitDate });
@@ -271,6 +282,7 @@ function ReviewForm({ venueId, onAdd }) {
           id="review-date"
           type="date"
           value={visitDate}
+          max={today}
           onChange={(e) => setVisitDate(e.target.value)}
           className="rounded-xl border border-sand-200 px-3 py-2 text-base text-ink focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
