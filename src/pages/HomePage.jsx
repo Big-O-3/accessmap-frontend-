@@ -377,8 +377,8 @@ export default function HomePage() {
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
-  // The "61 million" beat counts up when it scrolls into view.
-  const [countRef, count] = useCountUp(61);
+  // The "6 million" beat counts up when it scrolls into view.
+  const [countRef, count] = useCountUp(6);
 
   useEffect(() => {
     let alive = true;
@@ -554,8 +554,8 @@ export default function HomePage() {
             <span className="text-gradient">M+</span>
           </p>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-            Americans live with a disability. AccessMap helps them know a place
-            is accessible before they leave home.
+            Americans use a wheelchair. AccessMap helps them know a place is
+            accessible before they leave home.
           </p>
         </Reveal>
       </section>
