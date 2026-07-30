@@ -391,3 +391,18 @@ body::after {
     opacity: 1;
   }
 }
+
+/* ---- Leaflet map containment ----------------------------------------------
+   Leaflet hard-codes very high z-indexes on its internal layers — panes climb
+   to ~700 and the zoom/attribution controls sit at ~1000 — all far above the
+   app's sticky header (z-30), mobile bottom nav (z-40), and filter sheet
+   (z-50). Left alone, the map's tiles and controls paint OVER those when they
+   overlap while scrolling. `isolation: isolate` gives the map its own stacking
+   context, so every Leaflet z-index resolves INSIDE the map box (their internal
+   order — tiles < markers < popups < controls — is untouched) while the box
+   itself stacks at normal flow level, safely beneath the chrome above it. This
+   is the whole fix; we deliberately don't touch Leaflet's per-pane z-indexes,
+   which it needs for that internal ordering. */
+.leaflet-container {
+  isolation: isolate;
+}
