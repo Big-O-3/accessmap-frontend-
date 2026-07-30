@@ -7,6 +7,11 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import useCountUp from "../hooks/useCountUp";
 
+// Brand gradient for the primary "Scan" tile on the mobile home — matches the
+// raised Scan button in the bottom nav so the two read as the same action.
+const MARK_GRADIENT =
+  "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))";
+
 const STEPS = [
   {
     title: "Contributors upload photos",
