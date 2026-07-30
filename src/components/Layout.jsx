@@ -46,7 +46,7 @@ function AuthSlot({ mobile = false, onNavigate }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-lg px-3 py-2 text-base font-medium text-ink-soft hover:bg-sand-100"
+          className={navLinkClass({ isActive: false })}
         >
           Log out
         </button>
@@ -58,7 +58,7 @@ function AuthSlot({ mobile = false, onNavigate }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-lg px-3 py-2 font-medium text-ink-soft hover:bg-sand-100"
+          className={navLinkClass({ isActive: false })}
         >
           Log out
         </button>
