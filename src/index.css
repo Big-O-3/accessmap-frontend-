@@ -150,6 +150,17 @@ body,
   height: 100%;
 }
 
+/* Raise the base type scale for readability. Everything in the app is sized in
+   rem (font sizes AND Tailwind's spacing), so lifting the root size scales the
+   whole UI up proportionally without touching a single component — the visual
+   hierarchy the design system sets is preserved, just larger. A percentage
+   (not a fixed px) keeps this relative to the user's own browser font-size
+   setting, so anyone who has bumped their default still gets an even bigger
+   baseline — important for a low-vision audience. 112.5% = 18px on a 16px root. */
+html {
+  font-size: 112.5%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
