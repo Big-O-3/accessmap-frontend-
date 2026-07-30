@@ -97,6 +97,10 @@ export default function VenueDetailPage() {
         </div>
         <div className="flex flex-col items-end gap-3">
           <ScoreBadge score={venue.accessibilityScore} size="lg" />
+          <CommunityVerdict
+            verdict={venue.communityVerdict}
+            votes={venue.accessVotes}
+          />
           <div className="flex items-center gap-2">
             <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
             <Button
@@ -160,6 +164,29 @@ export default function VenueDetailPage() {
   );
 }
 
+// The community's accessibility verdict from reviewer votes ("yes"/"partial"/
+// "no"). Renders nothing until at least one vote exists, so we never show a
+// misleading answer. Distinct from the ScoreBadge (feature/photo evidence).
+const VERDICT_UI = {
+  yes: { label: "Community: Accessible", cls: "bg-green-100 text-green-800 ring-green-600/20" },
+  partial: { label: "Community: Partially accessible", cls: "bg-amber-100 text-amber-800 ring-amber-600/25" },
+  no: { label: "Community: Not accessible", cls: "bg-red-100 text-red-800 ring-red-600/20" },
+};
+
+function CommunityVerdict({ verdict, votes }) {
+  const ui = VERDICT_UI[verdict];
+  if (!ui) return null;
+  const total = (votes?.yes ?? 0) + (votes?.partial ?? 0) + (votes?.no ?? 0);
+  return (
+    <span
+      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${ui.cls}`}
+      title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
+    >
+      {ui.label}
+    </span>
+  );
+}
+
 function ReviewsSection({ venueId, reviews, onAdd, onDelete }) {
   const { user } = useAuth();
 
@@ -190,11 +217,18 @@ function ReviewsSection({ venueId, reviews, onAdd, onDelete }) {
   );
 }
 
+const ACCESS_VOTES = [
+  { value: "yes", label: "Yes", emoji: "✓" },
+  { value: "partial", label: "Partially", emoji: "~" },
+  { value: "no", label: "No", emoji: "✕" },
+];
+
 function ReviewForm({ venueId, onAdd }) {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");
   const [visitDate, setVisitDate] = useState("");
+  const [accessVote, setAccessVote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -214,11 +248,18 @@ function ReviewForm({ venueId, onAdd }) {
     }
     setSubmitting(true);
     try {
-      const review = await createReview({ venueId, rating, comment, visitDate });
+      const review = await createReview({
+        venueId,
+        rating,
+        comment,
+        visitDate,
+        accessibilityVote: accessVote,
+      });
       onAdd(review);
       setRating(0);
       setComment("");
       setVisitDate("");
+      setAccessVote("");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -231,6 +272,46 @@ function ReviewForm({ venueId, onAdd }) {
       onSubmit={handleSubmit}
       className="mb-6 space-y-4 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm"
     >
+      <div>
+        <span className="mb-1.5 block text-base font-medium text-ink">
+          Was this venue accessible for you?
+        </span>
+        <div
+          className="flex gap-2"
+          role="radiogroup"
+          aria-label="Accessibility verdict"
+        >
+          {ACCESS_VOTES.map((v) => {
+            const selected = accessVote === v.value;
+            return (
+              <button
+                key={v.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() =>
+                  setAccessVote((cur) => (cur === v.value ? "" : v.value))
+                }
+                className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                  selected
+                    ? "border-brand-500 bg-brand-50 text-link"
+                    : "border-sand-200 bg-surface text-ink-soft hover:bg-sand-100"
+                }`}
+              >
+                <span aria-hidden="true" className="mr-1">
+                  {v.emoji}
+                </span>
+                {v.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1 text-xs text-ink-faint">
+          This drives the venue's community accessibility verdict — separate from
+          your star rating below.
+        </p>
+      </div>
+
       <div>
         <span className="mb-1.5 block text-base font-medium text-ink">
           Your rating
