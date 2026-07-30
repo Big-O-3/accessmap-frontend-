@@ -272,7 +272,15 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:h-[600px]">
+              // On phones the map sits on top of the list (order-first) — the
+              // maps-app layout. Desktop keeps its DOM order (list left, map
+              // right) via lg:order-none. Shorter on mobile in split so the
+              // list shows below the fold; taller when it's the only view.
+              <div
+                className={`order-first min-h-[260px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:order-none lg:h-[600px] ${
+                  view === "map" ? "h-[70vh]" : "h-[42vh]"
+                }`}
+              >
                 <VenueMap
                   venues={venues}
                   center={mapCenter}

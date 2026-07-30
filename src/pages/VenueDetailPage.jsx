@@ -86,28 +86,31 @@ export default function VenueDetailPage() {
         ← Back to search
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm">
+      <div className="flex flex-col gap-4 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:p-6">
         <div>
-          <h1 className="font-display text-4xl font-extrabold leading-tight text-ink">
+          <h1 className="font-display text-3xl font-extrabold leading-tight text-ink sm:text-4xl">
             {venue.name}
           </h1>
-          <p className="mt-1 text-lg text-ink-soft">
+          <p className="mt-1 text-base text-ink-soft sm:text-lg">
             {venue.address}, {venue.city}, {venue.state} {venue.zipCode}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-3">
+        {/* Stacks left-aligned on phones; the desktop layout (right-aligned
+            column beside the title) is restored at sm+. */}
+        <div className="flex flex-col items-start gap-3 sm:items-end">
           <ScoreBadge score={venue.accessibilityScore} size="lg" />
           <CommunityVerdict
             verdict={venue.communityVerdict}
             votes={venue.accessVotes}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
             <Button
               as="a"
               href={directionsUrl}
               target="_blank"
               rel="noreferrer"
+              className="flex-1 text-center sm:flex-none"
             >
               Get directions
             </Button>
