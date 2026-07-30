@@ -343,9 +343,8 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
         </div>
 
         {/* Location — optional. Adding it pins the venue on the map; without it
-            the venue is still created (just not shown on the map). Geolocation
-            button plus manual entry so keyboard users and desktops without GPS
-            have a path. */}
+            the venue is still created (just not shown on the map). The
+            "Use my location" button reads the browser's geolocation. */}
         <fieldset>
           <legend className="text-base font-medium text-ink-soft">
             Location <span className="font-normal text-ink-faint">(optional)</span>
@@ -367,39 +366,6 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
                   ? "Location set"
                   : "Use my location"}
             </button>
-            <span className="text-sm text-ink-faint">or enter below</span>
-          </div>
-          <div className="mt-2 grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="venue-lat" className="sr-only">
-                Latitude
-              </label>
-              <input
-                id="venue-lat"
-                type="number"
-                step="any"
-                inputMode="decimal"
-                value={form.latitude}
-                onChange={updateField("latitude")}
-                placeholder="Latitude"
-                className="w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="venue-lng" className="sr-only">
-                Longitude
-              </label>
-              <input
-                id="venue-lng"
-                type="number"
-                step="any"
-                inputMode="decimal"
-                value={form.longitude}
-                onChange={updateField("longitude")}
-                placeholder="Longitude"
-                className="w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink placeholder:text-ink-faint outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-              />
-            </div>
           </div>
         </fieldset>
 
