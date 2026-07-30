@@ -29,7 +29,7 @@ export default function DashboardPage() {
             Your saved places, recent activity, and venues we recommend.
           </p>
         </div>
-        <Button as={Link} to="/add-venue">
+        <Button as={Link} to="/add-venue" className="w-full sm:w-auto">
           + Add a venue
         </Button>
       </div>
