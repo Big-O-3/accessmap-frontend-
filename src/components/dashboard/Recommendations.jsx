@@ -46,7 +46,7 @@ export default function Recommendations() {
   }, []);
 
   return (
-    <section aria-labelledby="recs-heading" className="h-full">
+    <section aria-labelledby="recs-heading" className="flex h-full flex-col">
       <h2 id="recs-heading" className="font-display text-xl font-extrabold text-ink">
         Recommended for you
       </h2>
@@ -65,7 +65,7 @@ export default function Recommendations() {
       )}
 
       {status === "done" && (
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 flex-1 space-y-3">
           {items.length === 0 ? (
             <p className="rounded-2xl border border-sand-200 bg-surface p-4 text-base text-ink-soft shadow-sm">
               No venues to recommend yet.

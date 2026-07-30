@@ -6,17 +6,20 @@ import { timeAgo } from "../../lib/timeAgo";
 // venue when there is one.
 export default function RecentActivity({ activity }) {
   return (
-    <section aria-labelledby="activity-heading" className="h-full">
+    <section aria-labelledby="activity-heading" className="flex h-full flex-col">
       <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
         Recent activity
       </h2>
 
       {activity.length === 0 ? (
-        <p className="mt-3 rounded-2xl border border-sand-200 bg-surface p-6 text-center text-base text-ink-soft shadow-sm">
+        // flex-1 so the card fills its column: the two dashboard columns are
+        // stretched to equal height, and without this the shorter one's card
+        // would float at the top with empty space, looking smaller.
+        <p className="mt-3 flex flex-1 items-center justify-center rounded-2xl border border-sand-200 bg-surface p-6 text-center text-base text-ink-soft shadow-sm">
           No activity yet. Save a venue or add one to get started.
         </p>
       ) : (
-        <ul className="mt-3 divide-y divide-sand-200 rounded-2xl border border-sand-200 bg-surface shadow-sm">
+        <ul className="mt-3 flex-1 divide-y divide-sand-200 rounded-2xl border border-sand-200 bg-surface shadow-sm">
           {activity.map((a) => (
             <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
