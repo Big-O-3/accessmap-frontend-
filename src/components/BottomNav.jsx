@@ -119,7 +119,13 @@ export default function BottomNav({ signedIn }) {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-sand-200 bg-sand-50/90 backdrop-blur-xl md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="mx-auto grid max-w-md grid-cols-5 items-end px-2">
+      {/* Signed-in users get four tabs (log out lives in the top bar); signed-out
+          users get a fifth "Sign in" tab, which is mobile's login entry point. */}
+      <ul
+        className={`mx-auto grid max-w-md items-end px-2 ${
+          signedIn ? "grid-cols-4" : "grid-cols-5"
+        }`}
+      >
         <li>
           <NavLink to="/" end className={tabClass}>
             <HomeIcon />
@@ -152,12 +158,14 @@ export default function BottomNav({ signedIn }) {
             <span>Dashboard</span>
           </NavLink>
         </li>
-        <li>
-          <NavLink to={signedIn ? "/profile" : "/login"} className={tabClass}>
-            <UserIcon />
-            <span>{signedIn ? "Account" : "Sign in"}</span>
-          </NavLink>
-        </li>
+        {!signedIn && (
+          <li>
+            <NavLink to="/login" className={tabClass}>
+              <UserIcon />
+              <span>Sign in</span>
+            </NavLink>
+          </li>
+        )}
       </ul>
     </nav>
   );

@@ -32,10 +32,6 @@ export default function App() {
                 path="upload"
                 element={<StubPage title="Photo Upload" owner="Brandon" />}
               />
-              <Route
-                path="profile"
-                element={<StubPage title="Profile & Settings" owner="Brandon" />}
-              />
             </Route>
 
             <Route path="*" element={<StubPage title="Page not found" />} />
