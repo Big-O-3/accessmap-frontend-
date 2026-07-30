@@ -35,10 +35,6 @@ function AuthSlot({ mobile = false, onNavigate }) {
   if (loading) return null;
 
   async function handleLogout() {
-    const ok = window.confirm(
-      "Are you sure you want to log out? Any unsaved progress on this page won't be saved.",
-    );
-    if (!ok) return;
     await logout();
     onNavigate?.();
     navigate("/");
