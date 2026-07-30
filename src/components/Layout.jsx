@@ -5,9 +5,6 @@ import ThemeToggle from "./ThemeToggle";
 import BottomNav from "./BottomNav";
 import CursorGlow from "./CursorGlow";
 
-const MARK_GRADIENT =
-  "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))";
-
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/search", label: "Search" },
@@ -124,13 +121,7 @@ export default function Layout() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <NavLink to="/" className="flex items-center gap-2 group">
-            <span
-              className="grid h-9 w-9 place-items-center rounded-xl text-lg text-white shadow-sm transition-transform group-hover:scale-105"
-              style={{ background: MARK_GRADIENT }}
-            >
-              ◆
-            </span>
+          <NavLink to="/" className="flex items-center group">
             <span className="font-display text-xl font-extrabold tracking-tight text-ink">
               AccessMap
             </span>
