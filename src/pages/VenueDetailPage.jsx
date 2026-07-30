@@ -13,6 +13,7 @@ import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
 import SaveButton from "../components/SaveButton";
 import DetectionImage from "../components/DetectionImage";
+import VenuePhotoContribution from "../components/VenuePhotoContribution";
 import Button from "../components/Button";
 import Card from "../components/Card";
 
@@ -136,6 +137,16 @@ export default function VenueDetailPage() {
           </div>
         </section>
       )}
+
+      {/* Add a photo, let the AI detect features, confirm them, and the venue's
+          score + photo grid update in place from the re-fetched venue. */}
+      <VenuePhotoContribution
+        venue={{ ...venue, id: venue.id ?? id }}
+        onUpdated={(updated) => {
+          setVenue(updated);
+          setReviews(updated.reviews ?? []);
+        }}
+      />
 
       <ReviewsSection
         venueId={venue.id ?? id}
