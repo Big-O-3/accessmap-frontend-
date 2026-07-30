@@ -121,28 +121,16 @@ export default function VenueDetailPage() {
       <FeatureBreakdown features={venue.features} />
 
       {venue.photos?.length > 0 && (
-        <section className="mt-8">
-          <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
-            AI-analyzed photos
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {venue.photos.map((photo) => (
-              <DetectionImage
-                key={photo.id}
-                photo={photo}
-                // Only the uploader sees a delete control; the backend
-                // re-checks ownership regardless.
-                canDelete={!!user && photo.userId === user.id}
-                onDelete={(photoId) =>
-                  setVenue((prev) => ({
-                    ...prev,
-                    photos: prev.photos.filter((p) => p.id !== photoId),
-                  }))
-                }
-              />
-            ))}
-          </div>
-        </section>
+        <PhotoGallery
+          photos={venue.photos}
+          currentUserId={user?.id}
+          onDelete={(photoId) =>
+            setVenue((prev) => ({
+              ...prev,
+              photos: prev.photos.filter((p) => p.id !== photoId),
+            }))
+          }
+        />
       )}
 
       {/* Add a photo, let the AI detect features, confirm them, and the venue's
@@ -187,6 +175,115 @@ function CommunityVerdict({ verdict, votes }) {
     >
       {ui.label}
     </span>
+  );
+}
+
+// The AI-analyzed photo grid with a feature filter. Every photo can carry
+// several ML detections (ramp, restroom, parking…); the chip bar lets a visitor
+// narrow the grid to photos that contain a chosen feature so they aren't forced
+// to scan every photo. Chips are built from the features actually detected in
+// THESE photos, so a chip never matches zero photos, and the whole bar is
+// hidden when there's only one feature (or none) to filter by.
+function PhotoGallery({ photos, currentUserId, onDelete }) {
+  // "" means "All"; otherwise a feature key from the detections below.
+  const [active, setActive] = useState("");
+
+  // Distinct feature keys present across these photos, in the canonical order
+  // from the shared vocabulary so the chips read consistently everywhere.
+  const presentKeys = new Set(
+    photos.flatMap((p) =>
+      (p.detections ?? []).map((d) => d.accessibilityFeature),
+    ),
+  );
+  const chips = ACCESSIBILITY_FEATURES.filter((f) => presentKeys.has(f.key));
+
+  // If the active feature no longer appears in any photo (e.g. the uploader
+  // deleted the last photo that had it), fall back to "All" so the grid can't
+  // get stuck on a filter whose chip has disappeared.
+  const effectiveActive = presentKeys.has(active) ? active : "";
+
+  const filtered =
+    effectiveActive === ""
+      ? photos
+      : photos.filter((p) =>
+          (p.detections ?? []).some(
+            (d) => d.accessibilityFeature === effectiveActive,
+          ),
+        );
+
+  return (
+    <section className="mt-8">
+      <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
+        AI-analyzed photos
+      </h2>
+
+      {chips.length > 1 && (
+        <div
+          className="mb-4 flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter photos by detected feature"
+        >
+          <FilterChip
+            active={effectiveActive === ""}
+            onClick={() => setActive("")}
+          >
+            All
+            <span className="ml-1 font-mono tabular-nums opacity-70">
+              {photos.length}
+            </span>
+          </FilterChip>
+          {chips.map((f) => {
+            const count = photos.filter((p) =>
+              (p.detections ?? []).some(
+                (d) => d.accessibilityFeature === f.key,
+              ),
+            ).length;
+            return (
+              <FilterChip
+                key={f.key}
+                active={effectiveActive === f.key}
+                onClick={() => setActive(f.key)}
+              >
+                {f.label}
+                <span className="ml-1 font-mono tabular-nums opacity-70">
+                  {count}
+                </span>
+              </FilterChip>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {filtered.map((photo) => (
+          <DetectionImage
+            key={photo.id}
+            photo={photo}
+            // Only the uploader sees a delete control; the backend re-checks
+            // ownership regardless.
+            canDelete={!!currentUserId && photo.userId === currentUserId}
+            onDelete={onDelete}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FilterChip({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ${
+        active
+          ? "border-brand-500 bg-brand-50 text-link"
+          : "border-sand-200 bg-surface text-ink-soft hover:bg-sand-100"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 
