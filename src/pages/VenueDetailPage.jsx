@@ -8,6 +8,7 @@ import {
   unmarkReviewHelpful,
 } from "../lib/api";
 import { ACCESSIBILITY_FEATURES } from "../lib/features";
+import { cleanText } from "../lib/profanity";
 import { hasMarkedHelpful, setMarkedHelpful } from "../lib/userData";
 import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
@@ -626,7 +627,7 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         </span>
       </div>
       <p className="mt-2 text-base leading-relaxed text-ink-soft">
-        {review.comment}
+        {cleanText(review.comment)}
       </p>
       <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
         {review.visitDate && (
