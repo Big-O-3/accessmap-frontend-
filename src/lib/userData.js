@@ -185,7 +185,6 @@ export function getStats() {
     statsCache = {
       savedCount: getSavedVenues().length,
       contributionCount: contributions,
-      activityCount: activity.length,
     };
   }
   return statsCache;

@@ -6,7 +6,6 @@ export default function StatsGrid({ stats }) {
   const tiles = [
     { label: "Venues Saved", value: stats.savedCount },
     { label: "Contributions", value: stats.contributionCount },
-    { label: "Activity Events", value: stats.activityCount },
   ];
 
   return (
@@ -17,7 +16,7 @@ export default function StatsGrid({ stats }) {
       >
         Your activity
       </h2>
-      <div className="mt-3 grid grid-cols-3 gap-3 sm:gap-4">
+      <div className="mt-3 grid grid-cols-2 gap-3 sm:gap-4">
         {tiles.map((t) => (
           <div
             key={t.label}
