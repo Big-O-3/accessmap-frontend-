@@ -160,13 +160,13 @@ export default function VenueDetailPage() {
 }
 
 // The venue's accessibility read-out: one block, not two competing pills.
-// The ScoreBadge (feature/photo evidence, 0-100) is the headline verdict — it's
-// what drives sort order and map-pin color everywhere — and the community's
+// The ScoreBadge (feature/photo evidence, 0-100) is the headline verdict - it's
+// what drives sort order and map-pin color everywhere - and the community's
 // vote-based verdict folds in beneath it as a single caption line rather than a
 // second, near-identical floating pill. The caption only appears once at least
 // one vote exists, so we never show a misleading community answer.
 // Map each verdict to an accessibility tier so it reuses the semantic tier
-// tokens (src/lib/tierStyles.js) — these adapt to dark mode, unlike the stock
+// tokens (src/lib/tierStyles.js) - these adapt to dark mode, unlike the stock
 // green/amber/red palette classes this used before.
 const COMMUNITY_VERDICT = {
   yes: { label: "Accessible", tier: "high" },
@@ -411,7 +411,7 @@ function ReviewForm({ venueId, onAdd }) {
           })}
         </div>
         <p className="mt-1 text-xs text-ink-faint">
-          This drives the venue's community accessibility verdict — separate from
+          This drives the venue's community accessibility verdict - separate from
           your star rating below.
         </p>
       </div>
@@ -483,7 +483,7 @@ function FeatureBreakdown({ features }) {
           const present = !!feature;
           const verified = (feature?.verifiedCount ?? 0) >= 3;
           // Present positive features read green, barriers red, and anything
-          // not reported stays neutral and dimmed — color is never the only
+          // not reported stays neutral and dimmed - color is never the only
           // signal (the status text on the right says the same thing).
           const boxClass = !present
             ? "border-sand-200 bg-sand-50 opacity-70"

@@ -19,7 +19,7 @@ import StepReviewDetections from "../components/addVenue/StepReviewDetections";
 import StepManualChecklist from "../components/addVenue/StepManualChecklist";
 import StepPreviewSubmit from "../components/addVenue/StepPreviewSubmit";
 
-// Add Venue — the contributor flow (planning: add_venue_wireframe.md).
+// Add Venue - the contributor flow (planning: add_venue_wireframe.md).
 // A four-step guided stepper (Venue → Photos → AI Review → Submit) driven by a
 // single local reducer; only the final Submit talks to the server. AI detection
 // runs directly against the Python ML service (see lib/detect.js) because photo
@@ -54,7 +54,7 @@ const initialState = {
   mode: "photos",
   photos: [], // { id, file, previewUrl, status, detections, altText, error }
   confirmed: {}, // { [detKey]: true }
-  manualFeatures: {}, // { [featureKey]: true } — checklist selections in manual mode
+  manualFeatures: {}, // { [featureKey]: true } - checklist selections in manual mode
   note: "",
   submitState: "idle", // idle | submitting | done | error
   submitError: null,
@@ -66,7 +66,7 @@ function reducer(state, action) {
     case "SET_VENUE":
       // Changing the venue resets the contribution path, so a manual checklist
       // picked for one venue doesn't carry over to another. `existing` is true
-      // when the venue was chosen from search (already in the system) — only
+      // when the venue was chosen from search (already in the system) - only
       // then do we offer the skip-photos / manual-checklist path.
       return {
         ...state,
@@ -158,12 +158,12 @@ function reducer(state, action) {
                 status: "error",
                 error: action.error,
                 // A dead session is a different problem from an unreachable
-                // service, and needs different advice — flag it so the step can
+                // service, and needs different advice - flag it so the step can
                 // say "sign in again" instead of "check the ML service".
                 authError: action.authError,
                 detections: [],
                 // The persisted photo was rolled back on failure (see
-                // analyzePhoto), so drop the stale id — a retry must re-upload
+                // analyzePhoto), so drop the stale id - a retry must re-upload
                 // rather than analyze a row that no longer exists.
                 backendPhotoId: null,
               }
@@ -255,7 +255,7 @@ export default function AddVenuePage() {
     if (photo?.previewUrl) URL.revokeObjectURL(photo.previewUrl);
     // If this photo was already uploaded (analyzed successfully), it exists on
     // the venue server-side. Removing it from the flow has to delete that row
-    // too, or a photo the contributor discarded would linger on the venue —
+    // too, or a photo the contributor discarded would linger on the venue -
     // the same "error but it's still there" surprise, via the remove path.
     // Best-effort and fire-and-forget: the row is the user's own, and the UI
     // removal shouldn't block on the network.
@@ -289,18 +289,18 @@ export default function AddVenuePage() {
         altText: data.altTextSuggestion ?? null,
       });
     } catch (err) {
-      // The photo is persisted the moment upload succeeds — before analysis
+      // The photo is persisted the moment upload succeeds - before analysis
       // runs. If analysis then fails, that photo would otherwise stay on the
       // venue even though the contributor only ever saw an error. Roll it back
       // so a failed analysis leaves nothing behind; ANALYZE_ERROR clears its id
       // so a retry re-uploads cleanly. Best-effort: if cleanup fails too (e.g.
       // the same dead session that failed analysis), there's nothing more we
-      // can safely do from the client — the error message below still informs.
+      // can safely do from the client - the error message below still informs.
       if (backendPhotoId) {
         try {
           await deletePhoto(backendPhotoId);
         } catch {
-          // ignore — leave the ANALYZE_ERROR dispatch to inform the user
+          // ignore - leave the ANALYZE_ERROR dispatch to inform the user
         }
       }
       dispatch({
@@ -320,7 +320,7 @@ export default function AddVenuePage() {
   const features = manual
     ? Object.keys(state.manualFeatures).map((type) => ({
         type,
-        mlDetected: false, // contributor-confirmed, not ML — trusted at full weight
+        mlDetected: false, // contributor-confirmed, not ML - trusted at full weight
         verifiedCount: 0,
       }))
     : detectionsToFeatures(detections);
@@ -383,7 +383,7 @@ export default function AddVenuePage() {
     }
   }
 
-  // The step names for the active flow, and the name of the current step —
+  // The step names for the active flow, and the name of the current step -
   // used to pick which component to render and to gate the "next" action.
   const flow = STEP_FLOWS[state.mode];
   const stepName = flow[state.step - 1];
@@ -402,7 +402,7 @@ export default function AddVenuePage() {
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-display text-3xl font-extrabold text-ink">Add a Venue</h1>
       <p className="mt-1 text-base text-ink-soft">
-        Upload a few photos and let AI detect the accessibility features — no
+        Upload a few photos and let AI detect the accessibility features - no
         tedious forms.
       </p>
 
@@ -426,7 +426,7 @@ export default function AddVenuePage() {
             photos={state.photos}
             onAdd={addPhotos}
             onRemove={removePhoto}
-            // Only an existing venue can skip photos — a brand-new venue needs a
+            // Only an existing venue can skip photos - a brand-new venue needs a
             // photo to seed its first detections.
             canSkip={state.venueExisting}
             onSkip={() => dispatch({ type: "SET_MODE", mode: "manual" })}

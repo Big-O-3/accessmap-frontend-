@@ -133,7 +133,7 @@ export default function Layout() {
             </span>
           </NavLink>
 
-          {/* Desktop nav — full row of links plus the auth slot. */}
+          {/* Desktop nav - full row of links plus the auth slot. */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <NavLink
@@ -151,7 +151,7 @@ export default function Layout() {
             </div>
           </nav>
 
-          {/* Mobile top bar — theme toggle plus log out; navigation is the
+          {/* Mobile top bar - theme toggle plus log out; navigation is the
               bottom tab bar. */}
           <div className="flex items-center gap-1 md:hidden">
             <ThemeToggle />

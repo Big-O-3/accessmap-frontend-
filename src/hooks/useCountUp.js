@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-// useCountUp — animate a number from 0 up to `target` the first time the
+// useCountUp - animate a number from 0 up to `target` the first time the
 // element scrolls into view (the "benchmark bar filling in" effect from
 // product pages). Returns [ref, value].
 //
-// Anyone who prefers reduced motion — or whose browser lacks the animation
-// APIs — is shown the final value immediately, with no motion and no wait, so
+// Anyone who prefers reduced motion - or whose browser lacks the animation
+// APIs - is shown the final value immediately, with no motion and no wait, so
 // the number never depends on the animation to be readable.
 //
 // Usage:

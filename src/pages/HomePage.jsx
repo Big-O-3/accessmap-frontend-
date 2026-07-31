@@ -9,7 +9,7 @@ import CityAutocomplete from "../components/CityAutocomplete";
 import useCountUp from "../hooks/useCountUp";
 import useCityOptions from "../hooks/useCityOptions";
 
-// Brand gradient for the primary "Scan" tile on the mobile home — matches the
+// Brand gradient for the primary "Scan" tile on the mobile home - matches the
 // raised Scan button in the bottom nav so the two read as the same action.
 const MARK_GRADIENT =
   "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))";
@@ -17,7 +17,7 @@ const MARK_GRADIENT =
 const STEPS = [
   {
     title: "Contributors upload photos",
-    body: "Snap a photo of an entrance, restroom, parking area, or seating — no tedious forms to fill out.",
+    body: "Snap a photo of an entrance, restroom, parking area, or seating - no tedious forms to fill out.",
   },
   {
     title: "AI detects accessibility features",
@@ -25,11 +25,11 @@ const STEPS = [
   },
   {
     title: "The community verifies",
-    body: "Other members confirm or correct each detection, so information is trustworthy — never AI-only.",
+    body: "Other members confirm or correct each detection, so information is trustworthy - never AI-only.",
   },
   {
     title: "Visitors decide with confidence",
-    body: "Every venue shows a clear rating — Accessible, Partially accessible, or Not accessible — backed by photo evidence, so you can plan a visit before leaving home.",
+    body: "Every venue shows a clear rating - Accessible, Partially accessible, or Not accessible - backed by photo evidence, so you can plan a visit before leaving home.",
   },
 ];
 
@@ -130,7 +130,7 @@ function DetectionTag({ className, label, conf }) {
 }
 
 // The sticky "phone" that walks through the four steps as the text scrolls by
-// (the Apple-style "take a closer look" pattern). Purely decorative — the same
+// (the Apple-style "take a closer look" pattern). Purely decorative - the same
 // story is spelled out in the numbered text steps beside it, so nothing here is
 // required to understand how AccessMap works.
 function StoryPhone({ activeStep }) {
@@ -141,7 +141,7 @@ function StoryPhone({ activeStep }) {
           className="relative aspect-[4/5]"
           style={{ background: "linear-gradient(150deg,#23485e,#0f2230)" }}
         >
-          {/* 1 — a fresh photo */}
+          {/* 1 - a fresh photo */}
           <Layer show={activeStep === 0}>
             <div className="flex h-full flex-col items-center justify-center gap-3 text-white/90">
               <CameraGlyph />
@@ -151,7 +151,7 @@ function StoryPhone({ activeStep }) {
             </div>
           </Layer>
 
-          {/* 2 — AI detections drawn on the photo */}
+          {/* 2 - AI detections drawn on the photo */}
           <Layer show={activeStep === 1}>
             <DetectionTag
               className="left-6 top-10 h-24 w-20"
@@ -165,7 +165,7 @@ function StoryPhone({ activeStep }) {
             />
           </Layer>
 
-          {/* 3 — community verification */}
+          {/* 3 - community verification */}
           <Layer show={activeStep === 2}>
             <div className="flex h-full items-center justify-center p-4">
               <span className="rounded-2xl bg-black/45 px-4 py-3 text-center text-sm font-semibold text-white backdrop-blur">
@@ -174,7 +174,7 @@ function StoryPhone({ activeStep }) {
             </div>
           </Layer>
 
-          {/* 4 — the plain-language rating users actually see (no raw number) */}
+          {/* 4 - the plain-language rating users actually see (no raw number) */}
           <Layer show={activeStep === 3}>
             <div className="flex h-full flex-col justify-end p-4">
               <div className="rounded-2xl bg-black/50 p-4 backdrop-blur">
@@ -187,7 +187,7 @@ function StoryPhone({ activeStep }) {
                   </span>
                 </div>
                 <p className="mt-3 text-xs leading-relaxed text-white/70">
-                  A clear rating from real photos — no number to decode.
+                  A clear rating from real photos - no number to decode.
                 </p>
               </div>
             </div>
@@ -273,7 +273,7 @@ function MobileHome({
         Community-verified, AI-assisted.
       </p>
 
-      {/* Search — the fastest path to a venue, so it leads. */}
+      {/* Search - the fastest path to a venue, so it leads. */}
       <form
         onSubmit={handleSearch}
         className="mt-5 flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-sm"
@@ -315,7 +315,7 @@ function MobileHome({
         <SecondaryTile to="/search" glyph={<MapPinGlyph />} label="Explore map" />
       </div>
 
-      {/* A short taste of the map — full list is one tap away. */}
+      {/* A short taste of the map - full list is one tap away. */}
       <div className="mt-8 flex items-center justify-between">
         <h2 className="font-display text-xl font-extrabold text-ink">
           Featured venues
@@ -442,7 +442,7 @@ export default function HomePage() {
     goToSearch(query);
   }
 
-  // Picking a city from the dropdown jumps straight to results — no need to
+  // Picking a city from the dropdown jumps straight to results - no need to
   // then press Search.
   function handleSelectCity(city) {
     setQuery(city);
@@ -528,13 +528,13 @@ export default function HomePage() {
             How it works
           </h2>
           <p className="mt-3 text-lg text-ink-soft">
-            From one quick photo to a score you can trust — here's the path every
+            From one quick photo to a score you can trust - here's the path every
             venue takes.
           </p>
         </Reveal>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* Sticky visual — desktop only, so mobile stays a calm list.
+          {/* Sticky visual - desktop only, so mobile stays a calm list.
               Vertically centered in the viewport so the phone lines up with the
               active step as it scrolls past the middle of the screen. */}
           <div className="hidden lg:block">
@@ -573,7 +573,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===================== BEAT — why it matters ===================== */}
+      {/* ===================== BEAT - why it matters ===================== */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16 text-center sm:py-24">
         <Reveal>
           <p className="font-display text-5xl font-black tracking-tight sm:text-7xl">

@@ -1,6 +1,6 @@
 // Loading state shown while the ML service analyzes a photo. Instead of a
 // generic spinner, we show the contributor's actual photo with an AI "scan"
-// sweeping over it — a line travelling top→bottom plus a framing reticle — so
+// sweeping over it - a line travelling top→bottom plus a framing reticle - so
 // it reads as "the AI is examining THIS image," not "something is loading."
 //
 // Used by the Analyze page and the Add-Venue detection-review step; both
@@ -25,7 +25,7 @@ export default function ScanningOverlay({
             className="block max-h-96 w-full object-contain opacity-70"
           />
         ) : (
-          // No preview available (rare) — fall back to a neutral panel so the
+          // No preview available (rare) - fall back to a neutral panel so the
           // scan line still has something to sweep across.
           <div className="h-56 w-full bg-gradient-to-b from-sand-100 to-sand-200" />
         )}
@@ -35,7 +35,7 @@ export default function ScanningOverlay({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
         >
-          {/* Corner reticle — a framing bracket in each corner. */}
+          {/* Corner reticle - a framing bracket in each corner. */}
           <span className="absolute left-3 top-3 h-6 w-6 rounded-tl border-l-2 border-t-2 border-white/80 shadow-[0_0_6px_rgba(0,0,0,0.4)]" />
           <span className="absolute right-3 top-3 h-6 w-6 rounded-tr border-r-2 border-t-2 border-white/80 shadow-[0_0_6px_rgba(0,0,0,0.4)]" />
           <span className="absolute bottom-3 left-3 h-6 w-6 rounded-bl border-b-2 border-l-2 border-white/80 shadow-[0_0_6px_rgba(0,0,0,0.4)]" />
@@ -48,7 +48,7 @@ export default function ScanningOverlay({
         </div>
       </div>
 
-      {/* Accessible status — announced to screen readers, visible to everyone.
+      {/* Accessible status - announced to screen readers, visible to everyone.
           The dots pulse for sighted users; the text is what actually conveys
           state (and stays put under reduced-motion). */}
       <p

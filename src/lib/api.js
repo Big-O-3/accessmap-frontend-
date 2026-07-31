@@ -74,7 +74,7 @@ export async function getReviews(venueId) {
   return request(`/api/reviews?venueId=${venueId}`);
 }
 
-// POST /api/reviews — leave a review on a venue (requires sign-in).
+// POST /api/reviews - leave a review on a venue (requires sign-in).
 // { venueId, rating (1-5), comment, accessibilityVote? } → the created review.
 // The review is dated automatically by its createdAt on the server.
 // accessibilityVote is "yes" | "partial" | "no" and feeds the venue's community
@@ -102,28 +102,28 @@ export async function createReview({
   });
 }
 
-// DELETE /api/reviews/:id — remove one of your own reviews (requires sign-in).
+// DELETE /api/reviews/:id - remove one of your own reviews (requires sign-in).
 // The backend rejects (403) anything that isn't the signed-in user's review.
 export async function deleteReview(reviewId) {
   if (!reviewId) throw new Error("A review is required.");
   return request(`/api/reviews/${reviewId}`, { method: "DELETE" });
 }
 
-// POST /api/reviews/:id/helpful — mark a review as helpful (requires sign-in).
+// POST /api/reviews/:id/helpful - mark a review as helpful (requires sign-in).
 // Returns the updated review with its new helpfulCount.
 export async function markReviewHelpful(reviewId) {
   if (!reviewId) throw new Error("A review is required.");
   return request(`/api/reviews/${reviewId}/helpful`, { method: "POST" });
 }
 
-// DELETE /api/reviews/:id/helpful — undo a helpful mark (requires sign-in).
+// DELETE /api/reviews/:id/helpful - undo a helpful mark (requires sign-in).
 // Returns the updated review with its new helpfulCount.
 export async function unmarkReviewHelpful(reviewId) {
   if (!reviewId) throw new Error("A review is required.");
   return request(`/api/reviews/${reviewId}/helpful`, { method: "DELETE" });
 }
 
-// DELETE /api/photos/:id — remove one of your own photos (requires sign-in).
+// DELETE /api/photos/:id - remove one of your own photos (requires sign-in).
 // The backend rejects (403) anything that isn't the signed-in user's photo.
 export async function deletePhoto(photoId) {
   if (!photoId) throw new Error("A photo is required.");
@@ -174,7 +174,7 @@ export async function createVenue(input) {
   });
 }
 
-// POST /api/contributions — submit a completed Add Venue contribution (Step 4).
+// POST /api/contributions - submit a completed Add Venue contribution (Step 4).
 //
 // Persists the contributor-confirmed features (the backend recomputes the venue
 // score from them) plus any photos that carry a hosted URL. `previewScore` is
@@ -209,7 +209,7 @@ export async function submitContribution({ venue, features, previewScore, note, 
   };
 }
 
-// POST /api/photos — upload a photo file to a venue (multipart/form-data).
+// POST /api/photos - upload a photo file to a venue (multipart/form-data).
 // The backend streams it to Cloudinary and returns the created Photo row
 // (id + hosted imageUrl).
 export async function uploadPhoto(venueId, file) {
@@ -217,7 +217,7 @@ export async function uploadPhoto(venueId, file) {
   form.append("venueId", venueId);
   form.append("image", file);
 
-  // NOTE: do NOT set Content-Type here — the browser adds the multipart
+  // NOTE: do NOT set Content-Type here - the browser adds the multipart
   // boundary. request() forces application/json, so we fetch directly.
   const auth = await authHeader();
   const res = await fetch(`${API_URL}/api/photos`, {
@@ -240,13 +240,13 @@ export async function uploadPhoto(venueId, file) {
   return res.json();
 }
 
-// POST /api/photos/:id/analyze — run detection on an already-uploaded photo and
+// POST /api/photos/:id/analyze - run detection on an already-uploaded photo and
 // persist the MLAnalysis + Detection rows.
 export async function analyzeUploadedPhoto(photoId) {
   return request(`/api/photos/${photoId}/analyze`, { method: "POST" });
 }
 
-// PATCH /api/photos/:id/detections — confirm (verify) or reject (delete) the
+// PATCH /api/photos/:id/detections - confirm (verify) or reject (delete) the
 // contributor's detections by id.
 export async function patchDetections(photoId, { confirmed = [], rejected = [] }) {
   return request(`/api/photos/${photoId}/detections`, {

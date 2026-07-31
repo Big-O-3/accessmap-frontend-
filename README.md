@@ -10,9 +10,9 @@ Email → **Confirm email**.
 
 - **On** (Supabase default): signup returns no session, so the user gets a
   confirmation email and must click its link before they can log in. The login
-  page shows "Check your inbox — confirm your email, then come back and log in."
+  page shows "Check your inbox - confirm your email, then come back and log in."
 - **Off**: signup returns a session immediately and the user is logged straight
-  in — the inbox step never appears.
+  in - the inbox step never appears.
 
 The frontend handles both automatically by branching on whether `signUp` returned
 a session (see `signUpWithEmail` in `src/context/AuthContext.jsx`), so flipping
@@ -32,5 +32,5 @@ non-asset path, or refreshing anything but `/` returns the host's own 404.
   rule in the static site's dashboard: Source `/*`, Destination `/index.html`,
   Action **Rewrite**. Render **ignores** `public/_redirects`.
 - **Netlify / Cloudflare Pages**: add a `public/_redirects` file containing
-  `/*  /index.html  200`. (Not committed — the current host is Render, which
+  `/*  /index.html  200`. (Not committed - the current host is Render, which
   ignores it.)

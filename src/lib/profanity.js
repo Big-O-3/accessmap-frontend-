@@ -1,7 +1,7 @@
 // A small profanity filter for user-submitted review text. This is a
 // display-side safeguard: it masks offensive words wherever a review is shown,
 // so it also covers reviews already in the database and ones posted from other
-// clients — not just what this browser submits.
+// clients - not just what this browser submits.
 //
 // It's intentionally a short, conservative blocklist rather than an exhaustive
 // or "smart" filter. Aggressive matching creates false positives (the classic
@@ -33,7 +33,7 @@ const BLOCKLIST = [
 
 // Match a blocked word as a WHOLE word (with an optional common suffix like
 // -s/-ed/-ing), case-insensitively. The \b boundaries stop clean words that
-// merely contain a blocked run — "class", "assess" — from matching.
+// merely contain a blocked run - "class", "assess" - from matching.
 const PATTERN = new RegExp(
   `\\b(${BLOCKLIST.join("|")})(s|es|ed|ing|er)?\\b`,
   "gi",

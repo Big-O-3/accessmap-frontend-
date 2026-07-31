@@ -27,7 +27,7 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
   }
 
   // Recompute the box scale whenever the image's rendered size changes, not just
-  // on first load — otherwise boxes drift after a responsive reflow (window
+  // on first load - otherwise boxes drift after a responsive reflow (window
   // resize, device rotation, sidebar collapse).
   useEffect(() => {
     const img = imgRef.current;

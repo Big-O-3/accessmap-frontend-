@@ -6,15 +6,15 @@ import { useId, useRef, useState } from "react";
 // pushes the surrounding content down. Matches the pattern in PlaceAutocomplete.
 //
 // Props:
-//   value            — current input string (parent controlled)
-//   onChange(str)    — called on every keystroke with the new string
-//   onSelect(city)   — called when the user picks a suggestion (click / Enter)
-//   options          — array of city-name strings to suggest from
-//   id               — DOM id for the input (a <label htmlFor> can pair with it)
-//   placeholder      — input placeholder text
-//   className        — classes for the <input> itself
-//   wrapperClassName — classes for the relative wrapper (e.g. flex sizing)
-//   aria-label       — accessible name when there's no visible <label>
+//   value            - current input string (parent controlled)
+//   onChange(str)    - called on every keystroke with the new string
+//   onSelect(city)   - called when the user picks a suggestion (click / Enter)
+//   options          - array of city-name strings to suggest from
+//   id               - DOM id for the input (a <label htmlFor> can pair with it)
+//   placeholder      - input placeholder text
+//   className        - classes for the <input> itself
+//   wrapperClassName - classes for the relative wrapper (e.g. flex sizing)
+//   aria-label       - accessible name when there's no visible <label>
 export default function CityAutocomplete({
   value,
   onChange,

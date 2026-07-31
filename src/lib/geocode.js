@@ -1,5 +1,5 @@
 // Place autocomplete via Nominatim (OpenStreetMap's geocoder). Free, no API
-// key required. Nominatim's usage policy allows up to 1 req/sec — we debounce
+// key required. Nominatim's usage policy allows up to 1 req/sec - we debounce
 // keystrokes to well under that in the consumer.
 //
 // Docs: https://nominatim.org/release-docs/develop/api/Search/
@@ -36,7 +36,7 @@ export async function searchPlaces(query, { signal } = {}) {
   const res = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {
     signal,
     // Nominatim asks callers to identify themselves. In-browser this is best-
-    // effort — the browser sends its own User-Agent — but the Referer header
+    // effort - the browser sends its own User-Agent - but the Referer header
     // is passed automatically and satisfies the "identify yourself" ask.
     headers: { Accept: "application/json" },
   });

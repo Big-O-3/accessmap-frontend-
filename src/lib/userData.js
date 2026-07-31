@@ -1,6 +1,6 @@
 // Per-browser user data (saved venues + activity feed), persisted to
 // localStorage. The app has no auth yet, so "your" data means "this browser's"
-// data — this module is the single source of truth for it, and the swap-point
+// data - this module is the single source of truth for it, and the swap-point
 // for a real per-user backend once sign-in exists.
 //
 // A tiny pub/sub lets React subscribe via useSyncExternalStore (see hooks in
@@ -46,7 +46,7 @@ function read(key, fallback) {
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
   } catch {
-    // Private mode, quota, or corrupt JSON — fall back gracefully.
+    // Private mode, quota, or corrupt JSON - fall back gracefully.
     return fallback;
   }
 }
@@ -55,7 +55,7 @@ function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Ignore write failures (e.g. Safari private mode) — the in-memory render
+    // Ignore write failures (e.g. Safari private mode) - the in-memory render
     // still reflects the attempted change for this session.
   }
 }

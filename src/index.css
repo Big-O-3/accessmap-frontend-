@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   AccessMap design tokens — "Azure"
+   AccessMap design tokens - "Azure"
    A confident azure-blue system with a full dark mode. Components reference
    SEMANTIC token names (bg-brand-600, text-ink, border-sand-200, text-link,
    text-success…); the values below are what those names resolve to. Dark mode
@@ -13,29 +13,29 @@
    the brighter brand-400 (#4C93FF) is reserved for accents, links, and borders.
 --------------------------------------------------------------------------- */
 @theme {
-  /* Brand ramp — azure (used for buttons, fills, borders). Light→dark. */
+  /* Brand ramp - azure (used for buttons, fills, borders). Light→dark. */
   --color-brand-50: #eaf1fe;
   --color-brand-100: #d6e4fd;
   --color-brand-200: #b3ccfb;
   --color-brand-300: #7fa8f6;
-  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-400: #4c93ff; /* bright accent - links, focus, gradients */
   --color-brand-500: #2f7df6;
-  --color-brand-600: #1d4ed8; /* primary button — white text is AA here */
+  --color-brand-600: #1d4ed8; /* primary button - white text is AA here */
   --color-brand-700: #1e40af; /* hover */
   --color-brand-800: #1a388a;
   --color-brand-900: #122a63;
 
-  /* Accent — violet secondary (the azure→violet gradient's far end). */
+  /* Accent - violet secondary (the azure→violet gradient's far end). */
   --color-accent-400: #a78bfa;
   --color-accent-500: #6d28d9; /* white text is AA here */
   --color-accent-600: #5b21b6;
 
-  /* Neutrals / surfaces — cool light greys. */
+  /* Neutrals / surfaces - cool light greys. */
   --color-sand-50: #eff2f8; /* page background */
   --color-sand-100: #e6ebf4; /* subtle panel fill / hover */
   --color-sand-200: #d3dbea; /* borders + unfilled stars */
 
-  /* Card surface — white on light, near-black on dark (see .dark below). */
+  /* Card surface - white on light, near-black on dark (see .dark below). */
   --color-surface: #ffffff;
 
   /* Text. */
@@ -43,10 +43,10 @@
   --color-ink-soft: #48566b;
   --color-ink-faint: #6b7688;
 
-  /* Interactive text / links — adaptive so it stays legible in both themes. */
+  /* Interactive text / links - adaptive so it stays legible in both themes. */
   --color-link: #1d4ed8;
 
-  /* Score tiers — ONE source of truth for high/medium/low accessibility.
+  /* Score tiers - ONE source of truth for high/medium/low accessibility.
      Each tier has a foreground (text/icon), a soft fill, and a ring/border.
      Light values are darkened for AA text contrast on pale fills. */
   --color-success: #0e7a43;
@@ -78,10 +78,10 @@
   --color-brand-100: #172c4c;
   --color-brand-200: #1e3a63; /* borders on blue */
   --color-brand-300: #2c5698;
-  --color-brand-400: #4c93ff; /* bright accent — links, focus, gradients */
+  --color-brand-400: #4c93ff; /* bright accent - links, focus, gradients */
   --color-brand-500: #6aa6ff;
-  --color-brand-600: #2563eb; /* primary button — white text is AA on black */
-  --color-brand-700: #1d4ed8; /* hover — darkens for a clear pressed feel */
+  --color-brand-600: #2563eb; /* primary button - white text is AA on black */
+  --color-brand-700: #1d4ed8; /* hover - darkens for a clear pressed feel */
   --color-brand-800: #6aa6ff;
   --color-brand-900: #b9d3ff;
 
@@ -89,10 +89,10 @@
   --color-accent-500: #7c3aed; /* white text is AA here */
   --color-accent-600: #6d28d9;
 
-  --color-sand-50: #08090b; /* page background — near-black */
+  --color-sand-50: #08090b; /* page background - near-black */
   --color-sand-100: #12151b; /* subtle panel fill / hover */
   --color-sand-200: #262a33; /* borders + unfilled stars */
-  --color-surface: #101318; /* card surface — lifted off the page */
+  --color-surface: #101318; /* card surface - lifted off the page */
 
   --color-ink: #f4f6f8; /* off-white text */
   --color-ink-soft: #a6adb8;
@@ -118,7 +118,7 @@
   color-scheme: light;
 
   /* Decorative atmosphere (see body::before/::after). Kept as plain custom
-     properties — not Tailwind tokens — because they're background art, not
+     properties - not Tailwind tokens - because they're background art, not
      colors components reference. */
   --aurora: radial-gradient(58% 48% at 80% -8%, rgba(37, 99, 235, 0.16) 0%, transparent 55%),
     radial-gradient(46% 40% at 10% 10%, rgba(124, 92, 255, 0.13) 0%, transparent 60%),
@@ -131,7 +131,7 @@
      Light-mode stops stay dark enough for AA on large text over white. */
   --grad-brand: linear-gradient(120deg, #2563eb, #4c93ff 52%, #7c5cff);
 
-  /* Motion vocabulary — one set of easings/durations the app's micro-interactions
+  /* Motion vocabulary - one set of easings/durations the app's micro-interactions
      (toasts, page transitions, confirm dialog) share, instead of scattering
      magic numbers. --ease-standard is the same curve the scroll-reveal uses. */
   --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -159,11 +159,11 @@ body,
 
 /* Raise the base type scale for readability. Everything in the app is sized in
    rem (font sizes AND Tailwind's spacing), so lifting the root size scales the
-   whole UI up proportionally without touching a single component — the visual
+   whole UI up proportionally without touching a single component - the visual
    hierarchy the design system sets is preserved, just larger. A percentage
    (not a fixed px) keeps this relative to the user's own browser font-size
    setting, so anyone who has bumped their default still gets an even bigger
-   baseline — important for a low-vision audience. 112.5% = 18px on a 16px root. */
+   baseline - important for a low-vision audience. 112.5% = 18px on a 16px root. */
 html {
   font-size: 112.5%;
 }
@@ -343,7 +343,7 @@ body::after {
 }
 
 /* Accessibility-first: a clear, high-contrast focus ring. Uses the ink token
-   so it's dark on light and silver on black — never ambiguous. */
+   so it's dark on light and silver on black - never ambiguous. */
 :where(a, button, input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 2px;
@@ -376,7 +376,7 @@ body::after {
     transparent 60%
   );
 }
-/* Respect users who prefer reduced motion — hide the moving spotlight. */
+/* Respect users who prefer reduced motion - hide the moving spotlight. */
 @media (prefers-reduced-motion: reduce) {
   .cursor-glow {
     display: none;
@@ -387,7 +387,7 @@ body::after {
    Loading state for photo analysis (ScanningOverlay.jsx). A bright line sweeps
    the photo top→bottom while the ML service examines it, and the status label
    pulses. Sits on top of a real photograph, so these use fixed black/white
-   rather than theme tokens — they must read the same in light and dark. */
+   rather than theme tokens - they must read the same in light and dark. */
 @keyframes scan-sweep {
   0% {
     top: -10%;
@@ -436,13 +436,13 @@ body::after {
 }
 
 /* ---- Leaflet map containment ----------------------------------------------
-   Leaflet hard-codes very high z-indexes on its internal layers — panes climb
-   to ~700 and the zoom/attribution controls sit at ~1000 — all far above the
+   Leaflet hard-codes very high z-indexes on its internal layers - panes climb
+   to ~700 and the zoom/attribution controls sit at ~1000 - all far above the
    app's sticky header (z-30), mobile bottom nav (z-40), and filter sheet
    (z-50). Left alone, the map's tiles and controls paint OVER those when they
    overlap while scrolling. `isolation: isolate` gives the map its own stacking
    context, so every Leaflet z-index resolves INSIDE the map box (their internal
-   order — tiles < markers < popups < controls — is untouched) while the box
+   order - tiles < markers < popups < controls - is untouched) while the box
    itself stacks at normal flow level, safely beneath the chrome above it. This
    is the whole fix; we deliberately don't touch Leaflet's per-pane z-indexes,
    which it needs for that internal ordering. */

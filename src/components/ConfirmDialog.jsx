@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import Button from "./Button";
 
-// A small, accessible confirmation modal — the in-app replacement for the
+// A small, accessible confirmation modal - the in-app replacement for the
 // native window.confirm() on destructive actions. Same dialog accessibility as
 // BottomSheet.jsx:
 //   - role="dialog" aria-modal, labelled by its title

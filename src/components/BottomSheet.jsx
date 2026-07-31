@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-// BottomSheet — a modal drawer that slides up from the bottom of the screen,
+// BottomSheet - a modal drawer that slides up from the bottom of the screen,
 // used for things like mobile filters. It's a proper accessible dialog:
 //   - role="dialog" aria-modal, labelled by its title
 //   - focus moves into the sheet on open and is trapped there (Tab wraps)

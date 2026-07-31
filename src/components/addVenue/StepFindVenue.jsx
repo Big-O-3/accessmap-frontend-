@@ -26,7 +26,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
   const [mode, setMode] = useState(initialVenue ? "selected" : "search");
   const [selected, setSelected] = useState(initialVenue ?? null);
 
-  // Create-form fields. latitude/longitude are optional — they're filled in
+  // Create-form fields. latitude/longitude are optional - they're filled in
   // when the contributor picks a search suggestion (see fillFromPlace), which
   // pins the venue on the map, but a venue can be created without them.
   const [form, setForm] = useState({

@@ -49,7 +49,7 @@ export default function LoginPage() {
         const { needsConfirmation } = await signUpWithEmail(email, password);
         if (needsConfirmation) {
           setInfo(
-            "Check your inbox — confirm your email, then come back and log in.",
+            "Check your inbox - confirm your email, then come back and log in.",
           );
           setMode("login");
         } else {

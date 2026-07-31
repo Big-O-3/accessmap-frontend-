@@ -20,8 +20,8 @@ import { useAuth } from "../context/useAuth";
 import { toast } from "../lib/toast";
 
 // "Add & verify a photo" on an existing venue's page. Reuses the same server
-// chain the Add-Venue stepper uses — uploadPhoto → analyzeUploadedPhoto → (user
-// confirms) → patchDetections + submitContribution — so a visitor can drop a
+// chain the Add-Venue stepper uses - uploadPhoto → analyzeUploadedPhoto → (user
+// confirms) → patchDetections + submitContribution - so a visitor can drop a
 // photo, watch the AI detect accessibility features, confirm what's right, and
 // have the venue's score + evidence update in place. No new backend needed.
 //
@@ -98,7 +98,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
     setStatus("analyzing");
 
     // Track the persisted photo across the two calls so a failure after upload
-    // can roll it back — a failed analysis should leave nothing on the venue.
+    // can roll it back - a failed analysis should leave nothing on the venue.
     let uploadedId = null;
     try {
       const uploaded = await uploadPhoto(venue.id, file);
@@ -124,7 +124,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
         try {
           await deletePhoto(uploadedId);
         } catch {
-          // ignore — the message below still informs the user
+          // ignore - the message below still informs the user
         }
         setPhotoId(null);
       }
@@ -157,7 +157,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
       }
 
       // Turn the confirmed detections into features and record the contribution
-      // — the backend upserts them (communityVerified) and recomputes the score.
+      // - the backend upserts them (communityVerified) and recomputes the score.
       // Skip when nothing was confirmed: the photo still stays on the venue.
       const confirmedDets = detections.filter((_, idx) => confirmed[idx]);
       const features = detectionsToFeatures(confirmedDets);
@@ -188,20 +188,20 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
     }
   }
 
-  // Discard an analyzed photo the user decided not to keep — delete the stored
+  // Discard an analyzed photo the user decided not to keep - delete the stored
   // row so it doesn't linger on the venue, then return to the empty state.
   async function handleDiscard() {
     if (photoId) {
       try {
         await deletePhoto(photoId);
       } catch {
-        // ignore — reset regardless; a leftover is the user's own photo
+        // ignore - reset regardless; a leftover is the user's own photo
       }
     }
     reset();
   }
 
-  // Signed-out visitors can't upload (the endpoints require auth) — prompt them.
+  // Signed-out visitors can't upload (the endpoints require auth) - prompt them.
   if (!user) {
     return (
       <section className="mt-8">
@@ -307,7 +307,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
 
       {(status === "review" || status === "saving") && (
         <div className="space-y-4">
-          {/* The photo with boxes over only the features the user has confirmed —
+          {/* The photo with boxes over only the features the user has confirmed -
               unchecking one removes its box, so the overlay tracks the decision. */}
           <DetectionImage
             photo={{ imageUrl: previewUrl, detections: confirmedDetections }}
@@ -318,7 +318,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
               ? "Analysis complete. No accessibility features detected in this photo."
               : `Analysis complete. ${detections.length} accessibility feature${
                   detections.length === 1 ? "" : "s"
-                } detected — confirm below.`}
+                } detected - confirm below.`}
           </p>
 
           {detections.length === 0 ? (
@@ -329,7 +329,7 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
           ) : (
             <fieldset>
               <legend className="mb-2 text-base text-ink-soft">
-                Uncheck anything the AI got wrong — only confirmed features count
+                Uncheck anything the AI got wrong - only confirmed features count
                 toward this venue&apos;s score.
               </legend>
               <ul className="divide-y divide-sand-100 rounded-xl bg-surface ring-1 ring-sand-200">
@@ -426,7 +426,7 @@ function SectionHeading() {
         Add &amp; verify a photo
       </h2>
       <p className="mb-4 text-base text-ink-soft">
-        Upload a photo and our AI will detect accessibility features — confirm
+        Upload a photo and our AI will detect accessibility features - confirm
         what&apos;s right and it counts toward this venue&apos;s score.
       </p>
     </>

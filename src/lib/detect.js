@@ -8,7 +8,7 @@
 import { calculateAccessibilityScore } from "./score";
 import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY, featureLabel } from "./features";
 
-// All ML traffic goes through the backend now — it forwards the image to the
+// All ML traffic goes through the backend now - it forwards the image to the
 // Python ML service. This keeps the ML URL and its CORS surface server-side.
 const API_URL = import.meta.env.VITE_API_URL;
 if (!API_URL) {
@@ -98,7 +98,7 @@ export function summarizeAccessibility(detections = []) {
 }
 
 // Build a full yes/no checklist covering every accessibility feature we know
-// about — not just the ones the model saw. Each row is one of:
+// about - not just the ones the model saw. Each row is one of:
 //   - "yes"           : detected in this photo
 //   - "not-detected"  : this feature wasn't found (doesn't mean absent, just not
 //                       visible / not confident)

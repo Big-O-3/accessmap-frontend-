@@ -1,6 +1,6 @@
 import { ACCESSIBILITY_FEATURES } from "../../lib/features";
 
-// Manual checklist step — the no-photo path for a venue that already exists.
+// Manual checklist step - the no-photo path for a venue that already exists.
 // Instead of uploading a photo for the AI to read, the contributor ticks the
 // accessibility features they know about. These are recorded as
 // community-confirmed features (trusted at full weight, same as confirmed AI
@@ -21,7 +21,7 @@ export default function StepManualChecklist({
         </h2>
         <p className="mt-1 text-base text-ink-soft">
           Adding to <span className="font-medium text-ink">{venue?.name}</span>{" "}
-          without a photo. Tick everything you know about — leave the rest
+          without a photo. Tick everything you know about - leave the rest
           unchecked.
         </p>
       </div>

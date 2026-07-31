@@ -24,7 +24,7 @@ const VERDICTS = {
   },
   partial: {
     text: "Partially accessible",
-    detail: "Some accessible features detected, but also a barrier — check the details.",
+    detail: "Some accessible features detected, but also a barrier - check the details.",
     className: "bg-warning-soft text-warning ring-warning-ring",
   },
   "not-accessible": {
@@ -51,12 +51,12 @@ export default function AnalyzePage() {
   const [showNameInput, setShowNameInput] = useState(false);
   const [venueName, setVenueName] = useState("");
   // When the user picks a place from the autocomplete, remember its
-  // coordinates — that's where the venue actually is, not where the phone is.
+  // coordinates - that's where the venue actually is, not where the phone is.
   const [pickedPlace, setPickedPlace] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   // The contributor's confirm/reject decision per detected feature, keyed by
   // feature key ({ entrance_detected: true }). AI detections are a starting
-  // point — the user has the final say, exactly like the Add-Venue review step.
+  // point - the user has the final say, exactly like the Add-Venue review step.
   // High-confidence hits start checked; "likely" ones start unchecked so the
   // user opts in. Everything downstream (score, verdict, counts, the boxes on
   // the photo, and the save) reads from this set, not the raw ML output.
@@ -85,7 +85,7 @@ export default function AnalyzePage() {
     });
   }
 
-  // Save this analysis at the user's location under the given venue name —
+  // Save this analysis at the user's location under the given venue name -
   // persists as a real venue via the contributions API so it shows up on the
   // shared map for everyone.
   async function confirmPlaceOnMap() {
@@ -148,7 +148,7 @@ export default function AnalyzePage() {
 
   const detections = result?.detections ?? [];
   // Only the detections whose feature the contributor has confirmed. The score,
-  // verdict, counts, and the save all flow from this set — unchecking a feature
+  // verdict, counts, and the save all flow from this set - unchecking a feature
   // takes it out of every one of them, so the preview reflects the user's call,
   // not just the model's.
   const confirmedDetections = detections.filter(
@@ -169,7 +169,7 @@ export default function AnalyzePage() {
   ).length;
 
   // A photo object in the shape DetectionImage expects. Only confirmed
-  // detections get boxes — unchecking a feature in the checklist removes its
+  // detections get boxes - unchecking a feature in the checklist removes its
   // box from the photo too, so the overlay always matches what the user has
   // agreed the AI got right.
   const photo = previewUrl
@@ -183,8 +183,8 @@ export default function AnalyzePage() {
           Check a venue's accessibility
         </h1>
         <p className="mt-2 text-base sm:text-lg text-ink-soft">
-          Upload a photo and our AI will detect accessibility features — ramps,
-          doors, seating, restrooms — and flag barriers like stairs, with a
+          Upload a photo and our AI will detect accessibility features - ramps,
+          doors, seating, restrooms - and flag barriers like stairs, with a
           preview score.
         </p>
       </header>
@@ -259,7 +259,7 @@ export default function AnalyzePage() {
       {/* Results */}
       {status === "done" && photo && (
         <section className="mt-8 space-y-6">
-          {/* Camera guidance from the ML service — non-venue warning and/or a
+          {/* Camera guidance from the ML service - non-venue warning and/or a
               framing hint (step back / step closer / recenter). aria-live so
               screen readers announce it after each capture. */}
           {(result.isVenue === false || result.framingHint) && (
@@ -285,7 +285,7 @@ export default function AnalyzePage() {
             </div>
           )}
 
-          {/* Overall verdict — the "degree of accessibility" at a glance. This
+          {/* Overall verdict - the "degree of accessibility" at a glance. This
               plain-language verdict IS the main rating shown to the user; the
               numeric score still exists under the hood (drives search, the map
               pins, and what the backend stores) but is never surfaced here. */}
@@ -311,7 +311,7 @@ export default function AnalyzePage() {
 
           {/* One unified checklist so the user sees every feature we checked
               for, not just the ones we found. Detected features (Yes / barrier)
-              carry a checkbox — the contributor confirms or unchecks each one,
+              carry a checkbox - the contributor confirms or unchecks each one,
               and the score + verdict + what gets saved all follow. Features that
               weren't detected are shown but aren't checkable (there's nothing to
               confirm). */}
@@ -320,7 +320,7 @@ export default function AnalyzePage() {
               Accessibility checklist
             </h2>
             <p className="border-b border-sand-100 px-4 py-2 text-sm text-ink-soft">
-              Uncheck anything the AI got wrong — you have the final say. Only
+              Uncheck anything the AI got wrong - you have the final say. Only
               confirmed features count toward the score and get saved.
             </p>
             <ul className="divide-y divide-sand-100">
@@ -329,7 +329,7 @@ export default function AnalyzePage() {
                 const isChecked = !!confirmed[row.key];
                 const inputId = `confirm-${row.key}`;
 
-                // Not-detected rows have nothing to confirm — render them as a
+                // Not-detected rows have nothing to confirm - render them as a
                 // plain, non-interactive row so the user still sees we looked.
                 if (!detected) {
                   return (
@@ -338,7 +338,7 @@ export default function AnalyzePage() {
                       className="flex items-center justify-between gap-3 px-4 py-3"
                     >
                       <span className="flex items-center gap-2 text-base font-medium text-ink-faint">
-                        <span aria-hidden>—</span>
+                        <span aria-hidden>-</span>
                         {row.label}
                       </span>
                       <span className="text-sm font-semibold text-ink-faint">
@@ -372,7 +372,7 @@ export default function AnalyzePage() {
                               : "bg-warning-soft text-warning ring-warning-ring"
                           }`}
                         >
-                          {row.highConfidence ? "Detected" : "Likely — verify"}
+                          {row.highConfidence ? "Detected" : "Likely - verify"}
                         </span>
                       )}
                       {row.status === "barrier" && (
@@ -387,7 +387,7 @@ export default function AnalyzePage() {
             </ul>
             <p className="border-t border-sand-100 px-4 py-3 text-sm text-ink-soft">
               &ldquo;Not detected&rdquo; means we didn&apos;t see it in this photo
-              — the feature could still exist at the venue.
+              - the feature could still exist at the venue.
             </p>
           </div>
 
@@ -397,7 +397,7 @@ export default function AnalyzePage() {
             </p>
           )}
 
-          {/* Connect this analysis to the map — save it as a place. */}
+          {/* Connect this analysis to the map - save it as a place. */}
           {(summary.present.length > 0 || summary.barriers.length > 0) &&
             (showNameInput ? (
               <div className="space-y-2 rounded-2xl border border-sand-200 bg-surface p-4 shadow-sm">
@@ -412,7 +412,7 @@ export default function AnalyzePage() {
                   value={venueName}
                   onChange={(v) => {
                     setVenueName(v);
-                    // Typing after a pick invalidates the coordinates — the
+                    // Typing after a pick invalidates the coordinates - the
                     // user may be editing the name away from the picked place.
                     if (pickedPlace && v !== pickedPlace.name) {
                       setPickedPlace(null);
@@ -450,7 +450,7 @@ export default function AnalyzePage() {
             ))}
 
           <p className="text-center text-sm text-ink-faint">
-            AI detections are a starting point — the community verifies each one
+            AI detections are a starting point - the community verifies each one
             before it counts toward a venue's official score.
           </p>
         </section>

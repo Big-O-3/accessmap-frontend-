@@ -1,4 +1,4 @@
-// Progress stepper for the Add Venue flow. Purely presentational — the current
+// Progress stepper for the Add Venue flow. Purely presentational - the current
 // step lives in the page's reducer. Rendered as an ordered list so screen
 // readers announce "step N of M" and the current step is marked aria-current.
 // `labels` is the ordered list of step names for the active flow (the photo

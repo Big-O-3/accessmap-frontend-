@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-# Local env config (never commit — contains local backend URL / secrets)
+# Local env config (never commit - contains local backend URL / secrets)
 .env
 .env.local
 
@@ -29,5 +29,5 @@ dist-ssr
 
 CLAUDE.md
 
-# Local AI tooling (UI/UX Pro Max skill, etc.) — personal, not shared.
+# Local AI tooling (UI/UX Pro Max skill, etc.) - personal, not shared.
 .claude/

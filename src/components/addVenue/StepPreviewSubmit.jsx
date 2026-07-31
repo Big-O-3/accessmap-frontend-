@@ -90,7 +90,7 @@ export default function StepPreviewSubmit({
         <div>
           <p className="text-base text-ink-soft">Estimated accessibility</p>
           <p className="text-sm text-ink-faint">
-            Preview — updates as the community verifies features
+            Preview - updates as the community verifies features
           </p>
         </div>
         <ScoreBadge score={previewScore} size="lg" />

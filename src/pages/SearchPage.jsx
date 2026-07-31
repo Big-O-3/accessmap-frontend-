@@ -193,8 +193,8 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* Result count sits ABOVE the whole sidebar+results grid — not inside
-          the results column — so the filter panel, the first venue card, and
+      {/* Result count sits ABOVE the whole sidebar+results grid - not inside
+          the results column - so the filter panel, the first venue card, and
           the map all start at the same top edge and line up side by side.
           (Only meaningful in split/list; hidden in map view.) The line's height
           is reserved with min-h even while loading, so the grid below doesn't
@@ -284,7 +284,7 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              // On phones the map sits on top of the list (order-first) — the
+              // On phones the map sits on top of the list (order-first) - the
               // maps-app layout. Desktop keeps its DOM order (list left, map
               // right) via lg:order-none. Shorter on mobile in split so the
               // list shows below the fold; taller when it's the only view.

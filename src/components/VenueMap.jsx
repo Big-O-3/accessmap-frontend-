@@ -26,7 +26,7 @@ function readTierColors() {
     high: read(TIER_COLOR_VAR.high),
     medium: read(TIER_COLOR_VAR.medium),
     low: read(TIER_COLOR_VAR.low),
-    // No score yet (no photo uploaded) — a muted neutral, not a tier color.
+    // No score yet (no photo uploaded) - a muted neutral, not a tier color.
     unscored: read("--color-ink-faint"),
   };
 }
@@ -119,7 +119,7 @@ export default function VenueMap({ venues, center, activeId, onSelect }) {
                 </p>
                 {venue.analyzed ? (
                   <p className="text-xs text-link">
-                    Analyzed photo — not a saved venue yet
+                    Analyzed photo - not a saved venue yet
                   </p>
                 ) : (
                   <Link

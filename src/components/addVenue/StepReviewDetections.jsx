@@ -8,7 +8,7 @@ import { featureLabel } from "../../lib/features";
 // Step 3 · AI Detection Review (the primary ML feature).
 // Each uploaded photo is analyzed by the ML service, then shown with bounding
 // boxes and a per-detection checklist. Every detection is announced as TEXT
-// (feature name + confidence), not conveyed by the boxes alone — critical for
+// (feature name + confidence), not conveyed by the boxes alone - critical for
 // screen-reader users. The contributor has the final say: uncheck false
 // positives. High-confidence detections start pre-checked (handled by the
 // reducer). Analysis is kicked off once per photo when this step mounts.
@@ -52,7 +52,7 @@ export default function StepReviewDetections({
           Confirm what the AI found
         </h2>
         <p className="mt-1 text-base text-ink-soft">
-          Our AI analyzed your photos. Uncheck anything it got wrong — you have
+          Our AI analyzed your photos. Uncheck anything it got wrong - you have
           the final say.
         </p>
       </div>
@@ -106,14 +106,14 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
   }
 
   // An expired session and an unreachable service both surface here, but the
-  // fix is completely different — retrying a 401 will never work. Say so, and
+  // fix is completely different - retrying a 401 will never work. Say so, and
   // point at the login page instead of at the ML service.
   if (photo.status === "error" && photo.authError) {
     // The backend separates a genuinely expired session from a token it could
     // not verify at all. Only the first is fixed by signing in again; offering
     // that button for the second walks people round a loop that cannot ever
     // succeed, because the thing to fix is on the server. Default to treating
-    // an unlabelled 401 as an expiry — that's the common case.
+    // an unlabelled 401 as an expiry - that's the common case.
     const expired = !photo.error || /expired/i.test(photo.error);
     return (
       <div
@@ -136,7 +136,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
         ) : (
           <p className="mt-1">
             The server couldn&apos;t verify your sign-in, so signing in again
-            won&apos;t help — the backend&apos;s Supabase credentials need
+            won&apos;t help - the backend&apos;s Supabase credentials need
             attention.
           </p>
         )}
@@ -153,7 +153,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
         <p className="font-semibold">Couldn&apos;t analyze this photo.</p>
         <p className="mt-1">{photo.error}</p>
         {/* Reassure the contributor that the failed analysis left nothing
-            behind — the photo is rolled back on failure (see analyzePhoto). */}
+            behind - the photo is rolled back on failure (see analyzePhoto). */}
         <p className="mt-1 text-sm opacity-80">
           This photo wasn&apos;t saved to the venue. Make sure the backend and
           ML service are reachable, then retry.
@@ -176,7 +176,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
           ? "Analysis complete. No accessibility features detected in this photo."
           : `Analysis complete. ${detections.length} accessibility feature${
               detections.length === 1 ? "" : "s"
-            } detected — review and confirm below.`}
+            } detected - review and confirm below.`}
       </p>
 
       {/* photo shape DetectionImage expects */}
@@ -190,7 +190,7 @@ function PhotoReview({ photo, confirmed, detKey, onToggle, onRetry }) {
       ) : (
         <fieldset>
           <legend className="sr-only">
-            Detected accessibility features — uncheck any the AI got wrong
+            Detected accessibility features - uncheck any the AI got wrong
           </legend>
           <ul className="divide-y divide-sand-100 rounded-xl bg-surface ring-1 ring-sand-200">
             {detections.map((d, idx) => {

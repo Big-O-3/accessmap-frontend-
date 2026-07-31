@@ -1,10 +1,10 @@
 import useReveal from "../hooks/useReveal";
 
-// Reveal — wrap anything so it fades-and-rises into view on scroll.
+// Reveal - wrap anything so it fades-and-rises into view on scroll.
 //
 // It applies the `rv` class (styled in src/index.css) and attaches the
 // useReveal hook, which adds `in` the first time the element is seen. Because
-// each <Reveal> is its own component, it's safe to use inside a .map() — every
+// each <Reveal> is its own component, it's safe to use inside a .map() - every
 // instance gets its own hook call. Stagger a group by passing an increasing
 // `delay` (in seconds).
 //

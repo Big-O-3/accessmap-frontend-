@@ -13,7 +13,7 @@ export default function SavedVenues({ saved }) {
       </h2>
 
       {saved.length === 0 ? (
-        // Nothing saved yet — explain what the save button does and point back
+        // Nothing saved yet - explain what the save button does and point back
         // to search, rather than showing a lone find-more tile with no context.
         <div className="mt-3 rounded-2xl border border-sand-200 bg-surface p-8 text-center shadow-sm">
           <p className="font-display text-xl font-bold text-ink">

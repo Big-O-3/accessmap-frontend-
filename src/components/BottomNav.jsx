@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-// Mobile bottom tab bar — the primary navigation on phones (hidden on md+,
+// Mobile bottom tab bar - the primary navigation on phones (hidden on md+,
 // where the top nav takes over). Thumb-zone destinations with a raised
 // "Analyze" action in the middle for the app's photo-analysis flow.
 //
@@ -139,7 +139,7 @@ export default function BottomNav({ signedIn }) {
           </NavLink>
         </li>
         <li className="flex flex-col items-center">
-          {/* Raised primary action — analyze a venue from a photo. */}
+          {/* Raised primary action - analyze a venue from a photo. */}
           <NavLink
             to="/analyze"
             aria-label="Analyze a venue"

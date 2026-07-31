@@ -1,8 +1,8 @@
 import { scoreVerdict } from "../lib/score";
 import { tierPlate } from "../lib/tierStyles";
 
-// Users see a plain verdict — "Accessible" / "Partially accessible" / "Not
-// accessible" — rather than a bare number, which is hard to read at a glance.
+// Users see a plain verdict - "Accessible" / "Partially accessible" / "Not
+// accessible" - rather than a bare number, which is hard to read at a glance.
 // The underlying 0-100 score still drives everything (tier/color here, sort and
 // map-pin color elsewhere, storage in the backend); we keep it in the tooltip
 // for anyone who wants the detail, and show it in the large (detail-page)
@@ -25,7 +25,7 @@ export default function ScoreBadge({ score, size = "md" }) {
     return (
       <span
         className={`inline-flex items-center gap-1 rounded-full font-medium ring-1 ring-inset bg-sand-100 text-ink-soft ring-sand-200 ${sizes[size]}`}
-        title="No accessibility rating yet — upload a photo to generate one"
+        title="No accessibility rating yet - upload a photo to generate one"
       >
         Not yet rated
       </span>

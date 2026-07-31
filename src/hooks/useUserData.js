@@ -1,6 +1,6 @@
 // React hooks over the localStorage-backed user data (src/lib/userData.js).
 // useSyncExternalStore is React's built-in way to read from an external store
-// and re-render subscribers when it changes — so saving a venue anywhere
+// and re-render subscribers when it changes - so saving a venue anywhere
 // instantly updates the dashboard, the save button, everything.
 
 import { useSyncExternalStore } from "react";

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-// useReveal — fade-and-rise an element in the first time it scrolls into view.
+// useReveal - fade-and-rise an element in the first time it scrolls into view.
 //
 // Attach the returned ref to an element that also has the `rv` class (defined
 // in src/index.css). When that element enters the viewport we add the `in`

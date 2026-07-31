@@ -6,12 +6,12 @@ import { searchPlaces } from "../lib/geocode";
 // normalized place object from lib/geocode.js and blurs the dropdown.
 //
 // Props:
-//   value        — current input string (parent controlled)
-//   onChange     — called on every keystroke with the new string
-//   onPick(p)    — called when the user picks a suggestion
-//   id           — DOM id for the input, so a <label htmlFor> can pair with it
-//   placeholder  — input placeholder text
-//   className    — extra classes for the input
+//   value        - current input string (parent controlled)
+//   onChange     - called on every keystroke with the new string
+//   onPick(p)    - called when the user picks a suggestion
+//   id           - DOM id for the input, so a <label htmlFor> can pair with it
+//   placeholder  - input placeholder text
+//   className    - extra classes for the input
 export default function PlaceAutocomplete({
   value,
   onChange,
@@ -27,7 +27,7 @@ export default function PlaceAutocomplete({
   // wrong order and close the list before onPick runs.
   const suppressBlur = useRef(false);
 
-  // Debounced search — respect Nominatim's 1 req/sec ask by waiting for the
+  // Debounced search - respect Nominatim's 1 req/sec ask by waiting for the
   // user to pause typing.
   useEffect(() => {
     const q = value.trim();

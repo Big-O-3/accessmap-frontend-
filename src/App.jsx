@@ -17,13 +17,13 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route element={<Layout />}>
-            {/* Public routes — anonymous browsing is a feature. */}
+            {/* Public routes - anonymous browsing is a feature. */}
             <Route index element={<HomePage />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="venue/:id" element={<VenueDetailPage />} />
             <Route path="login" element={<LoginPage />} />
 
-            {/* Protected routes — anything that writes to the DB. */}
+            {/* Protected routes - anything that writes to the DB. */}
             <Route element={<RequireAuth />}>
               <Route path="analyze" element={<AnalyzePage />} />
               <Route path="add-venue" element={<AddVenuePage />} />

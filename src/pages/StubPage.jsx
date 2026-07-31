@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Button from "../components/Button";
 
 // Fallback page for unbuilt routes and the 404 catch-all. Kept minimal so
-// unfinished features and unknown URLs land somewhere navigable — but wrapped
+// unfinished features and unknown URLs land somewhere navigable - but wrapped
 // in the shared card idiom so it still reads as part of the app.
 export default function StubPage({ title, owner }) {
   return (

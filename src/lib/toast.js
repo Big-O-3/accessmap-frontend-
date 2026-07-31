@@ -32,7 +32,7 @@ export function getToasts() {
 
 export function dismiss(id) {
   const next = toasts.filter((t) => t.id !== id);
-  if (next.length === toasts.length) return; // already gone — no-op
+  if (next.length === toasts.length) return; // already gone - no-op
   toasts = next;
   emit();
 }

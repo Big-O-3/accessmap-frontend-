@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 
 // Source of truth for "is the user signed in" across the UI. Supabase's JS
-// client owns the session (stored in localStorage) — this context just mirrors
+// client owns the session (stored in localStorage) - this context just mirrors
 // it into React so components can react to changes.
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
@@ -38,8 +38,8 @@ export function AuthProvider({ children }) {
     });
 
     // Re-read the session whenever the tab regains focus. The session can die
-    // while we're backgrounded — refresh-token expiry, a sign-out in another
-    // tab, localStorage cleared by hand — without this tab ever hearing the
+    // while we're backgrounded - refresh-token expiry, a sign-out in another
+    // tab, localStorage cleared by hand - without this tab ever hearing the
     // event. Without this re-check `user` stays truthy in memory, RequireAuth
     // keeps letting us through, and the dead session only surfaces as a
     // confusing 401 partway into a flow (e.g. Add Venue step 3, after an

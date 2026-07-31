@@ -1,5 +1,5 @@
 // Dashboard stat tiles. Shows metrics computed from this browser's local
-// activity — server-side sync isn't wired up yet, so switching devices resets
+// activity - server-side sync isn't wired up yet, so switching devices resets
 // them. Each tile pairs a number with a text label (no icon/color-only meaning,
 // per the accessibility requirement).
 export default function StatsGrid({ stats }) {

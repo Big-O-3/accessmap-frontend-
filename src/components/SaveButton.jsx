@@ -43,7 +43,7 @@ export default function SaveButton({ venue, size = "md" }) {
     >
       <span aria-hidden="true">{saved ? "★" : "☆"}</span>
       {/* Reserve space for the longer "Saved" label so the button width stays
-          fixed between states — only the color and star change on toggle. */}
+          fixed between states - only the color and star change on toggle. */}
       <span className="grid">
         <span className="invisible col-start-1 row-start-1" aria-hidden="true">
           Saved

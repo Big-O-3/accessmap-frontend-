@@ -16,7 +16,7 @@ export default function ThemeToggle({ compact = false }) {
     try {
       localStorage.setItem("accessmap-theme", dark ? "dark" : "light");
     } catch (e) {
-      // Ignore storage errors (private mode) — theme still applies for the session.
+      // Ignore storage errors (private mode) - theme still applies for the session.
     }
   }, [dark]);
 

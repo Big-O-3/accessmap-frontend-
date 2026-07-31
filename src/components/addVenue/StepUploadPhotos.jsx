@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../Button";
 
 // Step 2 · Upload Photos.
-// No manual tagging — that's the AI's job in Step 3. Photos are held locally as
+// No manual tagging - that's the AI's job in Step 3. Photos are held locally as
 // File objects (the frontend has no auth to persist them yet); each carries an
 // object-URL preview. Drag-and-drop plus an explicit button path for keyboard
 // and screen-reader users (the dropzone is not the only way in).
@@ -51,7 +51,7 @@ export default function StepUploadPhotos({
       <div>
         <h2 className="font-display text-xl font-extrabold text-ink">Upload photos</h2>
         <p className="mt-1 text-base text-ink-soft">
-          No forms to fill out — our AI reads the photos in the next step.
+          No forms to fill out - our AI reads the photos in the next step.
         </p>
       </div>
 
@@ -102,7 +102,7 @@ export default function StepUploadPhotos({
         <p className="mt-2 text-sm text-ink-faint">JPG or PNG, up to 10MB each.</p>
       </div>
 
-      {/* This venue already exists, so a photo is optional — offer a no-photo
+      {/* This venue already exists, so a photo is optional - offer a no-photo
           path that records accessibility features from a quick checklist. */}
       {canSkip && (
         <p className="text-center text-base text-ink-soft">

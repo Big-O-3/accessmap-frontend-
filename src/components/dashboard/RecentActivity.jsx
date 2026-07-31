@@ -30,7 +30,7 @@ export default function RecentActivity({ activity }) {
         // The scrolling list is absolutely positioned inside this flex-1
         // wrapper so its rows DON'T contribute to the column's height. That way
         // the recommendations column beside it always drives the row height and
-        // this list fills exactly that, scrolling internally — however many
+        // this list fills exactly that, scrolling internally - however many
         // entries there are, the dashboard never grows down the page. On mobile
         // there's no sibling column, so min-h gives the wrapper a real height to
         // fill; lg:min-h-0 hands height back to the equal-height grid row.
@@ -58,7 +58,7 @@ export default function RecentActivity({ activity }) {
 }
 
 // Render the activity detail, linking the venue name to its page when present.
-// Split on the FIRST occurrence only — a venue name can repeat in the detail
+// Split on the FIRST occurrence only - a venue name can repeat in the detail
 // (e.g. a venue literally named "favorites"), and splitting on all occurrences
 // would drop trailing text.
 function ActivityText({ detail, venueId, venueName }) {
