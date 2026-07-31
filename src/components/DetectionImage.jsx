@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { featureLabel } from "../lib/features";
 import { deletePhoto } from "../lib/api";
+import { toast } from "../lib/toast";
+import ConfirmDialog from "./ConfirmDialog";
 
 // Renders a photo with ML detection bounding boxes overlaid. Bounding boxes
 // from the ML service are in the original image's pixel space, so we scale them
@@ -13,7 +15,7 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
   const imgRef = useRef(null);
   const [scale, setScale] = useState({ x: 1, y: 1 });
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState(null);
+  const [confirming, setConfirming] = useState(false);
 
   function handleLoad() {
     const img = imgRef.current;
@@ -25,15 +27,15 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this photo? This can't be undone.")) return;
-    setError(null);
     setDeleting(true);
     try {
       await deletePhoto(photo.id);
-      onDelete?.(photo.id);
+      toast.success("Photo deleted");
+      onDelete?.(photo.id); // parent drops it from view (unmounts this)
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || "Couldn't delete photo");
       setDeleting(false);
+      setConfirming(false);
     }
   }
 
@@ -49,21 +51,23 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
       {canDelete && (
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={() => setConfirming(true)}
           disabled={deleting}
           className="absolute top-2 right-2 rounded-lg bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-danger disabled:opacity-50"
         >
-          {deleting ? "Deleting…" : "Delete"}
+          Delete
         </button>
       )}
-      {error && (
-        <p
-          role="alert"
-          className="absolute bottom-2 left-2 right-2 rounded-lg bg-black/75 px-2 py-1 text-xs text-white ring-1 ring-inset ring-danger-ring backdrop-blur-sm"
-        >
-          {error}
-        </p>
-      )}
+      <ConfirmDialog
+        open={confirming}
+        title="Delete this photo?"
+        body="This can't be undone."
+        confirmLabel="Delete"
+        destructive
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirming(false)}
+      />
       {(photo.detections ?? []).map((d, i) => (
         <div
           key={i}

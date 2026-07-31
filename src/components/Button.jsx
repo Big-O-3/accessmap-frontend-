@@ -12,6 +12,7 @@ const VARIANTS = {
   outline:
     "bg-surface text-ink ring-1 ring-inset ring-sand-200 hover:bg-sand-100 hover:ring-brand-400",
   ghost: "text-ink-soft hover:bg-sand-100 hover:text-ink",
+  danger: "bg-danger text-white shadow-sm hover:opacity-90",
 };
 
 const SIZES = {
