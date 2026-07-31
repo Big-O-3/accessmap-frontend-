@@ -150,10 +150,11 @@ export default function StepPreviewSubmit({
       <Button
         type="button"
         onClick={onSubmit}
-        disabled={submitState === "submitting" || !canSubmit}
+        loading={submitState === "submitting"}
+        disabled={!canSubmit}
         className="w-full"
       >
-        {submitState === "submitting" ? "Submitting…" : "Submit contribution ✓"}
+        Submit contribution ✓
       </Button>
     </div>
   );

@@ -93,16 +93,19 @@ export default function LoginPage() {
         variant="outline"
         size="lg"
         onClick={onGoogle}
-        disabled={submitting}
+        loading={submitting}
         className="mt-6 w-full"
       >
-        <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
-          <path
-            fill="#EA4335"
-            d="M12 10.2v3.9h5.5c-.24 1.44-1.72 4.23-5.5 4.23-3.31 0-6-2.74-6-6.13s2.69-6.13 6-6.13c1.88 0 3.14.8 3.86 1.49l2.63-2.53C16.83 3.5 14.66 2.5 12 2.5 6.98 2.5 2.9 6.58 2.9 11.6S6.98 20.7 12 20.7c6.93 0 9.15-4.87 9.15-7.36 0-.49-.05-.87-.12-1.24H12z"
-          />
-        </svg>
-        {submitting ? "Please wait…" : "Continue with Google"}
+        {/* Swap the Google mark for the button's own spinner while working. */}
+        {!submitting && (
+          <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5">
+            <path
+              fill="#EA4335"
+              d="M12 10.2v3.9h5.5c-.24 1.44-1.72 4.23-5.5 4.23-3.31 0-6-2.74-6-6.13s2.69-6.13 6-6.13c1.88 0 3.14.8 3.86 1.49l2.63-2.53C16.83 3.5 14.66 2.5 12 2.5 6.98 2.5 2.9 6.58 2.9 11.6S6.98 20.7 12 20.7c6.93 0 9.15-4.87 9.15-7.36 0-.49-.05-.87-.12-1.24H12z"
+            />
+          </svg>
+        )}
+        Continue with Google
       </Button>
 
       <div className="my-6 flex items-center gap-3 text-sm uppercase text-ink-faint">
@@ -141,12 +144,8 @@ export default function LoginPage() {
             className="mt-1 w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30"
           />
         </div>
-        <Button type="submit" size="lg" disabled={submitting} className="w-full">
-          {submitting
-            ? "Please wait…"
-            : mode === "login"
-              ? "Log in"
-              : "Create account"}
+        <Button type="submit" size="lg" loading={submitting} className="w-full">
+          {mode === "login" ? "Log in" : "Create account"}
         </Button>
       </form>
 
