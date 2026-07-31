@@ -193,6 +193,21 @@ export default function SearchPage() {
         </div>
       </div>
 
+      {/* Result count sits ABOVE the whole sidebar+results grid — not inside
+          the results column — so the filter panel, the first venue card, and
+          the map all start at the same top edge and line up side by side.
+          (Only meaningful in split/list; hidden in map view.) */}
+      {!loading && venues.length > 0 && view !== "map" && (
+        <p className="mb-3 text-base text-ink-soft">
+          Showing{" "}
+          <span className="font-mono tabular-nums">
+            {visibleVenues.length}
+          </span>{" "}
+          of <span className="font-mono tabular-nums">{venues.length}</span>{" "}
+          venue{venues.length !== 1 && "s"}, closest first
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         {/* Desktop sidebar. On mobile the same panel lives in the sheet. */}
         <aside className="hidden lg:col-span-1 lg:block">
@@ -209,22 +224,6 @@ export default function SearchPage() {
             >
               {error}
             </div>
-          )}
-
-          {/* Result count sits ABOVE the two columns, not inside the list — so
-              the first venue card and the map both start at the same top edge
-              and line up side by side. (Only meaningful in split/list; harmless
-              in map view where the list column isn't rendered.) */}
-          {!loading && venues.length > 0 && view !== "map" && (
-            <p className="mb-3 text-base text-ink-soft">
-              Showing{" "}
-              <span className="font-mono tabular-nums">
-                {visibleVenues.length}
-              </span>{" "}
-              of{" "}
-              <span className="font-mono tabular-nums">{venues.length}</span>{" "}
-              venue{venues.length !== 1 && "s"}, closest first
-            </p>
           )}
 
           <div
