@@ -42,7 +42,7 @@ export function calculateAccessibilityScore(features = []) {
 
 // Buckets for badge coloring in the UI.
 export function scoreTier(score) {
-  if (score >= 75) return "high";
+  if (score >= 67) return "high";
   if (score >= 40) return "medium";
   return "low";
 }

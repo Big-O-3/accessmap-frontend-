@@ -212,7 +212,7 @@ export default function SearchPage() {
           )}
 
           <div
-            className={`grid gap-4 ${
+            className={`grid items-start gap-4 ${
               view === "split" ? "lg:grid-cols-2" : "grid-cols-1"
             }`}
           >
@@ -272,13 +272,26 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:h-[600px]">
-                <VenueMap
-                  venues={venues}
-                  center={mapCenter}
-                  activeId={activeId}
-                  onSelect={setActiveId}
-                />
+              // In split view the map sticks below the header while the venue
+              // list scrolls beside it, so it stays in view. `self-start` keeps
+              // the sticky element from stretching to the row's full height
+              // (which would defeat position: sticky). On the full-width "map"
+              // view there's nothing to scroll past, so sticky is a no-op there.
+              <div
+                className={
+                  view === "split"
+                    ? "lg:sticky lg:top-20 lg:self-start"
+                    : undefined
+                }
+              >
+                <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:h-[600px]">
+                  <VenueMap
+                    venues={venues}
+                    center={mapCenter}
+                    activeId={activeId}
+                    onSelect={setActiveId}
+                  />
+                </div>
               </div>
             )}
           </div>

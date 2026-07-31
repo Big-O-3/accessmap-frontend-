@@ -10,6 +10,7 @@ export default function RecentActivity({ activity }) {
       <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
         Recent activity
       </h2>
+      <p className="text-sm text-ink-soft">Your latest saves and contributions</p>
 
       {activity.length === 0 ? (
         // flex-1 so the card fills its column: the two dashboard columns are
