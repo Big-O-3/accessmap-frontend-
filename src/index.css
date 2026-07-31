@@ -130,6 +130,13 @@
   /* Azure→violet brand gradient for headline accents and gradient fills.
      Light-mode stops stay dark enough for AA on large text over white. */
   --grad-brand: linear-gradient(120deg, #2563eb, #4c93ff 52%, #7c5cff);
+
+  /* Motion vocabulary — one set of easings/durations the app's micro-interactions
+     (toasts, page transitions, confirm dialog) share, instead of scattering
+     magic numbers. --ease-standard is the same curve the scroll-reveal uses. */
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
 }
 .dark {
   color-scheme: dark;
@@ -265,6 +272,38 @@ body::after {
   color: transparent;
 }
 
+/* ---- Micro-interactions ---------------------------------------------------
+   Toasts (ToastViewport.jsx) rise + fade in; routed pages (Layout.jsx) fade +
+   rise in on navigation. Both use the shared motion tokens and are held still
+   under prefers-reduced-motion below. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.toast-item {
+  animation: toast-in var(--dur-base) var(--ease-standard);
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-transition {
+  animation: page-in var(--dur-base) var(--ease-standard);
+}
+
 /* Reduced motion: hold the aurora still and show revealed content immediately,
    so nothing depends on movement to appear or be understood. */
 @media (prefers-reduced-motion: reduce) {
@@ -275,6 +314,10 @@ body::after {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .toast-item,
+  .page-transition {
+    animation: none;
   }
 }
 

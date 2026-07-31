@@ -4,6 +4,7 @@ import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
 import BottomNav from "./BottomNav";
 import CursorGlow from "./CursorGlow";
+import ToastViewport from "./ToastViewport";
 
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -167,6 +168,9 @@ export default function Layout() {
 
       {/* Mobile-only bottom navigation. */}
       <BottomNav signedIn={!!user} />
+
+      {/* App-wide toast notifications. */}
+      <ToastViewport />
     </div>
   );
 }
