@@ -196,15 +196,23 @@ export default function SearchPage() {
       {/* Result count sits ABOVE the whole sidebar+results grid — not inside
           the results column — so the filter panel, the first venue card, and
           the map all start at the same top edge and line up side by side.
-          (Only meaningful in split/list; hidden in map view.) */}
-      {!loading && venues.length > 0 && view !== "map" && (
-        <p className="mb-3 text-base text-ink-soft">
-          Showing{" "}
-          <span className="font-mono tabular-nums">
-            {visibleVenues.length}
-          </span>{" "}
-          of <span className="font-mono tabular-nums">{venues.length}</span>{" "}
-          venue{venues.length !== 1 && "s"}, closest first
+          (Only meaningful in split/list; hidden in map view.) The line's height
+          is reserved with min-h even while loading, so the grid below doesn't
+          jump down when the count appears. */}
+      {view !== "map" && (
+        <p className="mb-3 min-h-[1.5rem] text-base text-ink-soft">
+          {loading ? (
+            <span className="text-ink-faint">Searching…</span>
+          ) : venues.length > 0 ? (
+            <>
+              Showing{" "}
+              <span className="font-mono tabular-nums">
+                {visibleVenues.length}
+              </span>{" "}
+              of <span className="font-mono tabular-nums">{venues.length}</span>{" "}
+              venue{venues.length !== 1 && "s"}, closest first
+            </>
+          ) : null}
         </p>
       )}
 
