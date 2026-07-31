@@ -5,7 +5,9 @@ import VenueCard from "../components/VenueCard";
 import Reveal from "../components/Reveal";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import CityAutocomplete from "../components/CityAutocomplete";
 import useCountUp from "../hooks/useCountUp";
+import useCityOptions from "../hooks/useCityOptions";
 
 // Brand gradient for the primary "Scan" tile on the mobile home — matches the
 // raised Scan button in the bottom nav so the two read as the same action.
@@ -253,7 +255,15 @@ function SecondaryTile({ to, glyph, label }) {
 // actions are big thumb-friendly tiles, and a short venue list rounds it out.
 // It reuses the featured-venue data the page already fetched, so there's no
 // extra request. The full marketing story still shows on tablet/desktop.
-function MobileHome({ query, setQuery, handleSearch, featured, status }) {
+function MobileHome({
+  query,
+  setQuery,
+  handleSearch,
+  onSelectCity,
+  cityOptions,
+  featured,
+  status,
+}) {
   return (
     <div className="px-4 pt-6 pb-4">
       <h1 className="font-display text-3xl font-extrabold leading-tight text-ink">
@@ -269,12 +279,15 @@ function MobileHome({ query, setQuery, handleSearch, featured, status }) {
         className="mt-5 flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-sm"
       >
         <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
-        <input
+        <CityAutocomplete
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={setQuery}
+          onSelect={onSelectCity}
+          options={cityOptions}
           placeholder="Search by city…"
           aria-label="Search venues by city"
-          className="min-w-0 flex-1 bg-transparent py-2 text-base text-ink outline-none placeholder:text-ink-faint"
+          wrapperClassName="min-w-0 flex-1"
+          className="w-full bg-transparent py-2 text-base text-ink outline-none placeholder:text-ink-faint"
         />
         <Button type="submit">Search</Button>
       </form>
@@ -368,6 +381,7 @@ export default function HomePage() {
   const [query, setQuery] = useState("");
   const [featured, setFeatured] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
+  const cityOptions = useCityOptions();
 
   // Which "How it works" step is centered in the viewport (drives the phone).
   const [activeStep, setActiveStep] = useState(0);
@@ -419,9 +433,20 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, [reduced]);
 
+  function goToSearch(city) {
+    navigate(`/search?city=${encodeURIComponent(city)}`);
+  }
+
   function handleSearch(e) {
     e.preventDefault();
-    navigate(`/search?city=${encodeURIComponent(query)}`);
+    goToSearch(query);
+  }
+
+  // Picking a city from the dropdown jumps straight to results — no need to
+  // then press Search.
+  function handleSelectCity(city) {
+    setQuery(city);
+    goToSearch(city);
   }
 
   return (
@@ -433,6 +458,8 @@ export default function HomePage() {
           query={query}
           setQuery={setQuery}
           handleSearch={handleSearch}
+          onSelectCity={handleSelectCity}
+          cityOptions={cityOptions}
           featured={featured}
           status={status}
         />
@@ -468,12 +495,15 @@ export default function HomePage() {
             className="flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-lg"
           >
             <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
-            <input
+            <CityAutocomplete
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={setQuery}
+              onSelect={handleSelectCity}
+              options={cityOptions}
               placeholder="Search by city…"
               aria-label="Search venues by city"
-              className="min-w-0 flex-1 bg-transparent py-2 text-ink outline-none placeholder:text-ink-faint"
+              wrapperClassName="min-w-0 flex-1"
+              className="w-full bg-transparent py-2 text-ink outline-none placeholder:text-ink-faint"
             />
             <Button type="submit" size="lg">
               Search
