@@ -183,7 +183,7 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
           htmlFor="venue-search"
           className="block text-base font-medium text-ink-soft"
         >
-          Search a place by name or address
+          Search a venue by name or address
         </label>
         <input
           id="venue-search"

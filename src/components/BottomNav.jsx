@@ -139,10 +139,10 @@ export default function BottomNav({ signedIn }) {
           </NavLink>
         </li>
         <li className="flex flex-col items-center">
-          {/* Raised primary action — analyze a place from a photo. */}
+          {/* Raised primary action — analyze a venue from a photo. */}
           <NavLink
             to="/analyze"
-            aria-label="Analyze a place"
+            aria-label="Analyze a venue"
             className="-mt-6 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg ring-4 ring-sand-50 transition-transform active:scale-95"
             style={{ background: MARK_GRADIENT }}
           >

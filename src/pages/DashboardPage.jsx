@@ -26,7 +26,7 @@ export default function DashboardPage() {
             Your dashboard
           </h1>
           <p className="mt-1 text-base text-ink-soft">
-            Your saved places, recent activity, and venues we recommend.
+            Your saved venues, recent activity, and venues we recommend.
           </p>
         </div>
         <Button as={Link} to="/add-venue" className="w-full sm:w-auto">

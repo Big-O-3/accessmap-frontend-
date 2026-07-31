@@ -267,7 +267,7 @@ function MobileHome({
   return (
     <div className="px-4 pt-6 pb-4">
       <h1 className="font-display text-3xl font-extrabold leading-tight text-ink">
-        Find accessible places
+        Find accessible venues
       </h1>
       <p className="mt-1 text-base text-ink-soft">
         Community-verified, AI-assisted.
@@ -304,7 +304,7 @@ function MobileHome({
           </span>
           <span>
             <span className="block font-display text-lg font-extrabold">
-              Scan a place
+              Scan a venue
             </span>
             <span className="block text-sm text-white/85">
               Detect accessibility from a photo
@@ -354,7 +354,7 @@ function MobileHome({
               No venues yet
             </p>
             <p className="mt-1 text-ink-soft">
-              Be the first to map an accessible place.
+              Be the first to map an accessible venue.
             </p>
             <div className="mt-4 flex justify-center">
               <Button as={Link} to="/add-venue">
@@ -479,15 +479,14 @@ export default function HomePage() {
           delay={0.12}
           className="mt-6 font-display text-5xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-6xl"
         >
-          Find truly <span className="text-gradient">accessible</span> places
+          Find truly <span className="text-gradient">accessible</span> venues
         </Reveal>
         <Reveal
           as="p"
           delay={0.2}
           className="mx-auto mt-6 max-w-2xl text-lg text-ink-soft"
         >
-          Community-verified accessibility details and AI-detected features — so
-          you can find a venue that welcomes you before you leave home.
+          Community-verified accessibility details and AI-detected features.
         </Reveal>
         <Reveal delay={0.28} className="mx-auto mt-9 max-w-xl">
           <form
@@ -584,7 +583,7 @@ export default function HomePage() {
             <span className="text-gradient">M+</span>
           </p>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-            Americans use a wheelchair. AccessMap helps them know a place is
+            Americans use a wheelchair. AccessMap helps them know a venue is
             accessible before they leave home.
           </p>
         </Reveal>
@@ -604,7 +603,7 @@ export default function HomePage() {
               Featured venues
             </h2>
             <p className="mt-2 text-lg text-ink-soft">
-              A few places the community has mapped recently.
+              A few venues the community has mapped recently.
             </p>
           </div>
           <Link
@@ -643,7 +642,7 @@ export default function HomePage() {
               No venues yet
             </p>
             <p className="mt-2 text-ink-soft">
-              Be the first to put an accessible place on the map.
+              Be the first to put an accessible venue on the map.
             </p>
             <div className="mt-5 flex justify-center">
               <Button as={Link} to="/add-venue">
@@ -682,14 +681,14 @@ export default function HomePage() {
             </h2>
             <p className="relative mx-auto mt-3 max-w-xl text-lg text-ink-soft">
               Every photo you add makes it easier for someone to visit a new
-              place with confidence.
+              venue with confidence.
             </p>
             <div className="relative mt-8 flex flex-wrap justify-center gap-3">
               <Button as={Link} to="/add-venue" size="lg">
                 Add a venue
               </Button>
               <Button as={Link} to="/search" variant="outline" size="lg">
-                Find accessible places
+                Find accessible venues
               </Button>
             </div>
           </div>
