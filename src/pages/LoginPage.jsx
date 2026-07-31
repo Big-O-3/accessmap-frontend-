@@ -7,7 +7,6 @@ export default function LoginPage() {
   const { loginWithGoogle, loginWithEmail, signUpWithEmail } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const redirectHint = location.state?.from?.pathname;
 
   const [mode, setMode] = useState("login"); // "login" | "signup"
   const [email, setEmail] = useState("");
@@ -81,12 +80,6 @@ export default function LoginPage() {
           ? "Sign in to save analyses and contribute venues."
           : "Create an account with your email to save analyses and contribute venues."}
       </p>
-
-      {redirectHint && (
-        <p className="mt-4 rounded-xl bg-brand-50 px-3 py-2 text-base text-link ring-1 ring-inset ring-brand-200">
-          Sign in to continue to <span className="font-medium">{redirectHint}</span>.
-        </p>
-      )}
 
       <Button
         type="button"
