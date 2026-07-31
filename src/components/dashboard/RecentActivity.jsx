@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
 import { timeAgo } from "../../lib/timeAgo";
 
+// Only ever show the most recent few actions. Toggling a venue's save state
+// repeatedly logs a row each time, so without a cap the feed grows unbounded
+// and stretches the whole dashboard down the page. Showing the newest handful
+// keeps the card the same length as the recommendations column beside it.
+const RECENT_LIMIT = 6;
+
 // Reverse-chronological feed of the actions taken in this browser (saving a
 // venue, creating a venue, submitting a contribution). Each row links to its
 // venue when there is one.
 export default function RecentActivity({ activity }) {
+  const recent = activity.slice(0, RECENT_LIMIT);
   return (
     <section aria-labelledby="activity-heading" className="flex h-full flex-col">
       <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
@@ -23,7 +30,7 @@ export default function RecentActivity({ activity }) {
         </p>
       ) : (
         <ul className="mt-3 flex-1 divide-y divide-sand-200 rounded-2xl border border-sand-200 bg-surface shadow-sm">
-          {activity.map((a) => (
+          {recent.map((a) => (
             <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
                 <p className="text-base text-ink">

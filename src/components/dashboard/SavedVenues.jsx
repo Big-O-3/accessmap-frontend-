@@ -46,7 +46,10 @@ export default function SavedVenues({ saved }) {
                   <p className="mt-0.5 text-sm text-ink-soft">{v.city}</p>
                 )}
               </div>
-              <div className="mt-3 flex items-center justify-between gap-2">
+              {/* flex-wrap so on the narrow 2-col mobile cards the save
+                  button drops below the score badge instead of overflowing
+                  the card and clipping into the neighbouring card. */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <ScoreBadge score={v.accessibilityScore} size="sm" />
                 <SaveButton venue={v} size="sm" />
               </div>
