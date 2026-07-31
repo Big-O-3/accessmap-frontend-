@@ -1,5 +1,6 @@
 import { useSaveVenue } from "../hooks/useUserData";
 import { useAuth } from "../context/useAuth";
+import { toast } from "../lib/toast";
 
 // Toggle a venue in the browser's saved list. Used on venue cards and the
 // venue detail page. A real <button> with an accessible label and aria-pressed
@@ -27,6 +28,8 @@ export default function SaveButton({ venue, size = "md" }) {
         e.preventDefault();
         e.stopPropagation();
         toggle();
+        // `saved` is the pre-toggle value, so this reflects the new state.
+        toast.success(saved ? "Removed from saved" : "Saved to favorites");
       }}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${venue.name} from saved` : `Save ${venue.name}`}
