@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { featureLabel } from "../lib/features";
 import { deletePhoto } from "../lib/api";
 import { toast } from "../lib/toast";
@@ -17,7 +17,7 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
   const [deleting, setDeleting] = useState(false);
   const [confirming, setConfirming] = useState(false);
 
-  function handleLoad() {
+  function measure() {
     const img = imgRef.current;
     if (!img || !img.naturalWidth) return;
     setScale({
@@ -25,6 +25,17 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
       y: img.clientHeight / img.naturalHeight,
     });
   }
+
+  // Recompute the box scale whenever the image's rendered size changes, not just
+  // on first load — otherwise boxes drift after a responsive reflow (window
+  // resize, device rotation, sidebar collapse).
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(img);
+    return () => ro.disconnect();
+  }, []);
 
   async function handleDelete() {
     setDeleting(true);
@@ -45,7 +56,7 @@ export default function DetectionImage({ photo, canDelete = false, onDelete }) {
         ref={imgRef}
         src={photo.imageUrl}
         alt="Venue accessibility photo"
-        onLoad={handleLoad}
+        onLoad={measure}
         className="w-full rounded-lg"
       />
       {canDelete && (
