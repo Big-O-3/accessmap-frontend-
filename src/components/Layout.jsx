@@ -160,7 +160,7 @@ export default function Layout() {
             AccessMap
           </span>
           <p className="text-base text-ink-soft">
-            Community-powered accessibility discovery.
+            Created by Brandon Curo, Charles Mada, and Prateek Oblum
           </p>
         </div>
       </footer>
