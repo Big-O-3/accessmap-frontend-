@@ -97,10 +97,11 @@ export default function VenueDetailPage() {
           </p>
         </div>
         {/* Stacks left-aligned on phones; the desktop layout (right-aligned
-            column beside the title) is restored at sm+. */}
-        <div className="flex flex-col items-start gap-3 sm:items-end">
-          <ScoreBadge score={venue.accessibilityScore} size="lg" />
-          <CommunityVerdict
+            column beside the title) is restored at sm+. The accessibility
+            read-out and the actions are two clearly separated groups. */}
+        <div className="flex flex-col items-start gap-4 sm:items-end">
+          <AccessibilityStatus
+            score={venue.accessibilityScore}
             verdict={venue.communityVerdict}
             votes={venue.accessVotes}
           />
@@ -156,26 +157,34 @@ export default function VenueDetailPage() {
   );
 }
 
-// The community's accessibility verdict from reviewer votes ("yes"/"partial"/
-// "no"). Renders nothing until at least one vote exists, so we never show a
-// misleading answer. Distinct from the ScoreBadge (feature/photo evidence).
-const VERDICT_UI = {
-  yes: { label: "Community: Accessible", cls: "bg-green-100 text-green-800 ring-green-600/20" },
-  partial: { label: "Community: Partially accessible", cls: "bg-amber-100 text-amber-800 ring-amber-600/25" },
-  no: { label: "Community: Not accessible", cls: "bg-red-100 text-red-800 ring-red-600/20" },
+// The venue's accessibility read-out: one block, not two competing pills.
+// The ScoreBadge (feature/photo evidence, 0-100) is the headline verdict — it's
+// what drives sort order and map-pin color everywhere — and the community's
+// vote-based verdict folds in beneath it as a single caption line rather than a
+// second, near-identical floating pill. The caption only appears once at least
+// one vote exists, so we never show a misleading community answer.
+const COMMUNITY_VERDICT = {
+  yes: { label: "Accessible", cls: "text-green-700" },
+  partial: { label: "Partially accessible", cls: "text-amber-700" },
+  no: { label: "Not accessible", cls: "text-red-700" },
 };
 
-function CommunityVerdict({ verdict, votes }) {
-  const ui = VERDICT_UI[verdict];
-  if (!ui) return null;
+function AccessibilityStatus({ score, verdict, votes }) {
+  const ui = COMMUNITY_VERDICT[verdict];
   const total = (votes?.yes ?? 0) + (votes?.partial ?? 0) + (votes?.no ?? 0);
   return (
-    <span
-      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${ui.cls}`}
-      title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
-    >
-      {ui.label}
-    </span>
+    <div className="flex flex-col items-start gap-1 sm:items-end">
+      <ScoreBadge score={score} size="lg" />
+      {ui && (
+        <p
+          className="text-sm text-ink-soft"
+          title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
+        >
+          Community:{" "}
+          <span className={`font-semibold ${ui.cls}`}>{ui.label}</span>
+        </p>
+      )}
+    </div>
   );
 }
 
