@@ -328,38 +328,24 @@ function ReviewForm({ venueId, onAdd }) {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");
-  const [visitDate, setVisitDate] = useState("");
   const [accessVote, setAccessVote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Today in the visitor's local timezone as YYYY-MM-DD. Used to stop the visit
-  // date from being set in the future (both the date picker and the check below).
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-    // A visit can't happen in the future. YYYY-MM-DD strings compare in date
-    // order, so this also catches a value typed past the picker's max.
-    if (visitDate && visitDate > today) {
-      setError("Visit date can't be in the future.");
-      return;
-    }
     setSubmitting(true);
     try {
       const review = await createReview({
         venueId,
         rating,
         comment,
-        visitDate,
         accessibilityVote: accessVote,
       });
       onAdd(review);
       setRating(0);
       setComment("");
-      setVisitDate("");
       setAccessVote("");
     } catch (err) {
       setError(err.message);
@@ -450,23 +436,6 @@ function ReviewForm({ venueId, onAdd }) {
           rows={3}
           placeholder="Share how accessible this place was for you…"
           className="w-full rounded-xl border border-sand-200 px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="review-date"
-          className="mb-1.5 block text-base font-medium text-ink"
-        >
-          Visit date <span className="text-ink-faint">(optional)</span>
-        </label>
-        <input
-          id="review-date"
-          type="date"
-          value={visitDate}
-          max={today}
-          onChange={(e) => setVisitDate(e.target.value)}
-          className="rounded-xl border border-sand-200 px-3 py-2 text-base text-ink focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
         />
       </div>
 
@@ -630,8 +599,8 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         {cleanText(review.comment)}
       </p>
       <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
-        {review.visitDate && (
-          <span>Visited {new Date(review.visitDate).toLocaleDateString()}</span>
+        {review.createdAt && (
+          <span>{new Date(review.createdAt).toLocaleDateString()}</span>
         )}
         {canMarkHelpful ? (
           <button

@@ -75,14 +75,14 @@ export async function getReviews(venueId) {
 }
 
 // POST /api/reviews — leave a review on a venue (requires sign-in).
-// { venueId, rating (1-5), comment, visitDate?, accessibilityVote? } → the
-// created review. accessibilityVote is "yes" | "partial" | "no" and feeds the
-// venue's community accessibility verdict.
+// { venueId, rating (1-5), comment, accessibilityVote? } → the created review.
+// The review is dated automatically by its createdAt on the server.
+// accessibilityVote is "yes" | "partial" | "no" and feeds the venue's community
+// accessibility verdict.
 export async function createReview({
   venueId,
   rating,
   comment,
-  visitDate,
   accessibilityVote,
 }) {
   if (!venueId) throw new Error("A venue is required.");
@@ -97,7 +97,6 @@ export async function createReview({
       venueId,
       rating,
       comment: comment.trim(),
-      visitDate: visitDate || null,
       accessibilityVote: accessibilityVote || null,
     }),
   });
