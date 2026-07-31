@@ -17,6 +17,9 @@ import DetectionImage from "../components/DetectionImage";
 import VenuePhotoContribution from "../components/VenuePhotoContribution";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { toast } from "../lib/toast";
+import { tierStyles } from "../lib/tierStyles";
 
 export default function VenueDetailPage() {
   const { id } = useParams();
@@ -162,10 +165,13 @@ export default function VenueDetailPage() {
 // vote-based verdict folds in beneath it as a single caption line rather than a
 // second, near-identical floating pill. The caption only appears once at least
 // one vote exists, so we never show a misleading community answer.
+// Map each verdict to an accessibility tier so it reuses the semantic tier
+// tokens (src/lib/tierStyles.js) — these adapt to dark mode, unlike the stock
+// green/amber/red palette classes this used before.
 const COMMUNITY_VERDICT = {
-  yes: { label: "Accessible", cls: "text-green-700" },
-  partial: { label: "Partially accessible", cls: "text-amber-700" },
-  no: { label: "Not accessible", cls: "text-red-700" },
+  yes: { label: "Accessible", tier: "high" },
+  partial: { label: "Partially accessible", tier: "medium" },
+  no: { label: "Not accessible", tier: "low" },
 };
 
 function AccessibilityStatus({ score, verdict, votes }) {
@@ -180,7 +186,9 @@ function AccessibilityStatus({ score, verdict, votes }) {
           title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
         >
           Community:{" "}
-          <span className={`font-semibold ${ui.cls}`}>{ui.label}</span>
+          <span className={`font-semibold ${tierStyles(ui.tier).text}`}>
+            {ui.label}
+          </span>
         </p>
       )}
     </div>
@@ -355,6 +363,7 @@ function ReviewForm({ venueId, onAdd }) {
       setRating(0);
       setComment("");
       setAccessVote("");
+      toast.success("Review posted");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -453,8 +462,8 @@ function ReviewForm({ venueId, onAdd }) {
         </p>
       )}
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Posting…" : "Post review"}
+      <Button type="submit" loading={submitting}>
+        Post review
       </Button>
     </form>
   );
@@ -549,21 +558,22 @@ function ReviewList({ reviews = [], currentUserId, onDelete }) {
 
 function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
   const [deleting, setDeleting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState(null);
   const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount ?? 0);
   const [marked, setMarked] = useState(() => hasMarkedHelpful(review.id));
   const [savingHelpful, setSavingHelpful] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("Delete this review? This can't be undone.")) return;
-    setError(null);
     setDeleting(true);
     try {
       await deleteReview(review.id);
+      toast.success("Review deleted");
       onDelete?.(review.id);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || "Couldn't delete review");
       setDeleting(false);
+      setConfirming(false);
     }
   }
 
@@ -634,11 +644,11 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         {canDelete && (
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={() => setConfirming(true)}
             disabled={deleting}
             className="ml-auto font-medium text-danger hover:underline disabled:opacity-50"
           >
-            {deleting ? "Deleting…" : "Delete"}
+            Delete
           </button>
         )}
       </div>
@@ -647,6 +657,16 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
           {error}
         </p>
       )}
+      <ConfirmDialog
+        open={confirming}
+        title="Delete this review?"
+        body="This can't be undone."
+        confirmLabel="Delete"
+        destructive
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirming(false)}
+      />
     </article>
   );
 }
