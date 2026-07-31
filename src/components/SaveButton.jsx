@@ -16,7 +16,7 @@ export default function SaveButton({ venue, size = "md" }) {
 
   const sizes = {
     sm: "text-xs px-2 py-1",
-    md: "text-sm px-3 py-1.5",
+    md: "text-base px-3.5 py-1.5",
   };
 
   return (
@@ -30,7 +30,7 @@ export default function SaveButton({ venue, size = "md" }) {
       }}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${venue.name} from saved` : `Save ${venue.name}`}
-      className={`inline-flex items-center gap-1 rounded-full font-medium ring-1 ring-inset transition-colors ${
+      className={`inline-flex items-center gap-1 rounded-full font-semibold ring-1 ring-inset transition-colors ${
         sizes[size]
       } ${
         saved

@@ -97,26 +97,25 @@ export default function VenueDetailPage() {
           </p>
         </div>
         {/* Stacks left-aligned on phones; the desktop layout (right-aligned
-            column beside the title) is restored at sm+. The accessibility
-            read-out and the actions are two clearly separated groups. */}
+            column beside the title) is restored at sm+. Save sits on its own in
+            the top corner so it no longer crowds the primary Get-directions
+            action; the accessibility read-out sits between them. */}
         <div className="flex flex-col items-start gap-4 sm:items-end">
+          <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
           <AccessibilityStatus
             score={venue.accessibilityScore}
             verdict={venue.communityVerdict}
             votes={venue.accessVotes}
           />
-          <div className="flex w-full items-center gap-2 sm:w-auto">
-            <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
-            <Button
-              as="a"
-              href={directionsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex-1 text-center sm:flex-none"
-            >
-              Get directions
-            </Button>
-          </div>
+          <Button
+            as="a"
+            href={directionsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full text-center sm:w-auto"
+          >
+            Get directions
+          </Button>
         </div>
       </div>
 
@@ -174,7 +173,7 @@ function AccessibilityStatus({ score, verdict, votes }) {
   const total = (votes?.yes ?? 0) + (votes?.partial ?? 0) + (votes?.no ?? 0);
   return (
     <div className="flex flex-col items-start gap-1 sm:items-end">
-      <ScoreBadge score={score} size="lg" />
+      <ScoreBadge score={score} size="md" />
       {ui && (
         <p
           className="text-sm text-ink-soft"
