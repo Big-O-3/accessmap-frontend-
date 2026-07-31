@@ -1,17 +1,15 @@
 import { Link } from "react-router-dom";
 import { timeAgo } from "../../lib/timeAgo";
 
-// Only ever show the most recent few actions. Toggling a venue's save state
-// repeatedly logs a row each time, so without a cap the feed grows unbounded
-// and stretches the whole dashboard down the page. Showing the newest handful
-// keeps the card the same length as the recommendations column beside it.
-const RECENT_LIMIT = 6;
-
 // Reverse-chronological feed of the actions taken in this browser (saving a
 // venue, creating a venue, submitting a contribution). Each row links to its
 // venue when there is one.
+//
+// The list fills the card's full height (it's stretched to match the
+// recommendations column beside it) and scrolls INSIDE the card. That fills the
+// space with as many rows as fit instead of leaving it half-empty, while still
+// keeping repeated saves from growing the whole dashboard down the page.
 export default function RecentActivity({ activity }) {
-  const recent = activity.slice(0, RECENT_LIMIT);
   return (
     <section aria-labelledby="activity-heading" className="flex h-full flex-col">
       <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
@@ -29,22 +27,31 @@ export default function RecentActivity({ activity }) {
           No activity yet. Save a venue or add one to get started.
         </p>
       ) : (
-        <ul className="mt-3 flex-1 divide-y divide-sand-200 rounded-2xl border border-sand-200 bg-surface shadow-sm">
-          {recent.map((a) => (
-            <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-base text-ink">
-                  {a.venueId ? (
-                    <ActivityText detail={a.detail} venueId={a.venueId} venueName={a.venueName} />
-                  ) : (
-                    a.detail
-                  )}
-                </p>
-                <p className="mt-0.5 text-sm text-ink-faint">{timeAgo(a.createdAt)}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        // The scrolling list is absolutely positioned inside this flex-1
+        // wrapper so its rows DON'T contribute to the column's height. That way
+        // the recommendations column beside it always drives the row height and
+        // this list fills exactly that, scrolling internally — however many
+        // entries there are, the dashboard never grows down the page. On mobile
+        // there's no sibling column, so min-h gives the wrapper a real height to
+        // fill; lg:min-h-0 hands height back to the equal-height grid row.
+        <div className="relative mt-3 min-h-[20rem] flex-1 lg:min-h-0">
+          <ul className="absolute inset-0 divide-y divide-sand-200 overflow-y-auto rounded-2xl border border-sand-200 bg-surface shadow-sm">
+            {activity.map((a) => (
+              <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-base text-ink">
+                    {a.venueId ? (
+                      <ActivityText detail={a.detail} venueId={a.venueId} venueName={a.venueName} />
+                    ) : (
+                      a.detail
+                    )}
+                  </p>
+                  <p className="mt-0.5 text-sm text-ink-faint">{timeAgo(a.createdAt)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   );
