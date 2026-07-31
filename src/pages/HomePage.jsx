@@ -627,7 +627,7 @@ export default function HomePage() {
           <div className="grid gap-5 md:grid-cols-3">
             {featured.map((venue, i) => (
               <Reveal key={venue.id} delay={i * 0.08} className="h-full">
-                <VenueCard venue={venue} />
+                <VenueCard venue={venue} fill />
               </Reveal>
             ))}
           </div>
