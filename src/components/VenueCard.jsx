@@ -15,7 +15,7 @@ export default function VenueCard({ venue, active, onHover }) {
       {...wrapperProps}
       onMouseEnter={() => onHover?.(venue.id)}
       onMouseLeave={() => onHover?.(null)}
-      className={`block rounded-2xl border bg-surface p-4 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
+      className={`flex h-full flex-col rounded-2xl border bg-surface p-4 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
         active
           ? "border-brand-500 shadow-lg ring-1 ring-brand-500/30"
           : "border-sand-200 shadow-sm"
@@ -44,7 +44,7 @@ export default function VenueCard({ venue, active, onHover }) {
         ))}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
+      <div className="mt-auto pt-3 flex items-center gap-3 text-sm text-ink-faint">
         {venue.distance != null && (
           <span className="font-medium text-link">
             <span className="font-mono tabular-nums">
