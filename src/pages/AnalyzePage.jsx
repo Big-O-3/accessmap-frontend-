@@ -11,6 +11,7 @@ import {
   summarizeAccessibility,
 } from "../lib/detect";
 import { saveAnalyzedVenue } from "../lib/api";
+import { toast } from "../lib/toast";
 
 // Plain-English verdict shown at the top of the results, keyed by summary.level.
 // Colors come from the shared tier tokens (success / warning / danger) so the
@@ -89,7 +90,7 @@ export default function AnalyzePage() {
   // shared map for everyone.
   async function confirmPlaceOnMap() {
     if (!venueName.trim()) {
-      setError("Please enter a name for this place.");
+      setError("Please enter a name for this venue.");
       return;
     }
     setPlacing(true);
@@ -108,10 +109,11 @@ export default function AnalyzePage() {
         // Save only what the contributor confirmed, not every raw detection.
         detections: confirmedDetections,
       });
+      toast.success("Venue saved");
       navigate("/search");
     } catch (err) {
       setPlacing(false);
-      setError(err.message || "Couldn't save this place.");
+      setError(err.message || "Couldn't save this venue.");
     }
   }
 
@@ -403,7 +405,7 @@ export default function AnalyzePage() {
                   htmlFor="venue-name"
                   className="block text-base font-medium text-ink-soft"
                 >
-                  Name this place
+                  Name this venue
                 </label>
                 <PlaceAutocomplete
                   id="venue-name"
@@ -431,10 +433,10 @@ export default function AnalyzePage() {
                 <Button
                   type="button"
                   onClick={confirmPlaceOnMap}
-                  disabled={placing}
+                  loading={placing}
                   className="w-full"
                 >
-                  {placing ? "Saving…" : "Save & show on map"}
+                  Save &amp; show on map
                 </Button>
               </div>
             ) : (

@@ -1,5 +1,6 @@
 import { useSaveVenue } from "../hooks/useUserData";
 import { useAuth } from "../context/useAuth";
+import { toast } from "../lib/toast";
 
 // Toggle a venue in the browser's saved list. Used on venue cards and the
 // venue detail page. A real <button> with an accessible label and aria-pressed
@@ -16,7 +17,7 @@ export default function SaveButton({ venue, size = "md" }) {
 
   const sizes = {
     sm: "text-xs px-2 py-1",
-    md: "text-sm px-3 py-1.5",
+    md: "text-base px-3.5 py-1.5",
   };
 
   return (
@@ -27,10 +28,12 @@ export default function SaveButton({ venue, size = "md" }) {
         e.preventDefault();
         e.stopPropagation();
         toggle();
+        // `saved` is the pre-toggle value, so this reflects the new state.
+        toast.success(saved ? "Removed from saved" : "Saved to favorites");
       }}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${venue.name} from saved` : `Save ${venue.name}`}
-      className={`inline-flex items-center gap-1 rounded-full font-medium ring-1 ring-inset transition-colors ${
+      className={`inline-flex items-center gap-1 rounded-full font-semibold ring-1 ring-inset transition-colors ${
         sizes[size]
       } ${
         saved
@@ -39,7 +42,14 @@ export default function SaveButton({ venue, size = "md" }) {
       }`}
     >
       <span aria-hidden="true">{saved ? "★" : "☆"}</span>
-      {saved ? "Saved" : "Save"}
+      {/* Reserve space for the longer "Saved" label so the button width stays
+          fixed between states — only the color and star change on toggle. */}
+      <span className="grid">
+        <span className="invisible col-start-1 row-start-1" aria-hidden="true">
+          Saved
+        </span>
+        <span className="col-start-1 row-start-1">{saved ? "Saved" : "Save"}</span>
+      </span>
     </button>
   );
 }

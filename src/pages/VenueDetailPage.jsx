@@ -8,6 +8,7 @@ import {
   unmarkReviewHelpful,
 } from "../lib/api";
 import { ACCESSIBILITY_FEATURES } from "../lib/features";
+import { cleanText } from "../lib/profanity";
 import { hasMarkedHelpful, setMarkedHelpful } from "../lib/userData";
 import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
@@ -16,6 +17,9 @@ import DetectionImage from "../components/DetectionImage";
 import VenuePhotoContribution from "../components/VenuePhotoContribution";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { toast } from "../lib/toast";
+import { tierStyles } from "../lib/tierStyles";
 
 export default function VenueDetailPage() {
   const { id } = useParams();
@@ -86,60 +90,51 @@ export default function VenueDetailPage() {
         ← Back to search
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-sand-200 bg-surface p-6 shadow-sm">
+      <div className="flex flex-col gap-4 rounded-2xl border border-sand-200 bg-surface p-5 shadow-sm sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:p-6">
         <div>
-          <h1 className="font-display text-4xl font-extrabold leading-tight text-ink">
+          <h1 className="font-display text-3xl font-extrabold leading-tight text-ink sm:text-4xl">
             {venue.name}
           </h1>
-          <p className="mt-1 text-lg text-ink-soft">
+          <p className="mt-1 text-base text-ink-soft sm:text-lg">
             {venue.address}, {venue.city}, {venue.state} {venue.zipCode}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-3">
-          <ScoreBadge score={venue.accessibilityScore} size="lg" />
-          <CommunityVerdict
+        {/* Stacks left-aligned on phones; the desktop layout (right-aligned
+            column beside the title) is restored at sm+. Save sits on its own in
+            the top corner so it no longer crowds the primary Get-directions
+            action; the accessibility read-out sits between them. */}
+        <div className="flex flex-col items-start gap-4 sm:items-end">
+          <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
+          <AccessibilityStatus
+            score={venue.accessibilityScore}
             verdict={venue.communityVerdict}
             votes={venue.accessVotes}
           />
-          <div className="flex items-center gap-2">
-            <SaveButton venue={{ ...venue, id: venue.id ?? id }} />
-            <Button
-              as="a"
-              href={directionsUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Get directions
-            </Button>
-          </div>
+          <Button
+            as="a"
+            href={directionsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full text-center sm:w-auto"
+          >
+            Get directions
+          </Button>
         </div>
       </div>
 
       <FeatureBreakdown features={venue.features} />
 
       {venue.photos?.length > 0 && (
-        <section className="mt-8">
-          <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
-            AI-analyzed photos
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {venue.photos.map((photo) => (
-              <DetectionImage
-                key={photo.id}
-                photo={photo}
-                // Only the uploader sees a delete control; the backend
-                // re-checks ownership regardless.
-                canDelete={!!user && photo.userId === user.id}
-                onDelete={(photoId) =>
-                  setVenue((prev) => ({
-                    ...prev,
-                    photos: prev.photos.filter((p) => p.id !== photoId),
-                  }))
-                }
-              />
-            ))}
-          </div>
-        </section>
+        <PhotoGallery
+          photos={venue.photos}
+          currentUserId={user?.id}
+          onDelete={(photoId) =>
+            setVenue((prev) => ({
+              ...prev,
+              photos: prev.photos.filter((p) => p.id !== photoId),
+            }))
+          }
+        />
       )}
 
       {/* Add a photo, let the AI detect features, confirm them, and the venue's
@@ -164,26 +159,148 @@ export default function VenueDetailPage() {
   );
 }
 
-// The community's accessibility verdict from reviewer votes ("yes"/"partial"/
-// "no"). Renders nothing until at least one vote exists, so we never show a
-// misleading answer. Distinct from the ScoreBadge (feature/photo evidence).
-const VERDICT_UI = {
-  yes: { label: "Community: Accessible", cls: "bg-green-100 text-green-800 ring-green-600/20" },
-  partial: { label: "Community: Partially accessible", cls: "bg-amber-100 text-amber-800 ring-amber-600/25" },
-  no: { label: "Community: Not accessible", cls: "bg-red-100 text-red-800 ring-red-600/20" },
+// The venue's accessibility read-out: one block, not two competing pills.
+// The ScoreBadge (feature/photo evidence, 0-100) is the headline verdict — it's
+// what drives sort order and map-pin color everywhere — and the community's
+// vote-based verdict folds in beneath it as a single caption line rather than a
+// second, near-identical floating pill. The caption only appears once at least
+// one vote exists, so we never show a misleading community answer.
+// Map each verdict to an accessibility tier so it reuses the semantic tier
+// tokens (src/lib/tierStyles.js) — these adapt to dark mode, unlike the stock
+// green/amber/red palette classes this used before.
+const COMMUNITY_VERDICT = {
+  yes: { label: "Accessible", tier: "high" },
+  partial: { label: "Partially accessible", tier: "medium" },
+  no: { label: "Not accessible", tier: "low" },
 };
 
-function CommunityVerdict({ verdict, votes }) {
-  const ui = VERDICT_UI[verdict];
-  if (!ui) return null;
+function AccessibilityStatus({ score, verdict, votes }) {
+  const ui = COMMUNITY_VERDICT[verdict];
   const total = (votes?.yes ?? 0) + (votes?.partial ?? 0) + (votes?.no ?? 0);
   return (
-    <span
-      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${ui.cls}`}
-      title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
+    <div className="flex flex-col items-start gap-1 sm:items-end">
+      <ScoreBadge score={score} size="md" />
+      {ui && (
+        <p
+          className="text-sm text-ink-soft"
+          title={`Based on ${total} community vote${total !== 1 ? "s" : ""} (${votes?.yes ?? 0} yes · ${votes?.partial ?? 0} partial · ${votes?.no ?? 0} no)`}
+        >
+          Community:{" "}
+          <span className={`font-semibold ${tierStyles(ui.tier).text}`}>
+            {ui.label}
+          </span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+// The AI-analyzed photo grid with a feature filter. Every photo can carry
+// several ML detections (ramp, restroom, parking…); the chip bar lets a visitor
+// narrow the grid to photos that contain a chosen feature so they aren't forced
+// to scan every photo. Chips are built from the features actually detected in
+// THESE photos, so a chip never matches zero photos, and the whole bar is
+// hidden when there's only one feature (or none) to filter by.
+function PhotoGallery({ photos, currentUserId, onDelete }) {
+  // "" means "All"; otherwise a feature key from the detections below.
+  const [active, setActive] = useState("");
+
+  // Distinct feature keys present across these photos, in the canonical order
+  // from the shared vocabulary so the chips read consistently everywhere.
+  const presentKeys = new Set(
+    photos.flatMap((p) =>
+      (p.detections ?? []).map((d) => d.accessibilityFeature),
+    ),
+  );
+  const chips = ACCESSIBILITY_FEATURES.filter((f) => presentKeys.has(f.key));
+
+  // If the active feature no longer appears in any photo (e.g. the uploader
+  // deleted the last photo that had it), fall back to "All" so the grid can't
+  // get stuck on a filter whose chip has disappeared.
+  const effectiveActive = presentKeys.has(active) ? active : "";
+
+  const filtered =
+    effectiveActive === ""
+      ? photos
+      : photos.filter((p) =>
+          (p.detections ?? []).some(
+            (d) => d.accessibilityFeature === effectiveActive,
+          ),
+        );
+
+  return (
+    <section className="mt-8">
+      <h2 className="mb-4 font-display text-2xl font-extrabold text-ink">
+        AI-analyzed photos
+      </h2>
+
+      {chips.length > 1 && (
+        <div
+          className="mb-4 flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter photos by detected feature"
+        >
+          <FilterChip
+            active={effectiveActive === ""}
+            onClick={() => setActive("")}
+          >
+            All
+            <span className="ml-1 font-mono tabular-nums opacity-70">
+              {photos.length}
+            </span>
+          </FilterChip>
+          {chips.map((f) => {
+            const count = photos.filter((p) =>
+              (p.detections ?? []).some(
+                (d) => d.accessibilityFeature === f.key,
+              ),
+            ).length;
+            return (
+              <FilterChip
+                key={f.key}
+                active={effectiveActive === f.key}
+                onClick={() => setActive(f.key)}
+              >
+                {f.label}
+                <span className="ml-1 font-mono tabular-nums opacity-70">
+                  {count}
+                </span>
+              </FilterChip>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {filtered.map((photo) => (
+          <DetectionImage
+            key={photo.id}
+            photo={photo}
+            // Only the uploader sees a delete control; the backend re-checks
+            // ownership regardless.
+            canDelete={!!currentUserId && photo.userId === currentUserId}
+            onDelete={onDelete}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FilterChip({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ${
+        active
+          ? "border-brand-500 bg-brand-50 text-link"
+          : "border-sand-200 bg-surface text-ink-soft hover:bg-sand-100"
+      }`}
     >
-      {ui.label}
-    </span>
+      {children}
+    </button>
   );
 }
 
@@ -227,39 +344,26 @@ function ReviewForm({ venueId, onAdd }) {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");
-  const [visitDate, setVisitDate] = useState("");
   const [accessVote, setAccessVote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Today in the visitor's local timezone as YYYY-MM-DD. Used to stop the visit
-  // date from being set in the future (both the date picker and the check below).
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-    // A visit can't happen in the future. YYYY-MM-DD strings compare in date
-    // order, so this also catches a value typed past the picker's max.
-    if (visitDate && visitDate > today) {
-      setError("Visit date can't be in the future.");
-      return;
-    }
     setSubmitting(true);
     try {
       const review = await createReview({
         venueId,
         rating,
         comment,
-        visitDate,
         accessibilityVote: accessVote,
       });
       onAdd(review);
       setRating(0);
       setComment("");
-      setVisitDate("");
       setAccessVote("");
+      toast.success("Review posted");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -352,31 +456,14 @@ function ReviewForm({ venueId, onAdd }) {
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="review-date"
-          className="mb-1.5 block text-base font-medium text-ink"
-        >
-          Visit date <span className="text-ink-faint">(optional)</span>
-        </label>
-        <input
-          id="review-date"
-          type="date"
-          value={visitDate}
-          max={today}
-          onChange={(e) => setVisitDate(e.target.value)}
-          className="rounded-xl border border-sand-200 px-3 py-2 text-base text-ink focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-        />
-      </div>
-
       {error && (
         <p role="alert" className="text-base text-danger">
           {error}
         </p>
       )}
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Posting…" : "Post review"}
+      <Button type="submit" loading={submitting}>
+        Post review
       </Button>
     </form>
   );
@@ -471,21 +558,22 @@ function ReviewList({ reviews = [], currentUserId, onDelete }) {
 
 function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
   const [deleting, setDeleting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState(null);
   const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount ?? 0);
   const [marked, setMarked] = useState(() => hasMarkedHelpful(review.id));
   const [savingHelpful, setSavingHelpful] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("Delete this review? This can't be undone.")) return;
-    setError(null);
     setDeleting(true);
     try {
       await deleteReview(review.id);
+      toast.success("Review deleted");
       onDelete?.(review.id);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || "Couldn't delete review");
       setDeleting(false);
+      setConfirming(false);
     }
   }
 
@@ -526,11 +614,11 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         </span>
       </div>
       <p className="mt-2 text-base leading-relaxed text-ink-soft">
-        {review.comment}
+        {cleanText(review.comment)}
       </p>
       <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
-        {review.visitDate && (
-          <span>Visited {new Date(review.visitDate).toLocaleDateString()}</span>
+        {review.createdAt && (
+          <span>{new Date(review.createdAt).toLocaleDateString()}</span>
         )}
         {canMarkHelpful ? (
           <button
@@ -556,11 +644,11 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         {canDelete && (
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={() => setConfirming(true)}
             disabled={deleting}
             className="ml-auto font-medium text-danger hover:underline disabled:opacity-50"
           >
-            {deleting ? "Deleting…" : "Delete"}
+            Delete
           </button>
         )}
       </div>
@@ -569,6 +657,16 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
           {error}
         </p>
       )}
+      <ConfirmDialog
+        open={confirming}
+        title="Delete this review?"
+        body="This can't be undone."
+        confirmLabel="Delete"
+        destructive
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirming(false)}
+      />
     </article>
   );
 }

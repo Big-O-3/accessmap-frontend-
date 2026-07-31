@@ -17,6 +17,7 @@ import {
 } from "../lib/api";
 import { logActivity } from "../lib/userData";
 import { useAuth } from "../context/useAuth";
+import { toast } from "../lib/toast";
 
 // "Add & verify a photo" on an existing venue's page. Reuses the same server
 // chain the Add-Venue stepper uses — uploadPhoto → analyzeUploadedPhoto → (user
@@ -175,6 +176,9 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
       // Re-fetch so the score, features, and photo grid reflect the change.
       const updated = await getVenue(venue.id);
       onUpdated?.(updated);
+      toast.success(
+        features.length > 0 ? "Photo added and verified" : "Photo added",
+      );
       reset();
     } catch (err) {
       // Stay on the review step so the user can retry without re-analyzing.
@@ -384,13 +388,11 @@ export default function VenuePhotoContribution({ venue, onUpdated }) {
             <Button
               type="button"
               onClick={handleConfirm}
-              disabled={status === "saving"}
+              loading={status === "saving"}
             >
-              {status === "saving"
-                ? "Saving…"
-                : confirmedCount > 0
-                  ? `Confirm ${confirmedCount} & add photo`
-                  : "Add photo"}
+              {confirmedCount > 0
+                ? `Confirm ${confirmedCount} & add photo`
+                : "Add photo"}
             </Button>
             <Button
               type="button"

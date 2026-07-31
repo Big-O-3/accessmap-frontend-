@@ -5,7 +5,14 @@ import VenueCard from "../components/VenueCard";
 import Reveal from "../components/Reveal";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import CityAutocomplete from "../components/CityAutocomplete";
 import useCountUp from "../hooks/useCountUp";
+import useCityOptions from "../hooks/useCityOptions";
+
+// Brand gradient for the primary "Scan" tile on the mobile home — matches the
+// raised Scan button in the bottom nav so the two read as the same action.
+const MARK_GRADIENT =
+  "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700))";
 
 const STEPS = [
   {
@@ -22,7 +29,7 @@ const STEPS = [
   },
   {
     title: "Visitors decide with confidence",
-    body: "Every venue gets a 0–100 accessibility score with photo evidence, so you can plan a visit before leaving home.",
+    body: "Every venue shows a clear rating — Accessible, Partially accessible, or Not accessible — backed by photo evidence, so you can plan a visit before leaving home.",
   },
 ];
 
@@ -61,6 +68,41 @@ function CameraGlyph() {
   );
 }
 
+function PlusGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+function MapPinGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
 // A single cross-fading layer inside the story phone. Only the active step's
 // layer is shown; the rest fade out.
 function Layer({ show, children }) {
@@ -93,7 +135,7 @@ function DetectionTag({ className, label, conf }) {
 // required to understand how AccessMap works.
 function StoryPhone({ activeStep }) {
   return (
-    <div className="mx-auto w-full max-w-[18rem]">
+    <div className="mx-auto w-full max-w-[clamp(20rem,26vw,28rem)]">
       <div className="relative overflow-hidden rounded-[2rem] border border-sand-200 bg-surface shadow-xl">
         <div
           className="relative aspect-[4/5]"
@@ -132,27 +174,21 @@ function StoryPhone({ activeStep }) {
             </div>
           </Layer>
 
-          {/* 4 — the live score */}
+          {/* 4 — the plain-language rating users actually see (no raw number) */}
           <Layer show={activeStep === 3}>
             <div className="flex h-full flex-col justify-end p-4">
-              <div className="rounded-2xl bg-black/50 p-3 backdrop-blur">
-                <div className="flex items-baseline justify-between text-white">
-                  <span className="font-mono text-3xl font-bold tabular-nums">
-                    88
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-success">
-                    Accessible
+              <div className="rounded-2xl bg-black/50 p-4 backdrop-blur">
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                  Accessibility
+                </span>
+                <div className="mt-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1.5 text-base font-semibold text-success ring-1 ring-inset ring-success-ring">
+                    <span aria-hidden="true">✓</span> Accessible
                   </span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/15">
-                  <div
-                    className="h-full rounded-full transition-[width] duration-1000 ease-out"
-                    style={{
-                      width: activeStep >= 3 ? "88%" : "0%",
-                      backgroundImage: "var(--grad-brand)",
-                    }}
-                  />
-                </div>
+                <p className="mt-3 text-xs leading-relaxed text-white/70">
+                  A clear rating from real photos — no number to decode.
+                </p>
               </div>
             </div>
           </Layer>
@@ -199,11 +235,153 @@ function FeaturedSkeleton() {
   );
 }
 
+// One of the two smaller quick-action tiles under the primary "Scan" tile.
+function SecondaryTile({ to, glyph, label }) {
+  return (
+    <Link
+      to={to}
+      className="flex flex-col gap-3 rounded-3xl border border-sand-200 bg-surface p-4 shadow-sm transition-transform active:scale-[0.98]"
+    >
+      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+        {glyph}
+      </span>
+      <span className="font-display text-base font-bold text-ink">{label}</span>
+    </Link>
+  );
+}
+
+// The phone home screen: an app-style, task-first layout that replaces the
+// marketing page on small screens (below md). Search sits up top, the primary
+// actions are big thumb-friendly tiles, and a short venue list rounds it out.
+// It reuses the featured-venue data the page already fetched, so there's no
+// extra request. The full marketing story still shows on tablet/desktop.
+function MobileHome({
+  query,
+  setQuery,
+  handleSearch,
+  onSelectCity,
+  cityOptions,
+  featured,
+  status,
+}) {
+  return (
+    <div className="px-4 pt-6 pb-4">
+      <h1 className="font-display text-3xl font-extrabold leading-tight text-ink">
+        Find accessible venues
+      </h1>
+      <p className="mt-1 text-base text-ink-soft">
+        Community-verified, AI-assisted.
+      </p>
+
+      {/* Search — the fastest path to a venue, so it leads. */}
+      <form
+        onSubmit={handleSearch}
+        className="mt-5 flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-sm"
+      >
+        <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
+        <CityAutocomplete
+          value={query}
+          onChange={setQuery}
+          onSelect={onSelectCity}
+          options={cityOptions}
+          placeholder="Search by city…"
+          aria-label="Search venues by city"
+          wrapperClassName="min-w-0 flex-1"
+          className="w-full bg-transparent py-2 text-base text-ink outline-none placeholder:text-ink-faint"
+        />
+        <Button type="submit">Search</Button>
+      </form>
+
+      {/* Primary actions, sized for thumbs. Scan leads as the hero task. */}
+      <div className="mt-8 grid grid-cols-2 gap-3">
+        <Link
+          to="/analyze"
+          className="col-span-2 flex items-center gap-4 rounded-3xl p-5 text-white shadow-lg transition-transform active:scale-[0.98]"
+          style={{ background: MARK_GRADIENT }}
+        >
+          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-white/20">
+            <CameraGlyph />
+          </span>
+          <span>
+            <span className="block font-display text-lg font-extrabold">
+              Scan a venue
+            </span>
+            <span className="block text-sm text-white/85">
+              Detect accessibility from a photo
+            </span>
+          </span>
+        </Link>
+        <SecondaryTile to="/add-venue" glyph={<PlusGlyph />} label="Add a venue" />
+        <SecondaryTile to="/search" glyph={<MapPinGlyph />} label="Explore map" />
+      </div>
+
+      {/* A short taste of the map — full list is one tap away. */}
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="font-display text-xl font-extrabold text-ink">
+          Featured venues
+        </h2>
+        <Link to="/search" className="text-sm font-semibold text-link">
+          View all →
+        </Link>
+      </div>
+
+      <div className="mt-3">
+        {status === "loading" && (
+          <>
+            <p role="status" className="sr-only">
+              Loading featured venues…
+            </p>
+            <FeaturedSkeleton />
+          </>
+        )}
+
+        {status === "error" && (
+          <Card className="p-5 text-center">
+            <p role="alert" className="text-ink-soft">
+              We couldn't load venues right now.
+            </p>
+            <div className="mt-3 flex justify-center">
+              <Button as={Link} to="/search" variant="outline">
+                Browse all venues
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length === 0 && (
+          <Card className="p-6 text-center">
+            <p className="font-display text-lg font-bold text-ink">
+              No venues yet
+            </p>
+            <p className="mt-1 text-ink-soft">
+              Be the first to map an accessible venue.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button as={Link} to="/add-venue">
+                Add a venue
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {status === "ready" && featured.length > 0 && (
+          <div className="space-y-3">
+            {featured.map((venue) => (
+              <VenueCard key={venue.id} venue={venue} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [featured, setFeatured] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
+  const cityOptions = useCityOptions();
 
   // Which "How it works" step is centered in the viewport (drives the phone).
   const [activeStep, setActiveStep] = useState(0);
@@ -213,8 +391,8 @@ export default function HomePage() {
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
-  // The "61 million" beat counts up when it scrolls into view.
-  const [countRef, count] = useCountUp(61);
+  // The "6 million" beat counts up when it scrolls into view.
+  const [countRef, count] = useCountUp(6);
 
   useEffect(() => {
     let alive = true;
@@ -255,13 +433,39 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, [reduced]);
 
+  function goToSearch(city) {
+    navigate(`/search?city=${encodeURIComponent(city)}`);
+  }
+
   function handleSearch(e) {
     e.preventDefault();
-    navigate(`/search?city=${encodeURIComponent(query)}`);
+    goToSearch(query);
+  }
+
+  // Picking a city from the dropdown jumps straight to results — no need to
+  // then press Search.
+  function handleSelectCity(city) {
+    setQuery(city);
+    goToSearch(city);
   }
 
   return (
     <div>
+      {/* Phones get a compact, app-style home (search + quick actions + a short
+          venue list). Everything below is the full marketing story for md+. */}
+      <div className="md:hidden">
+        <MobileHome
+          query={query}
+          setQuery={setQuery}
+          handleSearch={handleSearch}
+          onSelectCity={handleSelectCity}
+          cityOptions={cityOptions}
+          featured={featured}
+          status={status}
+        />
+      </div>
+
+      <div className="hidden md:block">
       {/* ===================== HERO ===================== */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center sm:pt-28">
         <Reveal delay={0.05}>
@@ -275,15 +479,14 @@ export default function HomePage() {
           delay={0.12}
           className="mt-6 font-display text-5xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-6xl"
         >
-          Find truly <span className="text-gradient">accessible</span> places
+          Find truly <span className="text-gradient">accessible</span> venues
         </Reveal>
         <Reveal
           as="p"
           delay={0.2}
           className="mx-auto mt-6 max-w-2xl text-lg text-ink-soft"
         >
-          Community-verified accessibility details and AI-detected features — so
-          you can find a venue that welcomes you before you leave home.
+          Community-verified accessibility details and AI-detected features.
         </Reveal>
         <Reveal delay={0.28} className="mx-auto mt-9 max-w-xl">
           <form
@@ -291,12 +494,15 @@ export default function HomePage() {
             className="flex items-center gap-2 rounded-2xl border border-sand-200 bg-surface p-2 pl-4 shadow-lg"
           >
             <SearchGlyph className="h-5 w-5 flex-none text-ink-faint" />
-            <input
+            <CityAutocomplete
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={setQuery}
+              onSelect={handleSelectCity}
+              options={cityOptions}
               placeholder="Search by city…"
               aria-label="Search venues by city"
-              className="min-w-0 flex-1 bg-transparent py-2 text-ink outline-none placeholder:text-ink-faint"
+              wrapperClassName="min-w-0 flex-1"
+              className="w-full bg-transparent py-2 text-ink outline-none placeholder:text-ink-faint"
             />
             <Button type="submit" size="lg">
               Search
@@ -328,9 +534,11 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* Sticky visual — desktop only, so mobile stays a calm list. */}
+          {/* Sticky visual — desktop only, so mobile stays a calm list.
+              Vertically centered in the viewport so the phone lines up with the
+              active step as it scrolls past the middle of the screen. */}
           <div className="hidden lg:block">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:items-center">
               <StoryPhone activeStep={activeStep} />
             </div>
           </div>
@@ -375,8 +583,8 @@ export default function HomePage() {
             <span className="text-gradient">M+</span>
           </p>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-soft">
-            Americans live with a disability. AccessMap helps them know a place
-            is accessible before they leave home.
+            Americans use a wheelchair. AccessMap helps them know a venue is
+            accessible before they leave home.
           </p>
         </Reveal>
       </section>
@@ -395,7 +603,7 @@ export default function HomePage() {
               Featured venues
             </h2>
             <p className="mt-2 text-lg text-ink-soft">
-              A few places the community has mapped recently.
+              A few venues the community has mapped recently.
             </p>
           </div>
           <Link
@@ -434,7 +642,7 @@ export default function HomePage() {
               No venues yet
             </p>
             <p className="mt-2 text-ink-soft">
-              Be the first to put an accessible place on the map.
+              Be the first to put an accessible venue on the map.
             </p>
             <div className="mt-5 flex justify-center">
               <Button as={Link} to="/add-venue">
@@ -447,8 +655,8 @@ export default function HomePage() {
         {status === "ready" && featured.length > 0 && (
           <div className="grid gap-5 md:grid-cols-3">
             {featured.map((venue, i) => (
-              <Reveal key={venue.id} delay={i * 0.08}>
-                <VenueCard venue={venue} />
+              <Reveal key={venue.id} delay={i * 0.08} className="h-full">
+                <VenueCard venue={venue} fill />
               </Reveal>
             ))}
           </div>
@@ -473,19 +681,20 @@ export default function HomePage() {
             </h2>
             <p className="relative mx-auto mt-3 max-w-xl text-lg text-ink-soft">
               Every photo you add makes it easier for someone to visit a new
-              place with confidence.
+              venue with confidence.
             </p>
             <div className="relative mt-8 flex flex-wrap justify-center gap-3">
               <Button as={Link} to="/add-venue" size="lg">
                 Add a venue
               </Button>
               <Button as={Link} to="/search" variant="outline" size="lg">
-                Find accessible places
+                Find accessible venues
               </Button>
             </div>
           </div>
         </Reveal>
       </section>
+      </div>
     </div>
   );
 }

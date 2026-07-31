@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
 
 // Mobile bottom tab bar — the primary navigation on phones (hidden on md+,
-// where the top nav takes over). Five thumb-zone destinations with a raised
-// "Scan" action in the middle for the app's photo-analysis flow.
+// where the top nav takes over). Thumb-zone destinations with a raised
+// "Analyze" action in the middle for the app's photo-analysis flow.
 //
 // Accessibility notes:
 // - Each tab is a real link with a visible text label under the icon (never an
@@ -119,7 +119,13 @@ export default function BottomNav({ signedIn }) {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-sand-200 bg-sand-50/90 backdrop-blur-xl md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="mx-auto grid max-w-md grid-cols-5 items-end px-2">
+      {/* Signed-in users get four tabs (log out lives in the top bar); signed-out
+          users get a fifth "Sign in" tab, which is mobile's login entry point. */}
+      <ul
+        className={`mx-auto grid max-w-md items-end px-2 ${
+          signedIn ? "grid-cols-4" : "grid-cols-5"
+        }`}
+      >
         <li>
           <NavLink to="/" end className={tabClass}>
             <HomeIcon />
@@ -133,17 +139,17 @@ export default function BottomNav({ signedIn }) {
           </NavLink>
         </li>
         <li className="flex flex-col items-center">
-          {/* Raised primary action — scan a place with the camera. */}
+          {/* Raised primary action — analyze a venue from a photo. */}
           <NavLink
             to="/analyze"
-            aria-label="Scan a place"
+            aria-label="Analyze a venue"
             className="-mt-6 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg ring-4 ring-sand-50 transition-transform active:scale-95"
             style={{ background: MARK_GRADIENT }}
           >
             <CameraIcon />
           </NavLink>
           <span className="pb-1.5 text-[11px] font-semibold text-ink-faint">
-            Scan
+            Analyze
           </span>
         </li>
         <li>
@@ -152,12 +158,14 @@ export default function BottomNav({ signedIn }) {
             <span>Dashboard</span>
           </NavLink>
         </li>
-        <li>
-          <NavLink to={signedIn ? "/profile" : "/login"} className={tabClass}>
-            <UserIcon />
-            <span>{signedIn ? "Account" : "Sign in"}</span>
-          </NavLink>
-        </li>
+        {!signedIn && (
+          <li>
+            <NavLink to="/login" className={tabClass}>
+              <UserIcon />
+              <span>Sign in</span>
+            </NavLink>
+          </li>
+        )}
       </ul>
     </nav>
   );

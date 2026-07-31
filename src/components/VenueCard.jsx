@@ -4,18 +4,25 @@ import SaveButton from "./SaveButton";
 import Pill from "./Pill";
 import { featureLabel } from "../lib/features";
 
-export default function VenueCard({ venue, active, onHover }) {
+export default function VenueCard({ venue, active, onHover, fill = false }) {
   // Analyzed spots (dropped from the Analyze page) aren't saved venues, so they
   // have no detail page — render a plain div instead of a navigating Link.
   const Wrapper = venue.analyzed ? "div" : Link;
   const wrapperProps = venue.analyzed ? {} : { to: `/venue/${venue.id}` };
 
+  // `fill` stretches the card to its container's height and pins the meta row
+  // to the bottom — only wanted in a multi-column grid of equal-height cards
+  // (the home-page featured row). Off by default so single-column lists (search
+  // results, the mobile home stack) size to content and don't blow up when they
+  // sit beside a tall grid sibling like the map.
   return (
     <Wrapper
       {...wrapperProps}
       onMouseEnter={() => onHover?.(venue.id)}
       onMouseLeave={() => onHover?.(null)}
-      className={`block rounded-2xl border bg-surface p-4 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
+      className={`flex flex-col rounded-2xl border bg-surface p-4 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
+        fill ? "h-full" : ""
+      } ${
         active
           ? "border-brand-500 shadow-lg ring-1 ring-brand-500/30"
           : "border-sand-200 shadow-sm"
@@ -44,7 +51,7 @@ export default function VenueCard({ venue, active, onHover }) {
         ))}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-sm text-ink-faint">
+      <div className="mt-auto pt-3 flex items-center gap-3 text-sm text-ink-faint">
         {venue.distance != null && (
           <span className="font-medium text-link">
             <span className="font-mono tabular-nums">

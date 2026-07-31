@@ -193,6 +193,29 @@ export default function SearchPage() {
         </div>
       </div>
 
+      {/* Result count sits ABOVE the whole sidebar+results grid — not inside
+          the results column — so the filter panel, the first venue card, and
+          the map all start at the same top edge and line up side by side.
+          (Only meaningful in split/list; hidden in map view.) The line's height
+          is reserved with min-h even while loading, so the grid below doesn't
+          jump down when the count appears. */}
+      {view !== "map" && (
+        <p className="mb-3 min-h-[1.5rem] text-base text-ink-soft">
+          {loading ? (
+            <span className="text-ink-faint">Searching…</span>
+          ) : venues.length > 0 ? (
+            <>
+              Showing{" "}
+              <span className="font-mono tabular-nums">
+                {visibleVenues.length}
+              </span>{" "}
+              of <span className="font-mono tabular-nums">{venues.length}</span>{" "}
+              venue{venues.length !== 1 && "s"}, closest first
+            </>
+          ) : null}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         {/* Desktop sidebar. On mobile the same panel lives in the sheet. */}
         <aside className="hidden lg:col-span-1 lg:block">
@@ -231,17 +254,6 @@ export default function SearchPage() {
                   </Card>
                 ) : (
                   <>
-                    <p className="text-base text-ink-soft">
-                      Showing{" "}
-                      <span className="font-mono tabular-nums">
-                        {visibleVenues.length}
-                      </span>{" "}
-                      of{" "}
-                      <span className="font-mono tabular-nums">
-                        {venues.length}
-                      </span>{" "}
-                      venue{venues.length !== 1 && "s"}, closest first
-                    </p>
                     {visibleVenues.map((venue) => (
                       <VenueCard
                         key={venue.id}
@@ -272,26 +284,21 @@ export default function SearchPage() {
             )}
 
             {view !== "list" && (
-              // In split view the map sticks below the header while the venue
-              // list scrolls beside it, so it stays in view. `self-start` keeps
-              // the sticky element from stretching to the row's full height
-              // (which would defeat position: sticky). On the full-width "map"
-              // view there's nothing to scroll past, so sticky is a no-op there.
+              // On phones the map sits on top of the list (order-first) — the
+              // maps-app layout. Desktop keeps its DOM order (list left, map
+              // right) via lg:order-none. Shorter on mobile in split so the
+              // list shows below the fold; taller when it's the only view.
               <div
-                className={
-                  view === "split"
-                    ? "lg:sticky lg:top-20 lg:self-start"
-                    : undefined
-                }
+                className={`order-first min-h-[260px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:order-none lg:h-[600px] ${
+                  view === "map" ? "h-[70vh]" : "h-[42vh]"
+                }`}
               >
-                <div className="h-[60vh] min-h-[320px] overflow-hidden rounded-2xl border border-sand-200 shadow-sm lg:h-[600px]">
-                  <VenueMap
-                    venues={venues}
-                    center={mapCenter}
-                    activeId={activeId}
-                    onSelect={setActiveId}
-                  />
-                </div>
+                <VenueMap
+                  venues={venues}
+                  center={mapCenter}
+                  activeId={activeId}
+                  onSelect={setActiveId}
+                />
               </div>
             )}
           </div>

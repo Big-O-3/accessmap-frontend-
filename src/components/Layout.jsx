@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
 import BottomNav from "./BottomNav";
 import CursorGlow from "./CursorGlow";
+import ToastViewport from "./ToastViewport";
 
 const PUBLIC_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -87,6 +88,7 @@ function AuthSlot({ mobile = false, onNavigate }) {
 export default function Layout() {
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
   const navLinks = user ? [...PUBLIC_LINKS, ...AUTH_LINKS] : PUBLIC_LINKS;
 
   // Glass nav gains a border + shadow once the page is scrolled at all.
@@ -96,6 +98,14 @@ export default function Layout() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Start each new page at the top. Without this the SPA keeps the previous
+  // page's scroll position on navigation, which feels broken. An in-page anchor
+  // (#hash) is left alone so deep links still jump to their target.
+  useEffect(() => {
+    if (window.location.hash) return;
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-full flex flex-col text-ink">
@@ -150,8 +160,13 @@ export default function Layout() {
         </div>
       </header>
 
+      {/* Keying on the path replays the subtle fade/rise-in on every route
+          change (page-transition is defined in index.css, off under reduced
+          motion). */}
       <main id="main" className="flex-1">
-        <Outlet />
+        <div key={location.pathname} className="page-transition">
+          <Outlet />
+        </div>
       </main>
 
       <footer className="border-t border-sand-200 bg-sand-100">
@@ -160,13 +175,16 @@ export default function Layout() {
             AccessMap
           </span>
           <p className="text-base text-ink-soft">
-            Community-powered accessibility discovery.
+            Created by Brandon Curo, Charles Mada, and Prateek Oblum
           </p>
         </div>
       </footer>
 
       {/* Mobile-only bottom navigation. */}
       <BottomNav signedIn={!!user} />
+
+      {/* App-wide toast notifications. */}
+      <ToastViewport />
     </div>
   );
 }

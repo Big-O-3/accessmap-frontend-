@@ -1,5 +1,7 @@
 import { FILTERABLE_FEATURES } from "../lib/features";
 import { VENUE_TYPES } from "../lib/venueTypes";
+import CityAutocomplete from "./CityAutocomplete";
+import useCityOptions from "../hooks/useCityOptions";
 
 export default function FilterPanel({
   city,
@@ -11,16 +13,20 @@ export default function FilterPanel({
   onUseMyLocation,
   hasLocation,
 }) {
+  const cityOptions = useCityOptions();
+
   return (
     <div className="space-y-5">
       <div>
-        <label className="block text-base font-medium text-ink mb-1.5">
+        <label htmlFor="filter-city" className="block text-base font-medium text-ink mb-1.5">
           City
         </label>
-        <input
-          type="text"
+        <CityAutocomplete
+          id="filter-city"
           value={city}
-          onChange={(e) => onCityChange(e.target.value)}
+          onChange={onCityChange}
+          onSelect={onCityChange}
+          options={cityOptions}
           placeholder="e.g. San Francisco"
           className="w-full rounded-xl border border-sand-200 bg-surface px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
         />
