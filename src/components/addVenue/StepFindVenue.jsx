@@ -26,9 +26,9 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
   const [mode, setMode] = useState(initialVenue ? "selected" : "search");
   const [selected, setSelected] = useState(initialVenue ?? null);
 
-  // Create-form fields. latitude/longitude are optional — capturing them (via
-  // browser geolocation or manual entry) pins the venue on the map, but a venue
-  // can be created without them.
+  // Create-form fields. latitude/longitude are optional — they're filled in
+  // when the contributor picks a search suggestion (see fillFromPlace), which
+  // pins the venue on the map, but a venue can be created without them.
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -40,7 +40,6 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
     longitude: "",
   });
   const [creating, setCreating] = useState(false);
-  const [locating, setLocating] = useState(false);
   const [error, setError] = useState(null);
 
   // Debounced search against the existing venue list.
@@ -83,29 +82,6 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
     // Second arg flags this as an already-existing venue, so the flow can offer
     // the skip-photos / manual-checklist path.
     onVenue(venue, true);
-  }
-
-  function useMyLocation() {
-    if (!navigator.geolocation) {
-      setError("Geolocation isn't supported by your browser — enter coordinates manually.");
-      return;
-    }
-    setLocating(true);
-    setError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm((f) => ({
-          ...f,
-          latitude: pos.coords.latitude.toFixed(6),
-          longitude: pos.coords.longitude.toFixed(6),
-        }));
-        setLocating(false);
-      },
-      () => {
-        setError("Couldn't get your location — enter coordinates manually.");
-        setLocating(false);
-      },
-    );
   }
 
   async function handleCreate(e) {
@@ -162,8 +138,6 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
     setMode("create");
     setError(null);
   }
-
-  const hasCoords = form.latitude !== "" && form.longitude !== "";
 
   return (
     <div className="space-y-6">
@@ -341,33 +315,6 @@ export default function StepFindVenue({ initialVenue, onVenue }) {
             ))}
           </select>
         </div>
-
-        {/* Location — optional. Adding it pins the venue on the map; without it
-            the venue is still created (just not shown on the map). The
-            "Use my location" button reads the browser's geolocation. */}
-        <fieldset>
-          <legend className="text-base font-medium text-ink-soft">
-            Location <span className="font-normal text-ink-faint">(optional)</span>
-          </legend>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={useMyLocation}
-              disabled={locating}
-              className={`rounded-xl border px-3 py-2 text-base font-medium transition-colors disabled:opacity-60 ${
-                hasCoords
-                  ? "border-brand-500 bg-brand-50 text-link"
-                  : "border-sand-200 text-ink-soft hover:bg-sand-100"
-              }`}
-            >
-              {locating
-                ? "Locating…"
-                : hasCoords
-                  ? "Location set"
-                  : "Use my location"}
-            </button>
-          </div>
-        </fieldset>
 
         {error && (
           <p
