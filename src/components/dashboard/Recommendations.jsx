@@ -19,7 +19,7 @@ export default function Recommendations() {
 
     async function load(coords) {
       try {
-        const recs = await getRecommendations({ ...coords, limit: 3 });
+        const recs = await getRecommendations({ ...coords, limit: 4 });
         if (!cancelled) {
           setItems(recs);
           setStatus("done");
