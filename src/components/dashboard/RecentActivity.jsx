@@ -10,6 +10,9 @@ export default function RecentActivity({ activity }) {
       <h2 id="activity-heading" className="font-display text-xl font-extrabold text-ink">
         Recent activity
       </h2>
+      {/* Subtitle mirrors the one on Recommendations so both column headers are
+          the same height and their cards line up side by side. */}
+      <p className="text-sm text-ink-soft">Your latest saves and contributions</p>
 
       {activity.length === 0 ? (
         // flex-1 so the card fills its column: the two dashboard columns are

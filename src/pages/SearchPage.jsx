@@ -211,6 +211,22 @@ export default function SearchPage() {
             </div>
           )}
 
+          {/* Result count sits ABOVE the two columns, not inside the list — so
+              the first venue card and the map both start at the same top edge
+              and line up side by side. (Only meaningful in split/list; harmless
+              in map view where the list column isn't rendered.) */}
+          {!loading && venues.length > 0 && view !== "map" && (
+            <p className="mb-3 text-base text-ink-soft">
+              Showing{" "}
+              <span className="font-mono tabular-nums">
+                {visibleVenues.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-mono tabular-nums">{venues.length}</span>{" "}
+              venue{venues.length !== 1 && "s"}, closest first
+            </p>
+          )}
+
           <div
             className={`grid gap-4 ${
               view === "split" ? "lg:grid-cols-2" : "grid-cols-1"
@@ -231,17 +247,6 @@ export default function SearchPage() {
                   </Card>
                 ) : (
                   <>
-                    <p className="text-base text-ink-soft">
-                      Showing{" "}
-                      <span className="font-mono tabular-nums">
-                        {visibleVenues.length}
-                      </span>{" "}
-                      of{" "}
-                      <span className="font-mono tabular-nums">
-                        {venues.length}
-                      </span>{" "}
-                      venue{venues.length !== 1 && "s"}, closest first
-                    </p>
                     {visibleVenues.map((venue) => (
                       <VenueCard
                         key={venue.id}
