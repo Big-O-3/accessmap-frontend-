@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Map body -->
+  <polygon points="2,6 11,3 21,7 30,4 30,26 21,29 11,25 2,28" fill="#2f7df6" opacity="0.15" stroke="#2f7df6" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Fold lines -->
+  <line x1="11" y1="3" x2="11" y2="25" stroke="#2f7df6" stroke-width="1.2" opacity="0.5"/>
+  <line x1="21" y1="7" x2="21" y2="29" stroke="#2f7df6" stroke-width="1.2" opacity="0.5"/>
+  <!-- Pin drop shadow -->
+  <ellipse cx="16" cy="27" rx="3" ry="1" fill="#1d4ed8" opacity="0.25"/>
+  <!-- Pin body -->
+  <path d="M16 7 C12.5 7 10 9.8 10 13 C10 17.5 16 24 16 24 C16 24 22 17.5 22 13 C22 9.8 19.5 7 16 7Z" fill="#1d4ed8"/>
+  <!-- Pin dot -->
+  <circle cx="16" cy="13" r="2.5" fill="white"/>
+</svg>
