@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  getVenue,
-  createReview,
-  deleteReview,
-  markReviewHelpful,
-  unmarkReviewHelpful,
-} from "../lib/api";
+import { getVenue, createReview, deleteReview } from "../lib/api";
 import { ACCESSIBILITY_FEATURES } from "../lib/features";
 import { cleanText } from "../lib/profanity";
-import { hasMarkedHelpful, setMarkedHelpful } from "../lib/userData";
 import { useAuth } from "../context/useAuth";
 import ScoreBadge from "../components/ScoreBadge";
 import SaveButton from "../components/SaveButton";
@@ -546,9 +539,6 @@ function ReviewList({ reviews = [], currentUserId, onDelete }) {
           // Only the author sees a delete control; the backend re-checks
           // ownership regardless, so this is purely to hide the affordance.
           canDelete={!!currentUserId && review.userId === currentUserId}
-          // Marking a review helpful is a write, so it needs a signed-in user;
-          // signed-out visitors just see the count.
-          canMarkHelpful={!!currentUserId}
           onDelete={onDelete}
         />
       ))}
@@ -556,13 +546,9 @@ function ReviewList({ reviews = [], currentUserId, onDelete }) {
   );
 }
 
-function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
+function ReviewItem({ review, canDelete, onDelete }) {
   const [deleting, setDeleting] = useState(false);
   const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState(null);
-  const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount ?? 0);
-  const [marked, setMarked] = useState(() => hasMarkedHelpful(review.id));
-  const [savingHelpful, setSavingHelpful] = useState(false);
 
   async function handleDelete() {
     setDeleting(true);
@@ -574,30 +560,6 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
       toast.error(err.message || "Couldn't delete review");
       setDeleting(false);
       setConfirming(false);
-    }
-  }
-
-  async function handleHelpful() {
-    if (savingHelpful) return;
-    const nextMarked = !marked;
-    setError(null);
-    setSavingHelpful(true);
-    // Optimistically update so the button feels instant; revert on failure.
-    setMarked(nextMarked);
-    setHelpfulCount((c) => Math.max(0, c + (nextMarked ? 1 : -1)));
-    try {
-      const updated = nextMarked
-        ? await markReviewHelpful(review.id)
-        : await unmarkReviewHelpful(review.id);
-      // Trust the server's count and remember this browser's choice.
-      setHelpfulCount(updated.helpfulCount ?? 0);
-      setMarkedHelpful(review.id, nextMarked);
-    } catch (err) {
-      setMarked(!nextMarked);
-      setHelpfulCount((c) => Math.max(0, c + (nextMarked ? -1 : 1)));
-      setError(err.message);
-    } finally {
-      setSavingHelpful(false);
     }
   }
 
@@ -620,27 +582,6 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
         {review.createdAt && (
           <span>{new Date(review.createdAt).toLocaleDateString()}</span>
         )}
-        {canMarkHelpful ? (
-          <button
-            type="button"
-            onClick={handleHelpful}
-            disabled={savingHelpful}
-            aria-pressed={marked}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-medium transition-colors disabled:opacity-50 ${
-              marked
-                ? "border-brand-600 bg-brand-600 text-white"
-                : "border-sand-200 text-ink-soft hover:bg-sand-100"
-            }`}
-          >
-            Helpful ·{" "}
-            <span className="font-mono tabular-nums">{helpfulCount}</span>
-          </button>
-        ) : (
-          <span>
-            <span className="font-mono tabular-nums">{helpfulCount}</span> found
-            helpful
-          </span>
-        )}
         {canDelete && (
           <button
             type="button"
@@ -652,11 +593,6 @@ function ReviewItem({ review, canDelete, canMarkHelpful, onDelete }) {
           </button>
         )}
       </div>
-      {error && (
-        <p role="alert" className="mt-2 text-sm text-danger">
-          {error}
-        </p>
-      )}
       <ConfirmDialog
         open={confirming}
         title="Delete this review?"

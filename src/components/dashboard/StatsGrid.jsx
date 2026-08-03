@@ -29,10 +29,6 @@ export default function StatsGrid({ stats }) {
           </div>
         ))}
       </div>
-      <p className="mt-2 text-sm text-ink-faint">
-        Tracked on this device. Server-side sync isn&apos;t wired up yet, so
-        stats reset when you switch browsers or clear site data.
-      </p>
     </section>
   );
 }

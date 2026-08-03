@@ -8,7 +8,7 @@
 //
 // Tiers come from scoreTier() in src/lib/score.js: "high" | "medium" | "low".
 
-export const TIER_STYLES = {
+const TIER_STYLES = {
   high: {
     text: "text-success",
     softBg: "bg-success-soft",
@@ -33,7 +33,7 @@ export const TIER_STYLES = {
 };
 
 // Used when there's no score yet ("Not yet rated").
-export const NEUTRAL_TIER = {
+const NEUTRAL_TIER = {
   text: "text-ink-soft",
   softBg: "bg-sand-100",
   ring: "ring-sand-200",

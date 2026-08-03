@@ -69,11 +69,6 @@ export async function getVenue(id) {
   return request(`/api/venues/${id}`);
 }
 
-// GET /api/reviews?venueId=
-export async function getReviews(venueId) {
-  return request(`/api/reviews?venueId=${venueId}`);
-}
-
 // POST /api/reviews - leave a review on a venue (requires sign-in).
 // { venueId, rating (1-5), comment, accessibilityVote? } → the created review.
 // The review is dated automatically by its createdAt on the server.
@@ -107,20 +102,6 @@ export async function createReview({
 export async function deleteReview(reviewId) {
   if (!reviewId) throw new Error("A review is required.");
   return request(`/api/reviews/${reviewId}`, { method: "DELETE" });
-}
-
-// POST /api/reviews/:id/helpful - mark a review as helpful (requires sign-in).
-// Returns the updated review with its new helpfulCount.
-export async function markReviewHelpful(reviewId) {
-  if (!reviewId) throw new Error("A review is required.");
-  return request(`/api/reviews/${reviewId}/helpful`, { method: "POST" });
-}
-
-// DELETE /api/reviews/:id/helpful - undo a helpful mark (requires sign-in).
-// Returns the updated review with its new helpfulCount.
-export async function unmarkReviewHelpful(reviewId) {
-  if (!reviewId) throw new Error("A review is required.");
-  return request(`/api/reviews/${reviewId}/helpful`, { method: "DELETE" });
 }
 
 // DELETE /api/photos/:id - remove one of your own photos (requires sign-in).

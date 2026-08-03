@@ -1,11 +1,9 @@
 // Client for the Python ML service (accessmap-ml) that runs Grounding DINO.
 //
 // The Analyze page posts an image straight to this service and gets back
-// detections. We also turn those detections into the "features" shape that
-// calculateAccessibilityScore expects, so we can preview a score for a single
-// photo before any backend/venue exists.
+// detections. Detections are shaped into accessibility features and checklists
+// for the Analyze and Add Venue pages.
 
-import { calculateAccessibilityScore } from "./score";
 import { ACCESSIBILITY_FEATURES, FEATURE_BY_KEY, featureLabel } from "./features";
 
 // All ML traffic goes through the backend now - it forwards the image to the
@@ -55,11 +53,6 @@ export function detectionsToFeatures(detections = []) {
     }
   }
   return [...bestByType.values()];
-}
-
-// Convenience: raw detections -> a 0-100 preview score.
-export function scoreFromDetections(detections = []) {
-  return calculateAccessibilityScore(detectionsToFeatures(detections));
 }
 
 // Turn detections into a human-readable "degree of accessibility" summary:

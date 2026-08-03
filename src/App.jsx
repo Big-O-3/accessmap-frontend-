@@ -30,7 +30,7 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route
                 path="upload"
-                element={<StubPage title="Photo Upload" owner="Brandon" />}
+                element={<StubPage title="Photo Upload" />}
               />
             </Route>
 

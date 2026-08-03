@@ -4,7 +4,7 @@ import Button from "../components/Button";
 // Fallback page for unbuilt routes and the 404 catch-all. Kept minimal so
 // unfinished features and unknown URLs land somewhere navigable - but wrapped
 // in the shared card idiom so it still reads as part of the app.
-export default function StubPage({ title, owner }) {
+export default function StubPage({ title }) {
   return (
     <div className="mx-auto max-w-lg px-4 py-16 sm:py-24">
       <div className="rounded-2xl border border-sand-200 bg-surface p-8 text-center shadow-sm sm:p-10">
@@ -15,8 +15,7 @@ export default function StubPage({ title, owner }) {
           {title}
         </h1>
         <p className="mt-2 text-base text-ink-soft">
-          This page is planned{owner ? ` (owned by ${owner})` : ""} and not
-          built yet. In the meantime, you can keep exploring venues.
+          This page is not built yet. In the meantime, you can keep exploring venues.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button as={Link} to="/search">
